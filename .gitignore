@@ -1,0 +1,12 @@
+# Local configuration and credentials
+.env
+.env.*
+secrets.cfg
+
+# Runtime/editor output
+*.log
+*.tmp
+*.bak
+cache/
+.vscode/
+.idea/

@@ -9,7 +9,7 @@ lua54 'yes'
 shared_scripts {
     'configs/locales.lua',
     'configs/config.lua',
-    '@ox_lib/init.lua' --⚠️PLEASE READ⚠️; Uncomment this line if you use 'ox_lib'.⚠️
+    '@ox_lib/init.lua'
 }
 
 client_scripts {
@@ -18,7 +18,7 @@ client_scripts {
 }
 
 server_scripts {
-    '@mysql-async/lib/MySQL.lua', --⚠️PLEASE READ⚠️; Remove this line if you don't use 'mysql-async' or 'oxmysql'.⚠️
+    '@oxmysql/lib/MySQL.lua',
     'configs/server_customise_me.lua',
     'server/**/*.lua'
 }
@@ -35,7 +35,6 @@ files {
     'html/images/*.svg',
     'html/images/*.jpg',
     'html/**/*.js',
-    'html/js/libraries/*.js',
     'html/sound/*.wav'
 }
 
@@ -52,7 +51,9 @@ server_exports {
 }
 
 
-dependency '/server:4960' -- ⚠️PLEASE READ⚠️; Requires at least server build 4960.
+dependency 'ox_lib'
+dependency 'oxmysql'
+dependency '/server:4960'
 
 escrow_ignore {
     'client/main/functions.lua',
