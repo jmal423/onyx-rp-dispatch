@@ -479,22 +479,32 @@ AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
                 if notificationIndex then
                     if responseData.action == "add" then
                         notifications[notificationIndex].responding = responseData.responding + 1
+                        local isSelf = responseData.char_info.source == GetPlayerServerId(PlayerId())
+                        if isSelf then
+                            notifications[notificationIndex].responding_state = true
+                        end
                         SendNUIMessage({
                             action = "add_responding",
                             unique_id = responseData.unique_id,
                             SourceName = responseData.char_info.char_name,
                             SourceCallsign = responseData.char_info.callsign,
-                            source = responseData.char_info.source
+                            source = responseData.char_info.source,
+                            isSelf = isSelf
                         })
                     else
                         if responseData.action == "remove" then
                             notifications[notificationIndex].responding = responseData.responding - 1
+                            local isSelf = responseData.char_info.source == GetPlayerServerId(PlayerId())
+                            if isSelf then
+                                notifications[notificationIndex].responding_state = false
+                            end
                             SendNUIMessage({
                                 action = "remove_responding",
                                 unique_id = responseData.unique_id,
                                 SourceName = responseData.char_info.char_name,
                                 SourceCallsign = responseData.char_info.callsign,
-                                source = responseData.char_info.source
+                                source = responseData.char_info.source,
+                                isSelf = isSelf
                             })
                         end
                     end
