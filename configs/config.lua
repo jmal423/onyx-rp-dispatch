@@ -44,7 +44,7 @@ Config.FrameworkTriggers = {
 
 Config.UsingOneSync = true --Do you use OneSync legacy or infinity?
 Config.UseFrameworkDutySystem = true --Dispatch visibility and access follow the framework duty state.
-Config.Debug = true --To enable debug prints.
+Config.Debug = false --To enable debug prints.
 Config.EnableTestCommand = false --The test command is 'dispatchtest'.
 
 

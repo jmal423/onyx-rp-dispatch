@@ -54,10 +54,6 @@ RegisterNUICallback("dispatcheroffline", function()
         print("Loaded Successfully!")
     end
 end)
-RegisterNUICallback('dispatchRestartTrace', function(data, cb)
-    DispatchRestartTrace('nui_show_small_ack', data)
-    cb({ ok = true })
-end)
 Authorised = isDispatcherOffline
 notifications = {}
 currentNotificationIndex = 0

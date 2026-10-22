@@ -73,14 +73,12 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 
 ## Small não reaparece após reiniciar a resource
 
-- **Estado:** por resolver; investigação pausada por prioridade do utilizador.
-- **Comportamento:** depois de `restart onyx_dispatch`, o painel small não aparece automaticamente. Abrir e fechar o mapa grande faz com que apareça. O utilizador confirmou que continua a acontecer.
-- **Evidência disponível:** o log mostra `Loaded Successfully!` da NUI, mas não confirma a sincronização do jogador nem a decisão de visibilidade.
-- **Tentativas:** commits `4bac49e`, `75a61d2`, `c7b3803` e `6770fb1` alteraram o fluxo de restart/sincronização; não resolveram o problema e foram revertidos.
-- **Estado do código:** rollback aplicado; manter o comportamento anterior a essas quatro tentativas até retomar a investigação.
-- **Próxima investigação:** ativar temporariamente `Config.Debug = true`, reiniciar a resource uma vez quando for conveniente e recolher as linhas `[onyx_dispatch][restart-trace]` do F8 e da consola. A instrumentação regista autorização/handshake NUI, `ScriptRestarted`, pedido e resposta `PlayerLoaded`, emprego/duty, decisão `IsAllowed()`, envio de `show_small` e confirmação de visibilidade do elemento pela NUI. Depois desligar novamente `Config.Debug`.
-- **Ideia para investigar:** a notificação de arranque “O recurso ainda está a carregar. Tente novamente dentro de alguns segundos” pode indicar uma janela em que o small tenta abrir antes de a resource/NUI ou os dados do jogador estarem prontos. Na próxima investigação, identificar quem dispara essa notificação e comparar o seu momento com `PlayerLoaded`, estado de serviço e `show_small`; só depois decidir se é preciso sincronizar ou repetir a apresentação do small.
-- **Atualização (2026-10-22):** logs após a atualização confirmam `ScriptRestarted`, `PlayerLoaded`, dados do jogador e `IsAllowed()`; o cliente enviou `show_small`. A NUI reportou `toast fade showing`, `display:block`, `visibility:visible` e opacidade `0.592` aos 100 ms (durante o fade-in), sem o `TypeError` anterior. Tecnicamente, o toast está a ser mostrado nesta reprodução; falta confirmação visual do utilizador. Se não estiver visível no ecrã, investigar posição/viewport, não sincronização de job ou restart.
+- **Estado:** resolvido segundo confirmação do utilizador; o toast aparenta funcionar corretamente desde `9b56dcd`.
+- **Comportamento original:** ocasionalmente, depois de `restart onyx_dispatch`, o painel small não aparecia até abrir e fechar o mapa grande.
+- **Diagnóstico da reprodução:** handshake e autorização NUI, `ScriptRestarted`, `PlayerLoaded`, job `police`, estado de serviço ativo, `IsAllowed() = true` e envio de `show_small` passaram. A NUI confirmou o toast com a classe `showing`, visível e em fade-in.
+- **Histórico:** commits `4bac49e`, `75a61d2`, `c7b3803` e `6770fb1` tentaram corrigir sincronização e foram revertidos por não resolverem o problema. A instrumentação posterior expôs uma ação NUI desconhecida que causava `TypeError`; essa ação e a confirmação NUI temporária foram removidas.
+- **Estado final:** `Config.Debug = false`. Os logs Lua de diagnóstico permanecem disponíveis, condicionados por `Config.Debug`, caso o problema regresse.
+- **Atualização (2026-10-22):** o utilizador confirma que aparenta funcionar corretamente desde `9b56dcd`.
 
 ## Alertas de ocorrências ingame: assaltos, pessoa armada, explosões e incêndios
 
