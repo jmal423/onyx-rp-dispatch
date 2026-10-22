@@ -52,9 +52,9 @@ O dispatch só envia para jogadores que estejam de serviço e cujo emprego estej
 ## Retorno
 
 ```lua
-local sent, operationalCount, observerCount = exports['onyx_dispatch']:SendAlert(payload)
+local sent, result, observerCount = exports['onyx_dispatch']:SendAlert(payload)
 if sent then
-    print(('Alerta enviado a %d unidades operacionais e %d observadores.'):format(operationalCount, observerCount))
+    print(('Alerta enviado a %d unidades operacionais e %d observadores.'):format(result, observerCount))
 else
     print(('Alerta não enviado: %s'):format(result))
 end
