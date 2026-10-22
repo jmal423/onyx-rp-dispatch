@@ -38,6 +38,13 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - Foi acrescentado o job de cada unidade aos dados da interface para permitir a filtragem sem alterar a lógica de blips.
 - **Teste manual:** em serviço, abrir o mapa grande com um jogador LSPD, Sheriff e EMS online. Alternar cada botão e confirmar que só a lista lateral muda; fechar/abrir a NUI e confirmar que a preferência se mantém. Entrar como EMS e confirmar que só aparece a unidade EMS na lista, enquanto os blips continuam no mapa.
 
+## Lista de ocorrências — organização visual
+
+- **Estado:** primeira reorganização de texto aplicada; falta validação no FiveM.
+- Títulos e horas passaram a ocupar colunas próprias, impedindo que o título empurre a hora ou que a hora se sobreponha ao texto. A mensagem ganhou espaçamento e entrelinha próprios.
+- As cores e os efeitos atuais foram mantidos para serem avaliados depois, com a hierarquia de texto já corrigida.
+- **Próximo passo:** comparar a lista no viewport da captura e em 720p/4K; depois recolher feedback e rever cores/realce.
+
 ## Redimensionamento da NUI e small invisível
 
 - **Estado:** alterações implementadas; o utilizador confirmou que a barra superior ficou proporcional em 800×600. Falta retestar no jogo a posição do toast ao abrir/fechar ESC e inventário, e a escala das definições em 720p.

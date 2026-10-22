@@ -425,6 +425,35 @@ html {
   border-bottom-left-radius: 0.5rem !important;
 }
 
+/* Keep call titles and relative timestamps in separate, predictable columns. */
+#dispatchGroup > a > .d-flex.w-100.justify-content-between {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(8rem, auto);
+  align-items: start;
+  column-gap: 1rem;
+  row-gap: 0.35rem;
+}
+
+#dispatchGroup > a > .d-flex.w-100.justify-content-between > h5 {
+  min-width: 0;
+  margin: 0 !important;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+#dispatchGroup > a > .d-flex.w-100.justify-content-between > small {
+  max-width: 10rem;
+  text-align: right;
+  line-height: 1.35;
+}
+
+#dispatchGroup > a > p {
+  margin-top: 0.6rem !important;
+  margin-bottom: 0.75rem !important;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
 /* Unit list*/
 #onyxUnitFilters {
   display: flex;
