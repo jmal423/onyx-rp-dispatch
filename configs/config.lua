@@ -142,6 +142,29 @@ Config.Dispatcher = {
     VoipResource = 'toko' ---[ 'toko' / 'mumble' / 'pmavoice' / 'other' ] Choose your servers voip resource.
 }
 
+-- Configuração comum dos alertas de assaltos enviados por integrações server-side.
+Config.RobberyAlerts = {
+    ENABLE = true,
+    FLASH = true,
+    SOUND = 4,
+    BLIP = {
+        sprite = 161,
+        scale = 1.0,
+        colour = 1,
+        time = 5,
+    },
+    TYPES = {
+        store_register = { title = '10-90 - Assalto a comércio', description = 'Alarme confirmado numa caixa registadora' },
+        store_safe = { title = '10-90 - Assalto a comércio', description = 'Abertura confirmada de um cofre de comércio' },
+        bank_fleeca = { title = '10-90 - Assalto a banco', description = 'Alarme bancário confirmado' },
+        bank_paleto = { title = '10-90 - Assalto a banco', description = 'Alarme bancário confirmado' },
+        bank_pacific = { title = '10-90 - Assalto a banco', description = 'Alarme bancário confirmado' },
+        jewelry = { title = '10-90 - Assalto a joalharia', description = 'Alarme da joalharia confirmado' },
+        house = { title = '10-90 - Assalto a residência', description = 'Arrombamento confirmado' },
+        armored_truck = { title = '10-90 - Assalto a transporte de valores', description = 'Missão de assalto a transporte de valores iniciada' },
+    },
+}
+
 Config.IncidentAlerts = {
     ArmedPlayers = {
         ENABLE = true,

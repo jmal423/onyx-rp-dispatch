@@ -49,6 +49,7 @@ server_exports {
     'GetPlayersDispatchData',
     'GetConfig',
     'SendAlert',
+    'SendRobberyAlert',
 }
 
 

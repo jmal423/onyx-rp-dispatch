@@ -1,6 +1,25 @@
 # Integrar outros recursos com o ONYX Dispatch
 
-Usa o export server-side `SendAlert` para ligar um assalto ou outro evento confirmado ao dispatch. Os 10-13 são detetados e enviados automaticamente pelo cliente do jogador que dispara; o jogador não carrega numa tecla e não é preciso uma unidade policial perto ou a ver o disparo. Tiros silenciados e disparos em `Config.PoliceAlerts.GunShots.SuppressedZones` são ignorados. O 10-72 verifica automaticamente jogadores armados perto de vias em todos os clientes, incluindo o próprio jogador; a proximidade de um polícia não é necessária. Explosões e incêndios observados por clientes também têm deteção integrada. Os alertas são encaminhados à Polícia e Sheriff de serviço. Fogos só podem ser reportados quando um cliente os tem carregados no jogo. Continua a usar o export para assaltos e eventos especiais de outros recursos. O export não cria eventos de rede; chama-o a partir do servidor do recurso que detetou e validou a ocorrência.
+Usa `SendRobberyAlert` para integrações de assaltos; centraliza títulos, texto, som, flash, blip e encaminhamento para a Polícia e Sheriff de serviço. Para outros eventos confirmados, usa o export genérico `SendAlert`. Ambos são server-side. Os exports não criam eventos de rede: chama-os no servidor do recurso que validou a ocorrência.
+
+Os 10-13 são detetados e enviados automaticamente pelo cliente do jogador que dispara; o jogador não carrega numa tecla e não é preciso uma unidade policial perto ou a ver o disparo. Tiros silenciados e disparos em `Config.PoliceAlerts.GunShots.SuppressedZones` são ignorados. O 10-72 verifica automaticamente jogadores armados perto de vias em todos os clientes, incluindo o próprio jogador; a proximidade de um polícia não é necessária. Explosões e incêndios observados por clientes também têm deteção integrada. Os alertas são encaminhados à Polícia e Sheriff de serviço. Fogos só podem ser reportados quando um cliente os tem carregados no jogo.
+
+## Integração comum de assaltos
+
+No servidor do recurso de assalto, chama `SendRobberyAlert` apenas depois de o servidor confirmar o alarme ou o início real. A exportação exige `kind`, `location`, `coords` e um `unique_id` único por ocorrência; não aceita chamadas sem ID para evitar integrações que geram duplicados sem controlo.
+
+```lua
+exports['onyx_dispatch']:SendRobberyAlert({
+    kind = 'bank_fleeca',
+    location = 'Fleeca — Legion Square',
+    coords = bank.coords, -- Coordenadas lidas da configuração server-side do assalto
+    unique_id = ('qbx_bankrobbery:%s:%s:%s'):format(bankId, source, GetGameTimer()),
+})
+```
+
+Os tipos e o estilo estão em `Config.RobberyAlerts`. Tipos base incluídos: `store_register`, `store_safe`, `bank_fleeca`, `bank_paleto`, `bank_pacific`, `jewelry`, `house` e `armored_truck`. Para ligar outro script, só é preciso mapear o seu evento de sucesso para um destes tipos (ou adicionar um tipo à configuração) e passar a localização, coordenadas server-side e ID estável.
+
+Os pontos de integração dos cinco recursos Qbox no servidor de testes estão descritos em `QBX_ROBBERY_ADAPTERS.md`.
 
 ## Exemplo
 
