@@ -18,7 +18,7 @@ function ChangeRadio(new_channel)
             exports['tokovoip_script']:removePlayerFromRadio(current_channel)
             exports['tokovoip_script']:setPlayerData(player_name, 'radio:channel', new_channel, true);
             exports['tokovoip_script']:addPlayerToRadio(new_channel, true)
-            TriggerServerEvent('dispatch:GetRadioChannel', new_channel)
+            TriggerServerEvent('onyx_dispatch:GetRadioChannel', new_channel)
         else
             print('already on this channel')
         end
@@ -27,12 +27,12 @@ function ChangeRadio(new_channel)
         exports['mumble-voip']:SetRadioChannel(0)
         exports['mumble-voip']:SetRadioChannel(new_channel)
         exports['mumble-voip']:SetMumbleProperty('radioEnabled', true)
-        TriggerServerEvent('dispatch:GetRadioChannel', new_channel)
+        TriggerServerEvent('onyx_dispatch:GetRadioChannel', new_channel)
 
     elseif Config.Dispatcher.VoipResource == 'pmavoice' then
         exports['pma-voice']:setRadioChannel(new_channel)
         exports['pma-voice']:setVoiceProperty('radioEnabled', true)
-        TriggerServerEvent('dispatch:GetRadioChannel', new_channel)
+        TriggerServerEvent('onyx_dispatch:GetRadioChannel', new_channel)
 
     elseif Config.Dispatcher.VoipResource == 'other' then
         --add your own code.
@@ -46,7 +46,7 @@ function LeaveRadio()
         if current_channel ~= 'nil' then
             exports['tokovoip_script']:removePlayerFromRadio(current_channel)
             exports['tokovoip_script']:setPlayerData(player_name, 'radio:channel', 'nil', true)
-            TriggerServerEvent('dispatch:GetRadioChannel', 0)
+            TriggerServerEvent('onyx_dispatch:GetRadioChannel', 0)
         else
             print('not in any radio')
         end
@@ -55,12 +55,12 @@ function LeaveRadio()
     elseif Config.Dispatcher.VoipResource == 'mumble' then
         exports['mumble-voip']:SetRadioChannel(0)
         exports['mumble-voip']:SetMumbleProperty('radioEnabled', false)
-        TriggerServerEvent('dispatch:GetRadioChannel', 0)
+        TriggerServerEvent('onyx_dispatch:GetRadioChannel', 0)
 
     elseif Config.Dispatcher.VoipResource == 'pmavoice' then
         exports['pma-voice']:setRadioChannel(0)
         exports['pma-voice']:setVoiceProperty('radioEnabled', false)
-        TriggerServerEvent('dispatch:GetRadioChannel', 0)
+        TriggerServerEvent('onyx_dispatch:GetRadioChannel', 0)
 
     elseif Config.Dispatcher.VoipResource == 'other' then
         --add your own code.

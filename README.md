@@ -18,6 +18,8 @@ Recurso de dispatch para FiveM, instalado como `onyx_dispatch` em `resources/[st
 
 No `server.cfg`, iniciar `ox_lib` e `oxmysql` antes de `onyx_dispatch`.
 
+Para instalar a resource num servidor Qbox novo, segue [INSTALL.md](INSTALL.md). O guia inclui os passos de configuração, adaptação dos empregos e verificação no jogo.
+
 ## Base de dados
 
 `Config.AutoInsertSQL` está ativo por predefinição. O recurso cria a tabela `onyx_dispatch` para guardar os callsigns. No arranque, migra a tabela anterior automaticamente e preserva os callsigns existentes.
