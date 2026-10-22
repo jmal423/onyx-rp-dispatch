@@ -9,26 +9,32 @@
 ESX, QBCore = nil, nil
 JobData, on_duty = {}, false
 
-local playerSyncRequested = false
 local playerSyncPending = false
 
 local function RequestPlayerSync()
-    if playerSyncRequested or playerSyncPending then return end
+    if playerSyncPending then return end
     playerSyncPending = true
 
     CreateThread(function()
-        while not Authorised or type(JobData.name) ~= 'string' do
-            Wait(100)
+        while not Authorised do Wait(100) end
+
+        local function Request()
+            if not playerSyncPending then return end
+            TriggerServerEvent('cd_dispatch:PlayerLoaded')
+            SetTimeout(1500, Request)
         end
 
-        playerSyncPending = false
-        playerSyncRequested = true
-        TriggerServerEvent('cd_dispatch:PlayerLoaded')
+        Request()
     end)
 end
 
 RegisterNetEvent('cd_dispatch:ClientAuthorised')
 AddEventHandler('cd_dispatch:ClientAuthorised', RequestPlayerSync)
+
+RegisterNetEvent('cd_dispatch:PlayerSyncComplete')
+AddEventHandler('cd_dispatch:PlayerSyncComplete', function()
+    playerSyncPending = false
+end)
 
 local function UpdateDispatchVisibility()
     if not Authorised then return end

@@ -126,13 +126,18 @@ end
 RegisterServerEvent('cd_dispatch:PlayerLoaded')
 AddEventHandler('cd_dispatch:PlayerLoaded', function()
     local _source = source
+    local job = GetJob(_source)
+    -- The client retries this handshake during a resource restart. Ignore it
+    -- until the framework has restored this player's server-side job data.
+    if type(job) ~= 'string' then return end
+
     local data = GetCharacterInfo(_source)
     self[_source] = {}
     self[_source].source = _source
     self[_source].char_name = data.char_name
     self[_source].callsign = data.callsign
     self[_source].phone_number = data.phone_number
-    self[_source].job = GetJob(_source)
+    self[_source].job = job
     self[_source].radio_channel = 0
     self[_source].vehicle = 'foot'
     self[_source].status = {
