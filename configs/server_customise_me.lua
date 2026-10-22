@@ -170,8 +170,8 @@ function GetCharacterInfo(source)
 
     end
 
-    local Result = DatabaseQuery('SELECT callsign FROM cd_dispatch WHERE identifier="'..identifier..'"')
-    if Result and Result[1] and Result[1].callsign then
+    local Result = DatabaseQuery('SELECT callsign FROM cd_dispatch WHERE identifier = ?', {identifier})
+    if Result and Result[1] and type(Result[1].callsign) == 'string' and Result[1].callsign ~= '' then
         data.callsign = Result[1].callsign
     end
     
@@ -206,11 +206,14 @@ end
 
 function SetCallsign(source, callsign)
     local identifier = GetIdentifier(source)
-    local Result = DatabaseQuery('SELECT callsign FROM cd_dispatch WHERE identifier="'..identifier..'"')
-    if Result and Result[1] and Result[1].callsign then
-      	DatabaseQuery('UPDATE cd_dispatch SET callsign="'..callsign..'" WHERE identifier="'..identifier..'"')
+    if type(identifier) ~= 'string' or type(callsign) ~= 'string' or callsign == '' or #callsign >= 16 then return end
+
+    local Result = DatabaseQuery('SELECT callsign FROM cd_dispatch WHERE identifier = ?', {identifier})
+    if not Result then return end
+    if Result[1] then
+        DatabaseQuery('UPDATE cd_dispatch SET callsign = ? WHERE identifier = ?', {callsign, identifier})
     else
-        DatabaseQuery('INSERT INTO cd_dispatch (identifier, callsign) VALUES ("'..identifier..'", "'..callsign..'")')
+        DatabaseQuery('INSERT INTO cd_dispatch (identifier, callsign) VALUES (?, ?)', {identifier, callsign})
     end
 end
 

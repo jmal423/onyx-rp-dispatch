@@ -450,10 +450,13 @@ AddEventHandler("cd_dispatch:SaveUserSettings", function(settings)
         statusChanged = true
     end
     
-    if settings.callsign and settings.callsign ~= self[playerId].callsign then
-        self[playerId].callsign = settings.callsign
-        Checks("set_callsign", playerId, settings.callsign)
-        PlayerBlipsActions(playerId, "update")
+    if type(settings.callsign) == 'string' then
+        local callsign = settings.callsign:match('^%s*(.-)%s*$')
+        if callsign ~= '' and #callsign < 16 and not callsign:find('[%c]') and callsign ~= self[playerId].callsign then
+            self[playerId].callsign = callsign
+            Checks("set_callsign", playerId, callsign)
+            PlayerBlipsActions(playerId, "update")
+        end
     end
     
     if settings.vehicle and settings.vehicle ~= self[playerId].vehicle then
