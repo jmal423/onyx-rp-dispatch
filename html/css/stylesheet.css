@@ -35,6 +35,39 @@ html {
 .toastHeader {
   background-color: rgb(52, 58, 64);
 }
+.dispatch-alert-accent {
+  height: clamp(3px, 0.28vh, 6px);
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    #23c9a9 0%,
+    #27a9e8 24%,
+    #7866f2 48%,
+    #f04f8b 72%,
+    #ffb347 88%,
+    #23c9a9 100%
+  );
+  background-size: 220% 100%;
+  animation: dispatch-alert-flow 4s linear infinite,
+    dispatch-alert-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes dispatch-alert-flow {
+  from { background-position: 0% 50%; }
+  to { background-position: 220% 50%; }
+}
+
+@keyframes dispatch-alert-pulse {
+  0%, 100% { filter: brightness(0.82); }
+  50% { filter: brightness(1.3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dispatch-alert-accent {
+    animation: none;
+    background-position: 50% 50%;
+  }
+}
 .toast-distance {
   color:#999;
   font-size:80%;
