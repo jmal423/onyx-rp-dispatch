@@ -223,6 +223,51 @@ CreateThread(function()
     end
 end)
 
+local keyLabelMap = {
+    LEFT = '←',
+    RIGHT = '→',
+    UP = '↑',
+    DOWN = '↓',
+    RETURN = 'ENTER',
+    BACK = 'BACKSPACE',
+}
+
+local function GetMappedKeyLabel(command)
+    if type(command) ~= 'string' or command == '' then return '—' end
+
+    local mapped = GetControlInstructionalButton(0, GetHashKey(command) | 0x80000000, true)
+    if type(mapped) ~= 'string' or mapped == '' then return '—' end
+
+    local key = mapped:match('^t_(.+)$')
+    if not key then return '—' end
+
+    local normalizedKey = key:upper()
+    if normalizedKey == 'NONE' or normalizedKey == 'NULL' then return '—' end
+
+    return keyLabelMap[normalizedKey] or key
+end
+
+function GetDispatchKeybindLabels()
+    return {
+        previous = GetMappedKeyLabel(Config.small_ui_left.ENABLE and Config.small_ui_left.command),
+        respond = GetMappedKeyLabel(Config.respond.ENABLE and Config.respond.command),
+        next = GetMappedKeyLabel(Config.small_ui_right.ENABLE and Config.small_ui_right.command),
+    }
+end
+
+CreateThread(function()
+    local lastLabels
+    while true do
+        Wait(500)
+        local labels = GetDispatchKeybindLabels()
+        local signature = table.concat({labels.previous, labels.respond, labels.next}, '\0')
+        if signature ~= lastLabels then
+            lastLabels = signature
+            SendNUIMessage({action = 'dispatchKeybinds', keys = labels})
+        end
+    end
+end)
+
 RegisterNetEvent('cd_dispatch:DutyState')
 AddEventHandler('cd_dispatch:DutyState', function(duty)
     if type(duty) ~= 'boolean' then return end

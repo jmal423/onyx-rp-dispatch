@@ -785,6 +785,12 @@ end)
 RegisterNUICallback("moveend_smallui", function()
     NUI_status = false
 end)
+RegisterNUICallback('dispatchKeybindsReady', function(_, cb)
+    if GetDispatchKeybindLabels then
+        SendNUIMessage({action = 'dispatchKeybinds', keys = GetDispatchKeybindLabels()})
+    end
+    cb({})
+end)
 RegisterNUICallback("usersettings", function(settings)
     if T(settings, "table") then
         settings.vehicle = nil
