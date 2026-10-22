@@ -176,7 +176,20 @@ end
 
 RegisterNetEvent('cd_dispatch:ScriptRestarted')
 AddEventHandler('cd_dispatch:ScriptRestarted', function()
-    while not Authorised do Wait(0) end
+    -- A resource restart does not fire the framework's player-loaded event again.
+    -- Re-read the live job/duty data before asking the server to rebuild dispatch state.
+    if Config.Framework == 'qbcore' then
+        while not QBCore do Wait(50) end
+        local playerData = QBCore.Functions.GetPlayerData()
+        JobData = playerData and playerData.job or {}
+        on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
+    elseif Config.Framework == 'esx' then
+        while not ESX or not ESX.PlayerData do Wait(50) end
+        JobData = ESX.PlayerData.job or {}
+        on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
+    end
+
+    while not Authorised do Wait(100) end
     TriggerServerEvent('cd_dispatch:PlayerLoaded')
 end)
 
