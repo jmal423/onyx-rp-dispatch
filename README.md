@@ -68,6 +68,7 @@ Os mapeamentos podem ser alterados nas definições de teclas do FiveM. O painel
 - **Empregos:** os valores incluídos (`police`, `sheriff`, `ambulance`) são exemplos. Usa os nomes exatos de `job.name` do teu servidor.
 - **Agrupamento:** `Config.AllowedJobs` define quem tem acesso e que unidades são agrupadas; cada `job_table` define os destinatários de uma chamada específica.
 - **Chamadas civis:** os comandos estão desativados por predefinição. Revê os destinatários antes de os ativares.
+- **Cooldown de rádio:** 3 segundos por grupo, ajustável em `Config.RadioCodes.cooldown`.
 - **Modo operador:** opcional. A alteração de canal de rádio suporta `pma-voice`, `mumble-voip` e Toko; outros VOIP precisam de uma integração própria.
 
 ## ◉ Alertas: incluído e por integrar

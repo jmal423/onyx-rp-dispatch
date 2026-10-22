@@ -22,6 +22,7 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - `Alt+4`: 10-99 urgente — pedir apoio conjunto LSPD e Sheriff.
 - `Alt+5`: **Pedido de assistência médica — Polícia**; disponível para a polícia e encaminhado apenas para EMS, sem enviar chamados policiais para EMS. Não lhe atribuir um código numérico da lista LSPD.
 - Os dois atalhos 10-99 são urgentes. As binds continuam configuráveis em `Config.RadioCodes` e nas definições de teclas do FiveM.
+- Cooldown dos códigos reduzido de 10 para 3 segundos por grupo; 10-20, pedido médico e restantes códigos de apoio têm temporizadores independentes.
 - A lista original define 10-14 como “Transporte de ferido ao hospital”; não corresponde a pedir EMS e não deve ser reutilizado para `Alt+5`. O título de `Alt+5` ficou definido como “Pedido de assistência médica — Polícia”.
 - O servidor valida emprego e serviço e define os destinatários: códigos de força para a própria força; Alt+4 apenas para LSPD/Sheriff; Alt+5 apenas para polícia, enviado apenas a EMS.
 - Se não houver EMS de serviço, o chamado não é criado nem aparece no dispatch; quem o enviou recebe o aviso de falta de EMS. Havendo EMS, o pedido aparece silenciosamente no dispatch de Polícia e Sheriff de serviço, apenas para consulta; só EMS recebe o alerta operacional e pode responder.

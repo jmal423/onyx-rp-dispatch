@@ -177,7 +177,7 @@ Config.JobCallCommands = {
 
 Config.RadioCodes = {
     ENABLE = true,
-    cooldown = 10, -- Server-side cooldown in seconds.
+    cooldown = 3, -- Server-side cooldown per radio-code group, in seconds.
     -- The digit is editable in FiveM key bindings; hold Alt while pressing it.
     location = {command = '_onyx_dispatch_10_20', key = '1'},
     support = {command = '_onyx_dispatch_10_32_support', key = '2'},
