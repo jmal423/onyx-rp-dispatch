@@ -716,19 +716,27 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
 
     local medicalRequester = code == 'medical-assistance-police' and sourceId or nil
     local observerJobs = medicalRequester and { 'police', 'sheriff' } or nil
-    TrackDispatchCall(notification.unique_id, coords, targetJobs, medicalRequester, observerJobs)
-
-    local recipientCount = 0
+    local recipients = {}
     for playerId, playerData in pairs(self) do
         if playerData.on_duty then
             for _, targetJob in ipairs(targetJobs) do
                 if playerData.job == targetJob then
-                    recipientCount = recipientCount + 1
-                    TriggerClientEvent('onyx_dispatch:AddNotification', playerId, notification, true)
+                    recipients[#recipients + 1] = playerId
                     break
                 end
             end
         end
+    end
+
+    local recipientCount = #recipients
+    if medicalRequester and recipientCount == 0 then
+        SendNotification(sourceId, 3, 'radio_code_medical_no_ems')
+        return
+    end
+
+    TrackDispatchCall(notification.unique_id, coords, targetJobs, medicalRequester, observerJobs)
+    for _, playerId in ipairs(recipients) do
+        TriggerClientEvent('onyx_dispatch:AddNotification', playerId, notification, true)
     end
 
     if medicalRequester then
@@ -748,11 +756,7 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
     end
 
     if medicalRequester then
-        if recipientCount > 0 then
-            SendNotification(sourceId, 2, 'radio_code_medical_request_sent')
-        else
-            SendNotification(sourceId, 3, 'radio_code_medical_no_ems')
-        end
+        SendNotification(sourceId, 2, 'radio_code_medical_request_sent')
     end
 end)
 

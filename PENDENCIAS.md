@@ -24,9 +24,9 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - Os dois atalhos 10-99 são urgentes. As binds continuam configuráveis em `Config.RadioCodes` e nas definições de teclas do FiveM.
 - A lista original define 10-14 como “Transporte de ferido ao hospital”; não corresponde a pedir EMS e não deve ser reutilizado para `Alt+5`. O título de `Alt+5` ficou definido como “Pedido de assistência médica — Polícia”.
 - O servidor valida emprego e serviço e define os destinatários: códigos de força para a própria força; Alt+4 apenas para LSPD/Sheriff; Alt+5 apenas para polícia, enviado apenas a EMS.
-- A Polícia recebe confirmação quando o Alt+5 é enviado e aviso quando não há EMS de serviço. O pedido aparece silenciosamente no dispatch de Polícia e Sheriff de serviço, apenas para consulta; só EMS recebe o alerta operacional e pode responder.
+- Se não houver EMS de serviço, o chamado não é criado nem aparece no dispatch; quem o enviou recebe o aviso de falta de EMS. Havendo EMS, o pedido aparece silenciosamente no dispatch de Polícia e Sheriff de serviço, apenas para consulta; só EMS recebe o alerta operacional e pode responder.
 - Polícia, Sheriff e EMS de serviço veem o estado, callsign/nome e distância das unidades EMS que respondem. A lista atualiza quando EMS entra ou sai da resposta. Mantêm-se as notificações à pessoa que enviou o pedido.
-- **Teste manual:** em serviço, confirmar Alt+1 a Alt+4 com polícia/Sheriff e Alt+5 com polícia; validar que Polícia e Sheriff de serviço veem o pedido silencioso, não o conseguem responder, e veem a lista/distância de EMS atualizada em resposta. Confirmar que EMS recebe o alerta acionável, que polícia emissora recebe confirmação, que o aviso de falta de EMS continua a aparecer e que há bloqueio fora de serviço, bloqueio de Alt+4 para EMS e cooldown.
+- **Teste manual:** sem EMS de serviço, confirmar que Alt+5 não cria alerta e avisa quem o enviou. Com EMS de serviço, confirmar que Polícia e Sheriff veem o pedido silencioso, não o conseguem responder no painel pequeno nem no menu do mapa grande, e veem a lista/distância de EMS atualizada em resposta. Confirmar que EMS recebe o alerta acionável, que a polícia emissora recebe confirmação, bloqueio fora de serviço, bloqueio de Alt+4 para EMS e cooldown.
 
 ### Filtros da lista lateral — implementação inicial
 

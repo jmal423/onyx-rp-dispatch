@@ -31,6 +31,13 @@ html {
 #buttonGroup.onyx-read-only > button:nth-child(2) {
   display: none !important;
 }
+
+#context-menu.onyx-read-only #dropdownRespond,
+#context-menu.onyx-read-only #dropdownRemoveResponse,
+#context-menu.onyx-read-only #dropdownAssignAll + hr,
+#context-menu.onyx-read-only #dropdownRemoveResponse + hr {
+  display: none !important;
+}
 .toast {
   background-color: rgba(52, 58, 64, 0.85) !important;
   z-index: 9999 !important;
