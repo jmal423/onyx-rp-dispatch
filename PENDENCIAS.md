@@ -24,15 +24,21 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 
 ## Redimensionamento da NUI e small invisível
 
-- **Estado:** correção implementada em 2026-10-22; falta teste no FiveM.
+- **Estado:** alterações implementadas; o utilizador confirmou que a barra superior ficou proporcional em 800×600. Falta retestar no jogo a posição do toast ao abrir/fechar ESC e inventário, e a escala das definições em 720p.
 - Ao mudar a resolução, a NUI espera 250 ms para estabilizar, volta a ajustar o mapa à janela e pede ao cliente Lua para reapresentar o small se o mapa grande estiver fechado e o jogador continuar autorizado/de serviço. A posição do small é guardada como proporção da área útil, para manter a colocação relativa entre resoluções e reinícios da NUI.
 - A posição só é guardada após arrastar o painel; abrir/fechar menus e alterações automáticas de estilo já não reescrevem a posição guardada. A aplicação da posição também substitui explicitamente a transformação CSS de centragem.
 - Corrigida a transformação CSS do `#toastContainer`, que estava a ser sobrescrita e podia deslocar o small verticalmente.
 - **Ajuste 720p:** reduzido o mínimo da escala global de 14 px para 12 px, a largura mínima do toast e a largura máxima das definições. Em ecrãs baixos, as margens e espaçamentos das definições também diminuem para evitar um modal desproporcional.
 - **Barra superior em resoluções pequenas:** a largura agora considera o espaço ocupado pelos painéis laterais, para não se sobrepor aos cabeçalhos. Em 800 px de largura, passa de cerca de 528 px para cerca de 356 px.
 - **Menus:** o small é temporariamente ocultado enquanto o Pause Menu ou inventário está aberto e reaparece ao fechar. A deteção usa `IsPauseMenuActive()` e os state bags `invOpen`, `invBusy` e `inv_busy`.
-- **Teste manual:** abrir o dispatch, alternar entre resoluções pequenas e 4K, confirmar que o small continua visível quando o mapa está fechado e que o mapa grande volta a mostrar a ilha inteira centrada. Confirmar também que redimensionar com o mapa grande aberto não o fecha nem mostra o small por cima.
-- **Teste manual dos menus:** abrir/fechar o Pause Menu e o inventário ox_inventory em serviço; confirmar que só o small desaparece e que reaparece no mesmo sítio ao fechar. Confirmar que o small continua oculto se o jogador sair de serviço enquanto um menu está aberto.
+- **Validação confirmada:** barra de controlos do mapa sem sobrepor os cabeçalhos laterais em 800×600.
+- **Validação pendente:** alterar entre 720p e 4K; abrir/fechar ESC e ox_inventory em 800×600 e confirmar que o toast regressa à mesma posição; confirmar que a NUI continua correta com o mapa grande aberto.
+
+## Nome da resource e exports
+
+- **Estado:** confirmado em 2026-10-22. A resource chama-se `onyx_dispatch`; os consumidores usam `exports['onyx_dispatch']`.
+- A pesquisa ao código dos recursos Qbox não encontrou chamadas `exports['cd_dispatch']`. Os dois usos internos encontrados também apontam para `onyx_dispatch`.
+- O prefixo dos eventos `cd_dispatch:` e a tabela SQL `cd_dispatch` foram mantidos para compatibilidade. Não os confundir com o nome da resource/export.
 
 ## Small não reaparece após reiniciar a resource
 

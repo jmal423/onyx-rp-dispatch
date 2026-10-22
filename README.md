@@ -26,6 +26,22 @@ No `server.cfg`, iniciar `ox_lib` e `oxmysql` antes de `onyx_dispatch`.
 
 O nome do recurso e os exports próprios são `onyx_dispatch`. Os eventos públicos continuam no namespace `cd_dispatch:` para não partir integrações já existentes.
 
+### Usar os exports
+
+As integrações devem apontar para o nome atual da resource:
+
+```lua
+-- Client
+local playerInfo = exports['onyx_dispatch']:GetPlayerInfo()
+local notifications = exports['onyx_dispatch']:GetPlayerNotifications()
+
+-- Server
+local dispatchPlayers = exports['onyx_dispatch']:GetPlayersDispatchData(source)
+local dispatchConfig = exports['onyx_dispatch']:GetConfig()
+```
+
+Não usar `exports['cd_dispatch']`. O namespace de eventos `cd_dispatch:` e a tabela SQL `cd_dispatch` mantêm-se por compatibilidade; não são o nome da resource nem dos exports.
+
 ## Alertas de ocorrências
 
 - O alerta automático 10-13 deteta disparos não silenciados e respeita a whitelist de armas, empregos, zonas e cooldown configurados.
