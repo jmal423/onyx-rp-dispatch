@@ -410,6 +410,119 @@ AddEventHandler("cd_dispatch:Dispatcher_AddCall", function(callData)
     end
 end)
 
+local radioCodeCooldowns = {}
+local radioCodeSequence = 0
+local radioCodeJobs = {
+    police = true,
+    sheriff = true,
+    ambulance = true,
+}
+
+local function EscapeRadioCodeText(value, limit)
+    if type(value) ~= 'string' then value = tostring(value or '') end
+    value = value:gsub('[%c]', ' '):sub(1, limit)
+    return value:gsub('&', '&amp;'):gsub('<', '&lt;'):gsub('>', '&gt;')
+end
+
+RegisterNetEvent('onyx_dispatch:SendRadioCode')
+AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
+    local sourceId = source
+    if not Config.RadioCodes or not Config.RadioCodes.ENABLE then return end
+    if code ~= '10-20' and code ~= '10-99' and code ~= '10-99-joint' then return end
+
+    local unit = self and self[sourceId]
+    local job = GetJob(sourceId)
+    if not unit or not unit.on_duty or type(job) ~= 'string' or unit.job ~= job then return end
+    if not radioCodeJobs[job] then return end
+    if Config.UseFrameworkDutySystem and not IsPlayerOnDuty(sourceId) then return end
+
+    local targetJobs
+    local titleKey
+    local messageKey
+    local flash = 0
+    local sound = 1
+    local blipSprite = 792
+
+    if code == '10-20' then
+        targetJobs = {job}
+        titleKey = 'radio_code_10_20_title'
+        messageKey = 'radio_code_10_20_message'
+    elseif code == '10-99' then
+        targetJobs = {job}
+        titleKey = 'radio_code_10_99_title'
+        messageKey = 'radio_code_10_99_message'
+        flash = 1
+        sound = 4
+        blipSprite = 58
+    else
+        if job ~= 'police' and job ~= 'sheriff' then return end
+        targetJobs = {'police', 'sheriff'}
+        titleKey = 'radio_code_10_99_joint_title'
+        messageKey = 'radio_code_10_99_joint_message'
+        flash = 1
+        sound = 4
+        blipSprite = 58
+    end
+
+    local ped = GetPlayerPed(sourceId)
+    if not ped or ped == 0 or not DoesEntityExist(ped) then return end
+    local coords = GetEntityCoords(ped)
+
+    local cooldown = math.max(1, tonumber(Config.RadioCodes.cooldown) or 10)
+    local now = os.time()
+    local cooldownGroup = code == '10-20' and '10-20' or '10-99'
+    radioCodeCooldowns[sourceId] = radioCodeCooldowns[sourceId] or {}
+    local nextAllowed = radioCodeCooldowns[sourceId][cooldownGroup] or 0
+    if now < nextAllowed then
+        TriggerClientEvent('onyx_dispatch:RadioCodeCooldown', sourceId, nextAllowed - now)
+        return
+    end
+    radioCodeCooldowns[sourceId][cooldownGroup] = now + cooldown
+
+    street = EscapeRadioCodeText(street, 100)
+    if street == '' then street = L('unknown') end
+
+    radioCodeSequence = radioCodeSequence + 1
+    local notification = {
+        job_table = targetJobs,
+        coords = coords,
+        title = L(titleKey),
+        message = L(
+            messageKey,
+            EscapeRadioCodeText(unit.callsign or L('unknown'), 32),
+            EscapeRadioCodeText(unit.char_name or L('unknown'), 64),
+            street
+        ),
+        flash = flash,
+        unique_id = ('radio:%s:%s:%s'):format(sourceId, now, radioCodeSequence),
+        sound = sound,
+        blip = {
+            sprite = blipSprite,
+            scale = 1.5,
+            colour = 3,
+            flashes = flash == 1,
+            text = L(titleKey),
+            time = 5,
+            radius = 0,
+        },
+    }
+
+    for playerId, playerData in pairs(self) do
+        if playerData.on_duty then
+            for _, targetJob in ipairs(targetJobs) do
+                if playerData.job == targetJob then
+                    TriggerClientEvent('cd_dispatch:AddNotification', playerId, notification, true)
+                    break
+                end
+            end
+        end
+    end
+end)
+
+AddEventHandler('playerDropped', function()
+    radioCodeCooldowns[source] = nil
+end)
+
 RegisterServerEvent("cd_dispatch:DispatcherToggle")
 AddEventHandler("cd_dispatch:DispatcherToggle", function(isEnabled, jobName)
     local playerId = source

@@ -10,3 +10,4 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - **Tentativas:** commits `4bac49e`, `75a61d2`, `c7b3803` e `6770fb1` alteraram o fluxo de restart/sincronização; não resolveram o problema e foram revertidos.
 - **Estado do código:** rollback aplicado; manter o comportamento anterior a essas quatro tentativas até retomar a investigação.
 - **Próxima investigação:** recolher logs temporários em cada etapa: autorização NUI, pedido `PlayerLoaded`, emprego/duty no servidor, `DutyState`, `SendSourceData`, resultado de `IsAllowed()` e mensagem `show_small`. Corrigir a etapa comprovadamente interrompida e testar no servidor após restart da resource.
+- **Atualização (2026-10-22):** continua por resolver e não foi alterado nesta atualização dos códigos de rádio.

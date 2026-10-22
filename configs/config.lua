@@ -176,13 +176,13 @@ Config.JobCallCommands = {
 --╚═╝     ╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝ ╚═════╝    ╚═════╝  ╚═════╝    ╚═╝      ╚═╝    ╚═════╝ ╚═╝  ╚═══╝
 
 
-Config.PanicButton = {
-    ENABLE = true, --Do you want to allow dispatch users to use the built-in panic button?
-    command = '_onyx_dispatch_panic', --Internal key mapping command.
-    key = 'f10', --Change this in FiveM key bindings.
-    job_table = {'police', 'ambulance', 'sheriff'}, --A list of jobs who can use the panic button. (every job in this list will be notified if a panic button is pressed).
-    cooldown = 10, --(in seconds) This cooldown is to prevent a player spamming the panic button.
-    play_sound_in_distance = true --Do you want the panic button sound to play to all nearby players?
+Config.RadioCodes = {
+    ENABLE = true,
+    cooldown = 10, -- Server-side cooldown in seconds.
+    -- The digit is editable in FiveM key bindings; hold Alt while pressing it.
+    location = {command = '_onyx_dispatch_10_20', key = '1'},
+    assistance = {command = '_onyx_dispatch_10_99', key = '2'},
+    policeAssistance = {command = '_onyx_dispatch_10_99_joint', key = '3'},
 }
 
 
@@ -192,14 +192,6 @@ Config.PanicButton = {
 --██╔═══╝ ██║██║╚██╗██║██║   ██║
 --██║     ██║██║ ╚████║╚██████╔╝
 --╚═╝     ╚═╝╚═╝  ╚═══╝ ╚═════╝ 
-
-
-Config.Ping = {
-    ENABLE = true, --Do you want to allow players who have access to the dispatch to ping their location to other players of the same job?
-    command = '_onyx_dispatch_ping', --Internal key mapping command.
-    key = 'up', --The key press. You can choose other keys here - https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/.
-    cooldown = 10, --(in seconds) This cooldown is to prevent a player spamming pings.
-}
 
 
 --██████╗  ██████╗ ██╗     ██╗ ██████╗███████╗     █████╗ ██╗     ███████╗██████╗ ████████╗███████╗

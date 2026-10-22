@@ -318,18 +318,9 @@ function BlipSound(sound)
         DispatchSound('normal')
         
     elseif tostring(sound) == '3' or tostring(sound) == '4' then
-        if Config.PanicButton.play_sound_in_distance then
-            TriggerServerEvent('cd_dispatch:PanicSoundInDistance', GetClosestPlayers(5))
-        else
-            DispatchSound('panic')
-        end
+        DispatchSound('panic')
     end
 end
-
-RegisterNetEvent('cd_dispatch:PanicSoundInDistance')
-AddEventHandler('cd_dispatch:PanicSoundInDistance', function()
-    DispatchSound('panic')
-end)
 
 function TabletAnimation(boolean)
     local ped = PlayerPedId()
