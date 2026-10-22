@@ -15,7 +15,7 @@ Config.Framework = 'auto_detect' --[ 'auto_detect' / 'other' ]   If you select '
 Config.Database = 'auto_detect' --[ 'auto_detect' ]   If you select 'auto_detect', only MySQL, GHMattimysql, and Oxmysql SQL database resources will be detected.
 Config.AutoInsertSQL = true --Would you like the script to insert the necessary SQL tables into your database automatically? If you have already done this, please set it to false.
 Config.Notification = 'auto_detect' --[ 'auto_detect' / 'other' ]   If you select 'auto_detect', only ESX, QBCore, cd_notifications, okokNotify, ps-ui and ox_lib notifications will be detected. Use 'other' for custom notification resources.
-Config.Language = 'EN' --[ 'EN' / 'DK' / 'FR' / 'NL' ]   You can add your own locales to Locales.lua, but be sure to update the Config.Language to match it.
+Config.Language = 'PT' -- Portuguese (Portugal) translations are defined in Locales.lua.
 
 Config.FrameworkTriggers = {
     esx = { --If you have modified the default event names in the es_extended resource, change them here.

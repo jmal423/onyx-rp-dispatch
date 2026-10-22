@@ -136,7 +136,7 @@ AddEventHandler('cd_dispatch:PlayerLoaded', function()
     self[_source].radio_channel = 0
     self[_source].vehicle = 'foot'
     self[_source].status = {
-        name = 'Available',
+        name = 'Disponível',
         color = '#539D1B'
     }
     self[_source].on_duty = IsPlayerOnDuty(_source)
