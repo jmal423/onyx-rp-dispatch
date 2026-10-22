@@ -668,9 +668,6 @@ end
 function ShowSmallUI()
     uiStates.small = true
     local action = GetNUIState(uiStates.small and not smallUiSuppressedByMenu)
-    if Config.Debug then
-        SendNUIMessage({ action = 'dispatch_debug', enabled = true })
-    end
     DispatchRestartTrace('small_ui_message_sent', {
         action = action,
         authorised = Authorised,

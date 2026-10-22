@@ -6,7 +6,6 @@
   let positionSaveTimer;
   const positionStorageKey = 'onyx_dispatch.small_relative_position.v1';
   let relativePosition = null;
-  let dispatchDebugEnabled = false;
 
   try {
     const saved = JSON.parse(localStorage.getItem(positionStorageKey) || 'null');
@@ -111,16 +110,14 @@
 
   window.addEventListener('message', (event) => {
     if (!event.data) return;
-    if (event.data.action === 'dispatch_debug') {
-      dispatchDebugEnabled = event.data.enabled === true;
-      return;
-    }
     if (event.data.action !== 'show_small') return;
-    if (dispatchDebugEnabled && typeof GetParentResourceName === 'function') {
+    if (typeof GetParentResourceName === 'function') {
       setTimeout(() => {
         const panel = document.getElementById('toastContainer');
         const style = panel ? getComputedStyle(panel) : null;
         const rect = panel ? panel.getBoundingClientRect() : null;
+        const toast = panel && panel.querySelector('.toast');
+        const toastStyle = toast ? getComputedStyle(toast) : null;
         fetch(`https://${GetParentResourceName()}/dispatchRestartTrace`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -130,6 +127,11 @@
             visibility: style && style.visibility,
             opacity: style && style.opacity,
             rect: rect && { x: Math.round(rect.x), y: Math.round(rect.y), width: Math.round(rect.width), height: Math.round(rect.height) },
+            toast_exists: !!toast,
+            toast_class: toast && toast.className,
+            toast_display: toastStyle && toastStyle.display,
+            toast_visibility: toastStyle && toastStyle.visibility,
+            toast_opacity: toastStyle && toastStyle.opacity,
           }),
         }).catch(() => {});
       }, 100);
