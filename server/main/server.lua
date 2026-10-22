@@ -579,7 +579,8 @@ RegisterNetEvent('onyx_dispatch:SendRadioCode')
 AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
     local sourceId = source
     if not Config.RadioCodes or not Config.RadioCodes.ENABLE then return end
-    if code ~= '10-20' and code ~= '10-99' and code ~= '10-99-joint' then return end
+    if code ~= '10-20' and code ~= '10-32' and code ~= '10-99'
+        and code ~= '10-99-joint' and code ~= 'medical-assistance-police' then return end
 
     local unit = self and self[sourceId]
     local job = GetJob(sourceId)
@@ -593,11 +594,16 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
     local flash = 0
     local sound = 1
     local blipSprite = 792
+    local urgent = false
 
     if code == '10-20' then
         targetJobs = {job}
         titleKey = 'radio_code_10_20_title'
         messageKey = 'radio_code_10_20_message'
+    elseif code == '10-32' then
+        targetJobs = {job}
+        titleKey = 'radio_code_10_32_title'
+        messageKey = 'radio_code_10_32_message'
     elseif code == '10-99' then
         targetJobs = {job}
         titleKey = 'radio_code_10_99_title'
@@ -605,6 +611,12 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         flash = 1
         sound = 4
         blipSprite = 58
+        urgent = true
+    elseif code == 'medical-assistance-police' then
+        if job ~= 'police' then return end
+        targetJobs = {'ambulance'}
+        titleKey = 'radio_code_medical_assistance_police_title'
+        messageKey = 'radio_code_medical_assistance_police_message'
     else
         if job ~= 'police' and job ~= 'sheriff' then return end
         targetJobs = {'police', 'sheriff'}
@@ -613,6 +625,7 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         flash = 1
         sound = 4
         blipSprite = 58
+        urgent = true
     end
 
     local ped = GetPlayerPed(sourceId)
@@ -621,7 +634,9 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
 
     local cooldown = math.max(1, tonumber(Config.RadioCodes.cooldown) or 10)
     local now = os.time()
-    local cooldownGroup = code == '10-20' and '10-20' or '10-99'
+    local cooldownGroup = code == '10-20' and '10-20'
+        or code == 'medical-assistance-police' and 'medical-assistance'
+        or 'support'
     radioCodeCooldowns[sourceId] = radioCodeCooldowns[sourceId] or {}
     local nextAllowed = radioCodeCooldowns[sourceId][cooldownGroup] or 0
     if now < nextAllowed then
@@ -655,8 +670,8 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         sound = sound,
         blip = {
             sprite = blipSprite,
-            scale = code == '10-20' and 0.95 or 1.1,
-            colour = code == '10-20' and 3 or 1,
+            scale = urgent and 1.1 or 0.95,
+            colour = urgent and 1 or 3,
             flashes = flash == 1,
             text = L(titleKey),
             time = 5,

@@ -13,16 +13,18 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - **Limitação atual:** `Config.AllowedJobs` usa um único grupo partilhado (`police`, `ambulance`, `sheriff`), pelo que não exprime a visibilidade distinta da lista pretendida. As permissões do dispatcher também não estão separadas por força de forma segura. É necessário separar destinatários de chamadas, visibilidade de unidades e permissões administrativas, validando tudo no servidor.
 - **Próximo passo:** encaminhar chamadas médicas apenas para EMS; depois configurar e testar um chefe de dispatch por job/grade. O servidor de teste usa o job `sheriff`; confirmar `bcso` ao preparar o servidor principal.
 
-### Atalhos de rádio planeados
+### Atalhos de rádio
 
-- **Estado:** esquema confirmado pelo utilizador em 2026-10-22; implementação por fazer.
+- **Estado:** implementados no código em 2026-10-22; falta validação no FiveM.
 - `Alt+1`: 10-20 — comunicar localização da unidade.
 - `Alt+2`: 10-32 — pedir apoio à própria força. Este código consta da lista LSPD fornecida pelo utilizador como “Pedir apoio (1, 2, 3)”.
 - `Alt+3`: 10-99 urgente — pedir apoio à própria força. 10-99 não consta da lista LSPD fornecida; é um código já adotado como código próprio do dispatch.
 - `Alt+4`: 10-99 urgente — pedir apoio conjunto LSPD e Sheriff.
 - `Alt+5`: **Pedido de assistência médica — Polícia**; disponível para a polícia e encaminhado apenas para EMS, sem enviar chamados policiais para EMS. Não lhe atribuir um código numérico da lista LSPD.
-- Os dois atalhos 10-99 são urgentes. Ao implementar, confirmar que as binds configuráveis apresentadas na interface correspondem às teclas efetivamente configuradas e que os destinatários respeitam as regras por força acima.
+- Os dois atalhos 10-99 são urgentes. As binds continuam configuráveis em `Config.RadioCodes` e nas definições de teclas do FiveM.
 - A lista original define 10-14 como “Transporte de ferido ao hospital”; não corresponde a pedir EMS e não deve ser reutilizado para `Alt+5`. O título de `Alt+5` ficou definido como “Pedido de assistência médica — Polícia”.
+- O servidor valida emprego e serviço e define os destinatários: códigos de força para a própria força; Alt+4 apenas para LSPD/Sheriff; Alt+5 apenas para polícia, enviado apenas a EMS.
+- **Teste manual:** em serviço, confirmar Alt+1 a Alt+4 com polícia/Sheriff e Alt+5 com polícia; validar que EMS recebe Alt+5 e que polícia/Sheriff não recebem esse pedido. Confirmar bloqueio fora de serviço, bloqueio de Alt+4 para EMS e cooldown.
 
 ### Filtros da lista lateral — implementação inicial
 

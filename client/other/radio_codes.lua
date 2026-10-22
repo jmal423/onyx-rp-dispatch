@@ -10,9 +10,11 @@ if Config.RadioCodes and Config.RadioCodes.ENABLE then
         -- Key mappings bind the number key; Alt is checked as a required modifier.
         if not IsControlPressed(0, 19) and not IsDisabledControlPressed(0, 19) then return end
         if not IsAllowed() then return end
+        local job = GetJob()
         if code == '10-99-joint' then
-            local job = GetJob()
             if job ~= 'police' and job ~= 'sheriff' then return end
+        elseif code == 'medical-assistance-police' and job ~= 'police' then
+            return
         end
 
         local playerInfo = exports['onyx_dispatch']:GetPlayerInfo()
@@ -31,6 +33,8 @@ if Config.RadioCodes and Config.RadioCodes.ENABLE then
     end
 
     RegisterRadioCode('10-20', Config.RadioCodes.location, 'radio_code_10_20_description')
+    RegisterRadioCode('10-32', Config.RadioCodes.support, 'radio_code_10_32_description')
     RegisterRadioCode('10-99', Config.RadioCodes.assistance, 'radio_code_10_99_description')
     RegisterRadioCode('10-99-joint', Config.RadioCodes.policeAssistance, 'radio_code_10_99_joint_description')
+    RegisterRadioCode('medical-assistance-police', Config.RadioCodes.medicalAssistance, 'radio_code_medical_assistance_police_description')
 end

@@ -180,8 +180,10 @@ Config.RadioCodes = {
     cooldown = 10, -- Server-side cooldown in seconds.
     -- The digit is editable in FiveM key bindings; hold Alt while pressing it.
     location = {command = '_onyx_dispatch_10_20', key = '1'},
-    assistance = {command = '_onyx_dispatch_10_99', key = '2'},
-    policeAssistance = {command = '_onyx_dispatch_10_99_joint', key = '3'},
+    support = {command = '_onyx_dispatch_10_32_support', key = '2'},
+    assistance = {command = '_onyx_dispatch_10_99_force', key = '3'},
+    policeAssistance = {command = '_onyx_dispatch_10_99_joint_v2', key = '4'},
+    medicalAssistance = {command = '_onyx_dispatch_medical_assistance_police', key = '5'},
 }
 
 

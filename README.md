@@ -29,7 +29,7 @@ Interface NUI, alertas policiais, códigos de rádio e localização de equipas 
 | **Unidades** | Chamadasigns, viatura atribuída, estado de serviço e resposta a ocorrências. |
 | **Mapa** | Marcadores de unidades no mapa do dispatch e blips no mapa/minimapa do GTA. |
 | **Alertas** | Alertas policiais configuráveis para disparos e radares de velocidade. |
-| **Rádio** | Atalhos para 10-20, 10-99 e pedido conjunto LSPD/Sheriff. |
+| **Rádio** | Atalhos 10-20, 10-32, 10-99 urgente, apoio conjunto LSPD/Sheriff e pedido médico da Polícia aos EMS. |
 | **Acesso** | Acesso baseado no emprego e no estado de serviço do framework. |
 | **Interface** | NUI adaptável a diferentes resoluções, com posições guardadas no cliente. |
 
@@ -38,8 +38,10 @@ Interface NUI, alertas policiais, códigos de rádio e localização de equipas 
 | Atalho | Ação |
 |---|---|
 | `Alt + 1` | Enviar 10-20 — localização da unidade |
-| `Alt + 2` | Enviar 10-99 — assistência à própria força |
-| `Alt + 3` | Enviar 10-99 conjunto — LSPD e Sheriff |
+| `Alt + 2` | Enviar 10-32 — pedir apoio à própria força |
+| `Alt + 3` | Enviar 10-99 urgente — assistência à própria força |
+| `Alt + 4` | Enviar 10-99 urgente conjunto — LSPD e Sheriff |
+| `Alt + 5` | Polícia pede assistência médica aos EMS |
 | `K` | Abrir/fechar o mapa do dispatch |
 | `G` | Responder à ocorrência selecionada |
 | `←` / `→` | Ocorrência anterior / seguinte no painel pequeno |
@@ -70,7 +72,7 @@ Os mapeamentos podem ser alterados nas definições de teclas do FiveM. O painel
 
 ## ◉ Alertas: incluído e por integrar
 
-**Incluído:** alertas policiais configuráveis para disparos e radares, com filtros de empregos, armas, zonas e cooldown. Os códigos 10-20 e 10-99 são enviados manualmente pelos atalhos de rádio.
+**Incluído:** alertas policiais configuráveis para disparos e radares, com filtros de empregos, armas, zonas e cooldown. Os códigos 10-20, 10-32 e 10-99 são enviados manualmente pelos atalhos de rádio; o pedido médico de Alt+5 é encaminhado apenas aos EMS.
 
 **Ainda requer integração com outros recursos:** assaltos, pessoas armadas, explosões e incêndios. A resource não deteta automaticamente esses eventos por defeito. O estado atual está em [PENDENCIAS.md](PENDENCIAS.md).
 

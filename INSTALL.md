@@ -63,7 +63,7 @@ Não copies cegamente a lista de empregos de exemplo. Em particular, `AllowedJob
 
 ## 5. Confirmar controlos e integrações
 
-As teclas são editáveis em `Config.RadioCodes`, `Config.large_ui`, `Config.respond`, `Config.small_ui_left` e `Config.small_ui_right`. Os valores padrão incluem códigos de rádio em Alt+1, Alt+2 e Alt+3, mapa em K e resposta em G. Os jogadores podem alterar os mapeamentos nas definições de FiveM.
+As teclas são editáveis em `Config.RadioCodes`, `Config.large_ui`, `Config.respond`, `Config.small_ui_left` e `Config.small_ui_right`. Os valores padrão dos atalhos de rádio são Alt+1 (10-20), Alt+2 (10-32), Alt+3 (10-99 urgente da própria força), Alt+4 (10-99 urgente conjunto LSPD/Sheriff) e Alt+5 (pedido policial de assistência médica aos EMS). O mapa abre em K e a resposta usa G. Os jogadores podem alterar os mapeamentos nas definições de FiveM.
 
 Se ativares o modo operador, configura `Config.Dispatcher.VoipResource` para o VOIP suportado pelo teu servidor (`pmavoice`, `mumble`, `toko` ou `other`). A opção `other` exige implementar as funções de rádio em `client/other/dispatcher.lua`. O dispatch e os alertas básicos não precisam do modo operador.
 
