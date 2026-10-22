@@ -303,7 +303,11 @@ function PlayerBlipsActions(playerId, action)
                 pauseMenuBlips[playerId].radio_channel = self[playerId].radio_channel or 0
             end
             
-            pauseMenuBlips[playerId].name = L("playerblip", self[playerId].callsign, self[playerId].char_name)
+            local callsign = self[playerId].callsign or L('unknown')
+            if type(callsign) == 'string' and callsign:sub(1, 1) == '[' and callsign:sub(-1) == ']' then
+                callsign = callsign:sub(2, -2)
+            end
+            pauseMenuBlips[playerId].name = L("playerblip", callsign, self[playerId].char_name)
             pauseMenuBlips[playerId].job = self[playerId].job
             pauseMenuBlips[playerId].job_table = allowedJobs
             pauseMenuBlips[playerId].source = playerId
