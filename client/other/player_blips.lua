@@ -39,7 +39,8 @@ if Config.PauseMenuBlips.ENABLE then
 
                 SetBlipSprite(PlayerBlips[d.source].blip, d.blip_sprite)
                 SetBlipDisplay(PlayerBlips[d.source].blip, 4)
-                SetBlipScale(PlayerBlips[d.source].blip, 0.87)
+                -- A slightly larger scale keeps unit markers readable on high-resolution displays.
+                SetBlipScale(PlayerBlips[d.source].blip, 1.15)
                 SetBlipColour(PlayerBlips[d.source].blip, d.blip_colour[1])
                 SetBlipFlashes(PlayerBlips[d.source].blip, false)
                 ShowHeadingIndicatorOnBlip(PlayerBlips[d.source].blip, true)
@@ -85,7 +86,7 @@ if Config.PauseMenuBlips.ENABLE then
         local blip = GetMainPlayerBlipId()
         SetBlipSprite(blip, 6)
         SetBlipDisplay(blip, 4)
-        SetBlipScale(blip, 0.7)
+        SetBlipScale(blip, 1.0)
         SetBlipFlashes(blip, false)
         ShowHeadingIndicatorOnBlip(blip, false)
         HideNumberOnBlip(blip)
