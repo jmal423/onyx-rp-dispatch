@@ -342,7 +342,7 @@ local function EscapeRadioCodeText(value, limit)
     return value:gsub('&', '&amp;'):gsub('<', '&lt;'):gsub('>', '&gt;')
 end
 
-local function TrackDispatchCall(uniqueId, coords, jobs, requester)
+local function TrackDispatchCall(uniqueId, coords, jobs, requester, observerJobs)
     if type(uniqueId) ~= 'string' or uniqueId == '' or type(coords) ~= 'vector3' or type(jobs) ~= 'table' then return end
 
     local allowedJobs = {}
@@ -351,9 +351,15 @@ local function TrackDispatchCall(uniqueId, coords, jobs, requester)
     end
     if not next(allowedJobs) then return end
 
+    local allowedObserverJobs = {}
+    for _, job in ipairs(observerJobs or {}) do
+        if type(job) == 'string' then allowedObserverJobs[job] = true end
+    end
+
     trackedDispatchCalls[uniqueId] = {
         coords = coords,
         jobs = allowedJobs,
+        observerJobs = allowedObserverJobs,
         responders = {},
         requester = requester,
         expires = os.time() + trackedCallLifetime,
@@ -362,6 +368,11 @@ end
 
 local function IsTrackedCallRecipient(playerData, call)
     return playerData and playerData.on_duty and call.jobs[playerData.job] == true
+end
+
+local function CanViewTrackedCall(playerData, call)
+    return IsTrackedCallRecipient(playerData, call)
+        or (playerData and playerData.on_duty and call.observerJobs[playerData.job] == true)
 end
 
 local function SendRespondersSnapshot(uniqueId, call)
@@ -390,7 +401,7 @@ local function SendRespondersSnapshot(uniqueId, call)
     end)
 
     for playerId, playerData in pairs(self or {}) do
-        if IsTrackedCallRecipient(playerData, call) then
+        if CanViewTrackedCall(playerData, call) then
             TriggerClientEvent('onyx_dispatch:RespondersSnapshot', playerId, uniqueId, responders)
         end
     end
@@ -451,7 +462,7 @@ AddEventHandler("onyx_dispatch:PlayerResponding", function(responseData)
     end
 
     for targetId, targetData in pairs(self or {}) do
-        if IsTrackedCallRecipient(targetData, call) then
+        if CanViewTrackedCall(targetData, call) then
             TriggerClientEvent('onyx_dispatch:PlayerResponding', targetId, authoritativeResponse)
         end
     end
@@ -704,7 +715,8 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
     }
 
     local medicalRequester = code == 'medical-assistance-police' and sourceId or nil
-    TrackDispatchCall(notification.unique_id, coords, targetJobs, medicalRequester)
+    local observerJobs = medicalRequester and { 'police', 'sheriff' } or nil
+    TrackDispatchCall(notification.unique_id, coords, targetJobs, medicalRequester, observerJobs)
 
     local recipientCount = 0
     for playerId, playerData in pairs(self) do
@@ -715,6 +727,22 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
                     TriggerClientEvent('onyx_dispatch:AddNotification', playerId, notification, true)
                     break
                 end
+            end
+        end
+    end
+
+    if medicalRequester then
+        local policeNotification = {}
+        for key, value in pairs(notification) do
+            policeNotification[key] = value
+        end
+        policeNotification.job_table = { 'police', 'sheriff' }
+        policeNotification.sound = 0
+        policeNotification.read_only = true
+
+        for playerId, playerData in pairs(self) do
+            if playerData.on_duty and (playerData.job == 'police' or playerData.job == 'sheriff') then
+                TriggerClientEvent('onyx_dispatch:AddNotification', playerId, policeNotification, true)
             end
         end
     end
@@ -770,7 +798,7 @@ AddEventHandler('playerDropped', function()
                 )
             end
             for targetId, targetData in pairs(self or {}) do
-                if IsTrackedCallRecipient(targetData, call) then
+                if CanViewTrackedCall(targetData, call) then
                     TriggerClientEvent('onyx_dispatch:PlayerResponding', targetId, removal)
                 end
             end

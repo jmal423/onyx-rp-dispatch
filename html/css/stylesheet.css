@@ -27,6 +27,10 @@ html {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+#buttonGroup.onyx-read-only > button:nth-child(2) {
+  display: none !important;
+}
 .toast {
   background-color: rgba(52, 58, 64, 0.85) !important;
   z-index: 9999 !important;

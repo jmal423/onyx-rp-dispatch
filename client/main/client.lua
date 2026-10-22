@@ -175,6 +175,10 @@ AddEventHandler("onyx_dispatch:KEY_responding", function()
                 if #notifications > 0 then
                     local currentNotification = notifications[currentNotificationIndex]
                     if currentNotification then
+                        if currentNotification.read_only then
+                            Notif(2, "radio_code_medical_observer_readonly")
+                            return
+                        end
                         if currentNotification.coords ~= nil then
                             if not currentNotification.responding_state then
                                 if not isRespondingOnCooldown then
@@ -300,6 +304,13 @@ if Config.UpdateDistanceUI.ENABLE then
         end
     end)
 end
+local function SyncSmallResponseControl()
+    local currentNotification = notifications and notifications[currentNotificationIndex]
+    SendNUIMessage({
+        action = "set_small_read_only",
+        read_only = currentNotification and currentNotification.read_only == true or false,
+    })
+end
 RegisterNetEvent("onyx_dispatch:AddNotification")
 AddEventHandler("onyx_dispatch:AddNotification", function(notificationData, isDispatcherNotification)
     if Config.Debug then
@@ -349,6 +360,7 @@ AddEventHandler("onyx_dispatch:AddNotification", function(notificationData, isDi
                 notifications[currentNotificationIndex].message = notificationData.message
                 notifications[currentNotificationIndex].flash = notificationData.flash
                 notifications[currentNotificationIndex].unique_id = notificationData.unique_id
+                notifications[currentNotificationIndex].read_only = notificationData.read_only == true
                 notifications[currentNotificationIndex].distance = math.ceil(#(vector3(notificationData.coords.x, notificationData.coords.y, notificationData.coords.z) - GetEntityCoords(PlayerPedId())))
                 
                 SendNUIMessage({
@@ -364,6 +376,7 @@ AddEventHandler("onyx_dispatch:AddNotification", function(notificationData, isDi
                     distance = notifications[currentNotificationIndex].distance,
                     dispatcher_table = notificationData
                 })
+                SyncSmallResponseControl()
                 
                 if Config.Debug then
                     print("DEBUG: Notification added to UI: " .. notifications[currentNotificationIndex].unique_id)
@@ -574,6 +587,10 @@ function Responding(notificationIndex, action)
         if T(action, "string") then
             if notifications then
                 if notifications[notificationIndex] then
+                    if notifications[notificationIndex].read_only then
+                        Notif(2, "radio_code_medical_observer_readonly")
+                        return
+                    end
                     local responseData = {
                         action = action,
                         unique_id = notifications[notificationIndex].unique_id,
@@ -688,6 +705,7 @@ function Increasecount()
                     SendNUIMessage({
                         action = "move_right"
                     })
+                    SyncSmallResponseControl()
                 end
             end
         else
@@ -720,6 +738,7 @@ function Decreasecount()
                     SendNUIMessage({
                         action = "move_left"
                     })
+                    SyncSmallResponseControl()
                 end
             end
         else

@@ -41,7 +41,7 @@ Interface NUI, alertas policiais, códigos de rádio e localização de equipas 
 | `Alt + 2` | Enviar 10-32 — pedir apoio à própria força |
 | `Alt + 3` | Enviar 10-99 urgente — assistência à própria força |
 | `Alt + 4` | Enviar 10-99 urgente conjunto — LSPD e Sheriff |
-| `Alt + 5` | Polícia pede assistência médica aos EMS; recebe confirmação e aviso quando uma unidade responder |
+| `Alt + 5` | Polícia pede assistência médica aos EMS; Polícia e Sheriff de serviço veem o pedido e as unidades EMS a caminho, sem som e sem poder responder |
 | `K` | Abrir/fechar o mapa do dispatch |
 | `G` | Responder à ocorrência selecionada |
 | `←` / `→` | Ocorrência anterior / seguinte no painel pequeno |
@@ -72,7 +72,7 @@ Os mapeamentos podem ser alterados nas definições de teclas do FiveM. O painel
 
 ## ◉ Alertas: incluído e por integrar
 
-**Incluído:** alertas policiais configuráveis para disparos e radares, com filtros de empregos, armas, zonas e cooldown. Os códigos 10-20, 10-32 e 10-99 são enviados manualmente pelos atalhos de rádio; o pedido médico de Alt+5 é encaminhado apenas aos EMS.
+**Incluído:** alertas policiais configuráveis para disparos e radares, com filtros de empregos, armas, zonas e cooldown. Os códigos 10-20, 10-32 e 10-99 são enviados manualmente pelos atalhos de rádio. O pedido médico de Alt+5 é encaminhado operacionalmente apenas aos EMS; Polícia e Sheriff de serviço veem uma cópia silenciosa, apenas informativa, com a lista e a distância das unidades EMS que estão a caminho.
 
 **Ainda requer integração com outros recursos:** assaltos, pessoas armadas, explosões e incêndios. A resource não deteta automaticamente esses eventos por defeito. O estado atual está em [PENDENCIAS.md](PENDENCIAS.md).
 
