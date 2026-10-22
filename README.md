@@ -18,7 +18,7 @@ Recurso de dispatch para FiveM, instalado como `onyx_dispatch` em `resources/[st
 
 No `server.cfg`, iniciar `ox_lib` e `oxmysql` antes de `onyx_dispatch`.
 
-Para instalar a resource num servidor Qbox novo, segue [INSTALL.md](INSTALL.md). O guia inclui os passos de configuração, adaptação dos empregos e verificação no jogo.
+Para instalar manualmente num servidor Qbox, segue [INSTALL.md](INSTALL.md). Para delegar a instalação a um agente de IA, começa pelo prompt e procedimento em [AI_INSTALL.md](AI_INSTALL.md).
 
 ## Base de dados
 
