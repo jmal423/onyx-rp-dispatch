@@ -20,9 +20,9 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - `Alt+2`: 10-32 — pedir apoio à própria força. Este código consta da lista LSPD fornecida pelo utilizador como “Pedir apoio (1, 2, 3)”.
 - `Alt+3`: 10-99 urgente — pedir apoio à própria força. 10-99 não consta da lista LSPD fornecida; é um código já adotado como código próprio do dispatch.
 - `Alt+4`: 10-99 urgente — pedir apoio conjunto LSPD e Sheriff.
-- `Alt+5`: pedido de ajuda aos EMS, disponível para a polícia; encaminhar apenas para EMS, sem enviar chamados policiais para EMS.
+- `Alt+5`: **Pedido de assistência médica — Polícia**; disponível para a polícia e encaminhado apenas para EMS, sem enviar chamados policiais para EMS. Não lhe atribuir um código numérico da lista LSPD.
 - Os dois atalhos 10-99 são urgentes. Ao implementar, confirmar que as binds configuráveis apresentadas na interface correspondem às teclas efetivamente configuradas e que os destinatários respeitam as regras por força acima.
-- A lista original define 10-14 como “Transporte de ferido ao hospital”; não corresponde a pedir EMS e não deve ser reutilizado para `Alt+5`. O código ou título mostrado para o pedido policial aos EMS continua por decidir.
+- A lista original define 10-14 como “Transporte de ferido ao hospital”; não corresponde a pedir EMS e não deve ser reutilizado para `Alt+5`. O título de `Alt+5` ficou definido como “Pedido de assistência médica — Polícia”.
 
 ### Filtros da lista lateral — implementação inicial
 
