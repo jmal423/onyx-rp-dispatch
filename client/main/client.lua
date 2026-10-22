@@ -515,7 +515,7 @@ AddEventHandler('cd_dispatch:RespondersSnapshot', function(uniqueId, responders)
         SendNUIMessage({
             action = 'responders_snapshot',
             unique_id = uniqueId,
-            count = notificationIndex,
+            count = notificationIndex - 1,
             responders = responders,
         })
     end

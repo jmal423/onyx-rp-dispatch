@@ -4,6 +4,7 @@
   function renderSnapshot(count, snapshot) {
     const container = document.getElementById(`responding-units-${count}`);
     if (!container) return;
+    container.classList.toggle('hide', snapshot.responders.length === 0);
 
     const signature = JSON.stringify(snapshot.responders);
     const renderedRows = container.querySelectorAll('[data-onyx-responder-row]').length;
@@ -36,7 +37,7 @@
 
   window.addEventListener('message', (event) => {
     const data = event.data;
-    if (!data || data.action !== 'responders_snapshot' || !Number.isInteger(data.count) ||
+    if (!data || data.action !== 'responders_snapshot' || !Number.isInteger(data.count) || data.count < 0 ||
         !Array.isArray(data.responders)) return;
 
     const snapshot = {
