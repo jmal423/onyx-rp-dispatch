@@ -391,6 +391,8 @@ AddEventHandler("cd_dispatch:AddNotification", function(notificationData, isDisp
                 if notificationData.blip then
                     if notificationData.blip.sound ~= nil then
                         Checks("blip_sound", notificationData.blip.sound)
+                    elseif notificationData.sound ~= nil then
+                        Checks("blip_sound", notificationData.sound)
                     end
                 else
                     if notificationData.sound ~= nil then
