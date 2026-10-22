@@ -6,13 +6,6 @@ local explosionSourceCooldowns = {}
 local incidentSequence = 0
 local eventsSincePrune = 0
 
-local function IsPoliceServiceJob(jobName)
-    for _, allowedJob in ipairs((Config.Dispatcher.AlertRouting or {}).police or {}) do
-        if allowedJob == jobName then return true end
-    end
-    return false
-end
-
 local function IsProtectedTargetJob(jobName)
     for _, protectedJob in ipairs((Config.PoliceAlerts and Config.PoliceAlerts.whitelisted_jobs) or {}) do
         if protectedJob == jobName then return true end
@@ -95,11 +88,9 @@ AddEventHandler('onyx_dispatch:ReportIncident', function(data)
     local settings = configKey and incidentConfig[configKey]
     if not settings or settings.ENABLE ~= true then return end
 
-    local reporter = self and self[reporterId]
     local reporterPed = GetPlayerPed(reporterId)
     if kind == 'armed_player' then
-        if not reporter or not reporter.on_duty or GetJob(reporterId) ~= reporter.job
-            or not IsPoliceServiceJob(reporter.job) then return end
+        if not reporterPed or reporterPed == 0 or not DoesEntityExist(reporterPed) then return end
     elseif kind == 'fire' then
         if not reporterPed or reporterPed == 0 or not DoesEntityExist(reporterPed) then return end
     else
@@ -120,7 +111,7 @@ AddEventHandler('onyx_dispatch:ReportIncident', function(data)
         if reporterPed == 0 or #(GetEntityCoords(reporterPed) - coords) > (tonumber(settings.scan_radius) or 180) + 25 then return end
     else
         local targetId = tonumber(data.target)
-        if not targetId or targetId % 1 ~= 0 or targetId == reporterId then return end
+        if not targetId or targetId % 1 ~= 0 then return end
         local target = self and self[targetId]
         local targetPed = GetPlayerPed(targetId)
         if not target or not targetPed or targetPed == 0 or not DoesEntityExist(targetPed)

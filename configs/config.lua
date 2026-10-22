@@ -145,7 +145,7 @@ Config.Dispatcher = {
 Config.IncidentAlerts = {
     ArmedPlayers = {
         ENABLE = true,
-        scan_radius = 120, -- A unit only checks nearby players.
+        scan_radius = 120, -- Every client checks armed players in its streamed area and itself.
         road_distance = 22, -- Armed players farther from a drivable road are ignored.
         scan_interval = 2000,
         cooldown = 120,
@@ -246,10 +246,10 @@ Config.PoliceAlerts = {
     GunShots = {
         ENABLE = true, ---Do you want gunshots to alert police?
         
-        WhitelistedZones = { --Shooting in whitelisted areas doesn't alert police.
+        SuppressedZones = { -- Gunfire here is silent; add redzones and ranges as center + radius.
             [1] = {coords = vector3(13.98, -1098.05, 29.8), distance = 20}, --Legion gunrange.
             [2] = {coords = vector3(821.09, -2163.46, 78.67), distance = 20}, --Cypress Flats gunrange.
-            --[3] = {coords = vector3(0, 0, 0), distance = 10},
+            --[3] = {coords = vector3(0, 0, 0), distance = 10}, -- Example redzone.
         },
         WhitelistedWeapons = { --Shooting whitelisted weapons doesn't alert police.
             [`WEAPON_FLARE`] = true,

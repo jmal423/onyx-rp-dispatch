@@ -12,28 +12,25 @@ end
 CreateThread(function()
     while true do
         local settings = incidentScan.ArmedPlayers or {}
-        if settings.ENABLE and Authorised and on_duty
-            and Config.PoliceAlerts and Config.PoliceAlerts.ENABLE then
+        if settings.ENABLE and Config.PoliceAlerts and Config.PoliceAlerts.ENABLE then
             local myCoords = GetEntityCoords(PlayerPedId())
             local scanRadius = tonumber(settings.scan_radius) or 120
             local roadDistance = tonumber(settings.road_distance) or 22
 
             for _, playerId in ipairs(GetActivePlayers()) do
-                if playerId ~= PlayerId() then
-                    local targetPed = GetPlayerPed(playerId)
-                    if targetPed ~= 0 and DoesEntityExist(targetPed)
-                        and not IsPedDeadOrDying(targetPed, true)
-                        and IsPedArmed(targetPed, 4) then
-                        local targetCoords = GetEntityCoords(targetPed)
-                        if #(myCoords - targetCoords) <= scanRadius then
-                            local distanceToRoad = GetRoadDistance(targetCoords)
-                            if distanceToRoad and distanceToRoad <= roadDistance then
-                                TriggerServerEvent('onyx_dispatch:ReportIncident', {
-                                    kind = 'armed_player',
-                                    target = GetPlayerServerId(playerId),
-                                    road_distance = distanceToRoad,
-                                })
-                            end
+                local targetPed = GetPlayerPed(playerId)
+                if targetPed ~= 0 and DoesEntityExist(targetPed)
+                    and not IsPedDeadOrDying(targetPed, true)
+                    and IsPedArmed(targetPed, 4) then
+                    local targetCoords = GetEntityCoords(targetPed)
+                    if #(myCoords - targetCoords) <= scanRadius then
+                        local distanceToRoad = GetRoadDistance(targetCoords)
+                        if distanceToRoad and distanceToRoad <= roadDistance then
+                            TriggerServerEvent('onyx_dispatch:ReportIncident', {
+                                kind = 'armed_player',
+                                target = GetPlayerServerId(playerId),
+                                road_distance = distanceToRoad,
+                            })
                         end
                     end
                 end

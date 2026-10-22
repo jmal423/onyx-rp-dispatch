@@ -13,7 +13,7 @@ if Config.PoliceAlerts.ENABLE then
     local function IsPlayerInGunshotWhitelistZone()
         local ped = PlayerPedId()
         local coords = GetEntityCoords(ped)
-        for c, d in pairs(Config.PoliceAlerts.GunShots.WhitelistedZones) do
+        for c, d in pairs(Config.PoliceAlerts.GunShots.SuppressedZones) do
             local distance = #(coords-d.coords)
             if distance <= d.distance then
                 return true
