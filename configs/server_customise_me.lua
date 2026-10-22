@@ -123,8 +123,8 @@ end
 --╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
 
 
-RegisterServerEvent('cd_dispatch:PlayerLoaded')
-AddEventHandler('cd_dispatch:PlayerLoaded', function()
+RegisterServerEvent('onyx_dispatch:PlayerLoaded')
+AddEventHandler('onyx_dispatch:PlayerLoaded', function()
     local _source = source
     local data = GetCharacterInfo(_source)
     self[_source] = {}
@@ -140,8 +140,8 @@ AddEventHandler('cd_dispatch:PlayerLoaded', function()
         color = '#539D1B'
     }
     self[_source].on_duty = IsPlayerOnDuty(_source)
-    TriggerClientEvent('cd_dispatch:DutyState', _source, self[_source].on_duty)
-    TriggerClientEvent('cd_dispatch:SendSourceData', _source, self[_source], DispatcherData.active)
+    TriggerClientEvent('onyx_dispatch:DutyState', _source, self[_source].on_duty)
+    TriggerClientEvent('onyx_dispatch:SendSourceData', _source, self[_source], DispatcherData.active)
     PlayerBlipsActions(_source, 'update')
     if CheckMultiJobs(self[_source].job) then
         RefreshLargeUI(self[_source].job)
@@ -170,7 +170,7 @@ function GetCharacterInfo(source)
 
     end
 
-    local Result = DatabaseQuery('SELECT callsign FROM cd_dispatch WHERE identifier = ?', {identifier})
+    local Result = DatabaseQuery('SELECT callsign FROM onyx_dispatch WHERE identifier = ?', {identifier})
     if Result and Result[1] and type(Result[1].callsign) == 'string' and Result[1].callsign ~= '' then
         data.callsign = Result[1].callsign
     end
@@ -208,17 +208,17 @@ function SetCallsign(source, callsign)
     local identifier = GetIdentifier(source)
     if type(identifier) ~= 'string' or type(callsign) ~= 'string' or callsign == '' or #callsign >= 16 then return end
 
-    local Result = DatabaseQuery('SELECT callsign FROM cd_dispatch WHERE identifier = ?', {identifier})
+    local Result = DatabaseQuery('SELECT callsign FROM onyx_dispatch WHERE identifier = ?', {identifier})
     if not Result then return end
     if Result[1] then
-        DatabaseQuery('UPDATE cd_dispatch SET callsign = ? WHERE identifier = ?', {callsign, identifier})
+        DatabaseQuery('UPDATE onyx_dispatch SET callsign = ? WHERE identifier = ?', {callsign, identifier})
     else
-        DatabaseQuery('INSERT INTO cd_dispatch (identifier, callsign) VALUES (?, ?)', {identifier, callsign})
+        DatabaseQuery('INSERT INTO onyx_dispatch (identifier, callsign) VALUES (?, ?)', {identifier, callsign})
     end
 end
 
-RegisterServerEvent('cd_dispatch:JobSet')
-AddEventHandler('cd_dispatch:JobSet', function(job)
+RegisterServerEvent('onyx_dispatch:JobSet')
+AddEventHandler('onyx_dispatch:JobSet', function(job)
     local _source = source
     if self and self[_source] then
         job = GetFrameworkPlayerJob(_source) -- Never accept a job identity supplied by the client.
@@ -228,7 +228,7 @@ AddEventHandler('cd_dispatch:JobSet', function(job)
         PlayerBlipsActions(_source, 'update')
         if CheckMultiJobs(job) then
             RefreshLargeUI(job)
-            TriggerClientEvent('cd_dispatch:SendSourceData', _source, self[_source], DispatcherData.active)
+            TriggerClientEvent('onyx_dispatch:SendSourceData', _source, self[_source], DispatcherData.active)
         end
         if CheckMultiJobs(old_job) then
             RefreshLargeUI(old_job)
@@ -245,8 +245,8 @@ end)
 --╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ ╚═╝ ╚═════╝      ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝╚══════╝╚══════╝
 
 
-RegisterServerEvent('cd_dispatch:GetRadioChannel')
-AddEventHandler('cd_dispatch:GetRadioChannel', function(radio_channel)
+RegisterServerEvent('onyx_dispatch:GetRadioChannel')
+AddEventHandler('onyx_dispatch:GetRadioChannel', function(radio_channel)
     local _source = source
     if radio_channel ~= nil and CheckJob(_source, self[_source].job) and self and self[_source] then
         self[_source].radio_channel = tonumber(radio_channel)
@@ -348,19 +348,19 @@ AddEventHandler('cd_donatorshop:CharacterNameChanged', function(new_name, _sourc
     end
 end)
 
-RegisterNetEvent('cd_dispatch:OnDutyChecks')
-AddEventHandler('cd_dispatch:OnDutyChecks', function(boolean)
+RegisterNetEvent('onyx_dispatch:OnDutyChecks')
+AddEventHandler('onyx_dispatch:OnDutyChecks', function(boolean)
     local _source = source
     while not self do Wait(1000) end
     if self[_source] and Config.UseFrameworkDutySystem and type(boolean) == 'boolean' then
         local duty = IsPlayerOnDuty(_source)
 
         self[_source].on_duty = duty
-        TriggerClientEvent('cd_dispatch:DutyState', _source, duty)
+        TriggerClientEvent('onyx_dispatch:DutyState', _source, duty)
         if duty then
             PlayerBlipsActions(_source, 'update')
         else
-            TriggerClientEvent('cd_dispatch:ForceCloseLargeUI', _source)
+            TriggerClientEvent('onyx_dispatch:ForceCloseLargeUI', _source)
             PlayerBlipsActions(_source, 'remove')
         end
     end
@@ -370,7 +370,7 @@ function PlayerDropped(source)
     if self and source and self[source] then
         PlayerBlipsActions(source, 'remove')
         if self[source].dispatcher then
-            TriggerEvent('cd_dispatch:DispatcherToggle', false, self[source].job)
+            TriggerEvent('onyx_dispatch:DispatcherToggle', false, self[source].job)
         end
         if CheckMultiJobs(self[source].job) then
             RefreshLargeUI(self[source].job)
@@ -383,12 +383,12 @@ AddEventHandler('playerDropped', function()
     PlayerDropped(source)
 end)
 
-RegisterServerEvent('cd_dispatch:AddNotification')
-AddEventHandler('cd_dispatch:AddNotification', function(data)
+RegisterServerEvent('onyx_dispatch:AddNotification')
+AddEventHandler('onyx_dispatch:AddNotification', function(data)
     for c, d in pairs(self) do
         for cc, dd in pairs(data.job_table) do
             if d.job == dd then
-                TriggerClientEvent('cd_dispatch:AddNotification', d.source, data)
+                TriggerClientEvent('onyx_dispatch:AddNotification', d.source, data)
             end
         end
     end
@@ -416,8 +416,8 @@ end
 --╚═════╝ ╚══════╝╚═════╝  ╚═════╝  ╚═════╝ 
 
 
-RegisterServerEvent('cd_dispatch:Debug')
-AddEventHandler('cd_dispatch:Debug', function()
+RegisterServerEvent('onyx_dispatch:Debug')
+AddEventHandler('onyx_dispatch:Debug', function()
     local _source = source
     print('^6-----------------------^0')
     print('^1CODESIGN DEBUG^0')

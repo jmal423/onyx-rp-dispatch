@@ -60,7 +60,7 @@ if Config.PauseMenuBlips.ENABLE then
                     SetBlipAsShortRange(PlayerBlips[d.source].blip, true)
                 end
                 if Config.PauseMenuBlips.flashing_blips and d.flashing_blip then
-                    TriggerEvent('cd_dispatch:PlayerBlips_flash', PlayerBlips[d.source])
+                    TriggerEvent('onyx_dispatch:PlayerBlips_flash', PlayerBlips[d.source])
                 end
             else
                 OutOfScope[d.source] = nil
@@ -69,8 +69,8 @@ if Config.PauseMenuBlips.ENABLE then
         end
     end
 
-    RegisterNetEvent('cd_dispatch:PlayerBlips_update')
-    AddEventHandler('cd_dispatch:PlayerBlips_update', function(source, data, remove_list)
+    RegisterNetEvent('onyx_dispatch:PlayerBlips_update')
+    AddEventHandler('onyx_dispatch:PlayerBlips_update', function(source, data, remove_list)
         BlipActions(source, data)
         for c, d in pairs(remove_list) do
             if d and PlayerBlips[d] then
@@ -95,8 +95,8 @@ if Config.PauseMenuBlips.ENABLE then
         SetBlipCategory(blip, 1)
     end
 
-    RegisterNetEvent('cd_dispatch:PlayerBlips_disable')
-    AddEventHandler('cd_dispatch:PlayerBlips_disable', function(source)
+    RegisterNetEvent('onyx_dispatch:PlayerBlips_disable')
+    AddEventHandler('onyx_dispatch:PlayerBlips_disable', function(source)
         for c, d in pairs(PlayerBlips) do
             if d.blip then
                 RemoveBlip(d.blip)
@@ -110,8 +110,8 @@ if Config.PauseMenuBlips.ENABLE then
 
     if Config.PauseMenuBlips.flashing_blips then
 
-        RegisterNetEvent('cd_dispatch:PlayerBlips_flash')
-        AddEventHandler('cd_dispatch:PlayerBlips_flash', function(data)
+        RegisterNetEvent('onyx_dispatch:PlayerBlips_flash')
+        AddEventHandler('onyx_dispatch:PlayerBlips_flash', function(data)
             if not data.blip_colour[2] then return end
             Wait(Config.PauseMenuBlips.data_update_timer*1000/2)
             SetBlipColour(data.blip, data.blip_colour[2])
@@ -129,13 +129,13 @@ if Config.PauseMenuBlips.ENABLE then
                     if IsPedInAnyVehicle(ped, true) then
                         if IsVehicleSirenOn(GetVehiclePedIsIn(ped, true)) then
                             if not PlayerBlips[source].flashing_blip then
-                                TriggerServerEvent('cd_dispatch:PlayerBlips:emergancylights', true)
+                                TriggerServerEvent('onyx_dispatch:PlayerBlips:emergancylights', true)
                             end
                         elseif PlayerBlips[source].flashing_blip then
-                            TriggerServerEvent('cd_dispatch:PlayerBlips:emergancylights', false)
+                            TriggerServerEvent('onyx_dispatch:PlayerBlips:emergancylights', false)
                         end
                     elseif PlayerBlips[source].flashing_blip then
-                        TriggerServerEvent('cd_dispatch:PlayerBlips:emergancylights', false)
+                        TriggerServerEvent('onyx_dispatch:PlayerBlips:emergancylights', false)
                     end
                 end
             end

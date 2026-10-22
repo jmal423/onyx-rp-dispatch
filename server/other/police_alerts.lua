@@ -26,8 +26,8 @@ if Config.PoliceAlerts.ENABLE then
     -- ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚══════╝
 
 
-    RegisterServerEvent('cd_dispatch:pdalerts:Gunshots')
-    AddEventHandler('cd_dispatch:pdalerts:Gunshots', function(data)
+    RegisterServerEvent('onyx_dispatch:pdalerts:Gunshots')
+    AddEventHandler('onyx_dispatch:pdalerts:Gunshots', function(data)
         if GetResourceState('cd_radar') == 'started' then
             TriggerEvent('cd_radar:RadarDatabase_ADD', {
                 plate = data.vehicle_plate,
@@ -51,8 +51,8 @@ if Config.PoliceAlerts.ENABLE then
     --╚══════╝╚═╝     ╚══════╝╚══════╝╚═════╝        ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚══════╝
 
 
-    RegisterServerEvent('cd_dispatch:pdalerts:Speedtrap')
-    AddEventHandler('cd_dispatch:pdalerts:Speedtrap', function(data, config_data, speed, all_plates)
+    RegisterServerEvent('onyx_dispatch:pdalerts:Speedtrap')
+    AddEventHandler('onyx_dispatch:pdalerts:Speedtrap', function(data, config_data, speed, all_plates)
         local _source = source
         if (config_data.fine_amount > 0 and not Config.PoliceAlerts.SpeedTrap.check_owner_for_fine) or (config_data.fine_amount > 0 and Config.PoliceAlerts.SpeedTrap.check_owner_for_fine and CheckVehicleOwner(_source, all_plates)) then
             RemoveMoney(_source, config_data.fine_amount)

@@ -5,7 +5,7 @@ if Config.JobCallCommands.ENABLE then
         RegisterCommand(d.command, function(source, args)
             local message = table.concat(args, ' ')
             if message then
-                TriggerServerEvent('cd_dispatch:CallCommand', GetPlayerInfo(), {job_label = d.job_label, job_table = d.job_table, anonymous = d.anonymous, message = message, phone_number = SourceInfo.phone_number, char_name = SourceInfo.char_name})
+                TriggerServerEvent('onyx_dispatch:CallCommand', GetPlayerInfo(), {job_label = d.job_label, job_table = d.job_table, anonymous = d.anonymous, message = message, phone_number = SourceInfo.phone_number, char_name = SourceInfo.char_name})
                 PlayAnimation('cellphone@', 'cellphone_call_listen_base', 5000)
             else
                 Notif(3, 'enter_message_1', d.job_label)
@@ -32,7 +32,7 @@ if Config.JobCallCommands.ENABLE then
             if target_id then
                 local message = table.concat(args, ' '):sub(tonumber(#target_id+1))
                 if #message > 0 then
-                    TriggerServerEvent('cd_dispatch:CallCommand:Reply', {job = job, job_label = data.job_label, job_table = data.job_table, target_id = tonumber(target_id), message = message, char_name = SourceInfo.char_name})
+                    TriggerServerEvent('onyx_dispatch:CallCommand:Reply', {job = job, job_label = data.job_label, job_table = data.job_table, target_id = tonumber(target_id), message = message, char_name = SourceInfo.char_name})
                 else
                     Notif(3, 'enter_message_2')
                 end

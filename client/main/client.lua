@@ -8,12 +8,12 @@ CreateThread(function()
         if isLoaded ~= false then
             break
         end
-        TriggerServerEvent("cd_dispatch:SpeedtrapLocations")
+        TriggerServerEvent("onyx_dispatch:SpeedtrapLocations")
         Wait(1000)
     end
 end)
-RegisterNetEvent("cd_dispatch:PoliceiconColour")
-AddEventHandler("cd_dispatch:PoliceiconColour", function(color)
+RegisterNetEvent("onyx_dispatch:PoliceiconColour")
+AddEventHandler("onyx_dispatch:PoliceiconColour", function(color)
     if isLoaded then
         return
     end
@@ -68,9 +68,9 @@ callbackIndex = 0
 function RunCallback(job, callbackType)
     callbackIndex = callbackIndex + 1
     if callbackType == "update_ui_blips" then
-        TriggerServerEvent("cd_dispatch:GetCoords", job, callbackIndex)
+        TriggerServerEvent("onyx_dispatch:GetCoords", job, callbackIndex)
     elseif callbackType == "large_ui_data" then
-        TriggerServerEvent("cd_dispatch:LargeUIData", job, callbackIndex)
+        TriggerServerEvent("onyx_dispatch:LargeUIData", job, callbackIndex)
     end
     while true do
         if callbackResults[callbackIndex] ~= nil then
@@ -81,8 +81,8 @@ function RunCallback(job, callbackType)
     local result = callbackResults[callbackIndex]
     return result
 end
-RegisterNetEvent("cd_dispatch:Callback")
-AddEventHandler("cd_dispatch:Callback", function(result, index)
+RegisterNetEvent("onyx_dispatch:Callback")
+AddEventHandler("onyx_dispatch:Callback", function(result, index)
     callbackResults[index] = result
     Wait(5000)
     callbackResults[index] = nil
@@ -93,8 +93,8 @@ function HasSourceInfoLoaded()
     end
     return false
 end
-RegisterNetEvent("cd_dispatch:KEY_smallui")
-AddEventHandler("cd_dispatch:KEY_smallui", function()
+RegisterNetEvent("onyx_dispatch:KEY_smallui")
+AddEventHandler("onyx_dispatch:KEY_smallui", function()
     if Checks("is_allowed") then
         if HasSourceInfoLoaded() and not uiStates.large then ShowSmallUI() end
     else
@@ -104,8 +104,8 @@ AddEventHandler("cd_dispatch:KEY_smallui", function()
         HideSmallUI()
     end
 end)
-RegisterNetEvent("cd_dispatch:KEY_largeui")
-AddEventHandler("cd_dispatch:KEY_largeui", function()
+RegisterNetEvent("onyx_dispatch:KEY_largeui")
+AddEventHandler("onyx_dispatch:KEY_largeui", function()
     if Checks("is_allowed") then
         if uiStates.large then
             return
@@ -167,8 +167,8 @@ AddEventHandler("cd_dispatch:KEY_largeui", function()
         end
     end
 end)
-RegisterNetEvent("cd_dispatch:KEY_responding")
-AddEventHandler("cd_dispatch:KEY_responding", function()
+RegisterNetEvent("onyx_dispatch:KEY_responding")
+AddEventHandler("onyx_dispatch:KEY_responding", function()
     if Checks("is_allowed") then
         if uiStates.small then
             if notifications then
@@ -179,7 +179,7 @@ AddEventHandler("cd_dispatch:KEY_responding", function()
                             if not currentNotification.responding_state then
                                 if not isRespondingOnCooldown then
                                     isRespondingOnCooldown = true
-                                    TriggerEvent("cd_dispatch:StopSpammings")
+                                    TriggerEvent("onyx_dispatch:StopSpammings")
                                     Responding(currentNotificationIndex, "add")
                                 else
                                     Notif(3, "cooldown")
@@ -187,7 +187,7 @@ AddEventHandler("cd_dispatch:KEY_responding", function()
                             else
                                 if not isRespondingOnCooldown then
                                     isRespondingOnCooldown = true
-                                    TriggerEvent("cd_dispatch:StopSpammings")
+                                    TriggerEvent("onyx_dispatch:StopSpammings")
                                     Responding(currentNotificationIndex, "remove")
                                 else
                                     Notif(3, "cooldown")
@@ -206,8 +206,8 @@ AddEventHandler("cd_dispatch:KEY_responding", function()
         end
     end
 end)
-RegisterNetEvent("cd_dispatch:RefreshLargeUI")
-AddEventHandler("cd_dispatch:RefreshLargeUI", function(job, largeUIData)
+RegisterNetEvent("onyx_dispatch:RefreshLargeUI")
+AddEventHandler("onyx_dispatch:RefreshLargeUI", function(job, largeUIData)
     if uiStates.large then
         SendNUIMessage({
             action = "showlarge_ui",
@@ -217,8 +217,8 @@ AddEventHandler("cd_dispatch:RefreshLargeUI", function(job, largeUIData)
         })
     end
 end)
-RegisterNetEvent("cd_dispatch:EnableMoveMode")
-AddEventHandler("cd_dispatch:EnableMoveMode", function()
+RegisterNetEvent("onyx_dispatch:EnableMoveMode")
+AddEventHandler("onyx_dispatch:EnableMoveMode", function()
     if Checks("is_allowed") then
         if uiStates.small then
             Checks("enable_nui")
@@ -232,8 +232,8 @@ AddEventHandler("cd_dispatch:EnableMoveMode", function()
         end
     end
 end)
-RegisterNetEvent("cd_dispatch:SendSourceData")
-AddEventHandler("cd_dispatch:SendSourceData", function(sourceData, dispatcherState)
+RegisterNetEvent("onyx_dispatch:SendSourceData")
+AddEventHandler("onyx_dispatch:SendSourceData", function(sourceData, dispatcherState)
     if T(sourceData, "table") then
         if T(dispatcherState, "boolean") then
             if Config.UseFrameworkDutySystem and type(sourceData.on_duty) == "boolean" then
@@ -253,7 +253,7 @@ AddEventHandler("cd_dispatch:SendSourceData", function(sourceData, dispatcherSta
             uiStates = uiStates or {}
             if not IsAllowed() then
                 uiStates.large = false
-                if NUI_status then TriggerEvent('cd_dispatch:ForceCloseLargeUI') end
+                if NUI_status then TriggerEvent('onyx_dispatch:ForceCloseLargeUI') end
             end
             SendNUIMessage({
                 action = "currentplayer",
@@ -300,8 +300,8 @@ if Config.UpdateDistanceUI.ENABLE then
         end
     end)
 end
-RegisterNetEvent("cd_dispatch:AddNotification")
-AddEventHandler("cd_dispatch:AddNotification", function(notificationData, isDispatcherNotification)
+RegisterNetEvent("onyx_dispatch:AddNotification")
+AddEventHandler("onyx_dispatch:AddNotification", function(notificationData, isDispatcherNotification)
     if Config.Debug then
         print("DEBUG: Received notification: " .. json.encode(notificationData))
     end
@@ -471,8 +471,8 @@ AddEventHandler("cd_dispatch:AddNotification", function(notificationData, isDisp
         E("1466")
     end
 end)
-RegisterNetEvent("cd_dispatch:PlayerResponding")
-AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
+RegisterNetEvent("onyx_dispatch:PlayerResponding")
+AddEventHandler("onyx_dispatch:PlayerResponding", function(responseData)
     if T(responseData, "table") then
         if T(responseData.unique_id, "string") then
             if notifications then
@@ -516,8 +516,8 @@ AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
         E("0231")
     end
 end)
-RegisterNetEvent('cd_dispatch:RespondersSnapshot')
-AddEventHandler('cd_dispatch:RespondersSnapshot', function(uniqueId, responders)
+RegisterNetEvent('onyx_dispatch:RespondersSnapshot')
+AddEventHandler('onyx_dispatch:RespondersSnapshot', function(uniqueId, responders)
     if type(uniqueId) ~= 'string' or type(responders) ~= 'table' or not notifications then return end
 
     local notificationIndex = FindUniqueID(uniqueId)
@@ -530,36 +530,36 @@ AddEventHandler('cd_dispatch:RespondersSnapshot', function(uniqueId, responders)
         })
     end
 end)
-RegisterNetEvent("cd_dispatch:StopSpammings")
-AddEventHandler("cd_dispatch:StopSpammings", function()
+RegisterNetEvent("onyx_dispatch:StopSpammings")
+AddEventHandler("onyx_dispatch:StopSpammings", function()
     Wait(500)
     isRespondingOnCooldown = false
 end)
-RegisterNetEvent("cd_dispatch:GetNonOnesyncCoords")
-AddEventHandler("cd_dispatch:GetNonOnesyncCoords", function()
-    TriggerServerEvent("cd_dispatch:GetNonOnesyncCoords", GetEntityCoords(PlayerPedId()))
+RegisterNetEvent("onyx_dispatch:GetNonOnesyncCoords")
+AddEventHandler("onyx_dispatch:GetNonOnesyncCoords", function()
+    TriggerServerEvent("onyx_dispatch:GetNonOnesyncCoords", GetEntityCoords(PlayerPedId()))
 end)
-RegisterNetEvent("cd_dispatch:SetGPS")
-AddEventHandler("cd_dispatch:SetGPS", function(coords)
+RegisterNetEvent("onyx_dispatch:SetGPS")
+AddEventHandler("onyx_dispatch:SetGPS", function(coords)
     SetNewWaypoint(coords.x, coords.y)
 end)
-RegisterNetEvent("cd_dispatch:DispatcherToggle")
-AddEventHandler("cd_dispatch:DispatcherToggle", function(state)
+RegisterNetEvent("onyx_dispatch:DispatcherToggle")
+AddEventHandler("onyx_dispatch:DispatcherToggle", function(state)
     if T(state, "boolean") then
         isDispatcher = state
     else
         E("8845")
     end
 end)
-RegisterNetEvent("cd_dispatch:UpdateGroups")
-AddEventHandler("cd_dispatch:UpdateGroups", function(groups)
+RegisterNetEvent("onyx_dispatch:UpdateGroups")
+AddEventHandler("onyx_dispatch:UpdateGroups", function(groups)
     SendNUIMessage({
         action = "updategroups",
         values = groups
     })
 end)
-RegisterNetEvent("cd_dispatch:SyncUserSettings")
-AddEventHandler("cd_dispatch:SyncUserSettings", function(settings)
+RegisterNetEvent("onyx_dispatch:SyncUserSettings")
+AddEventHandler("onyx_dispatch:SyncUserSettings", function(settings)
     SendNUIMessage({
         action = "syncusersettings",
         values = settings
@@ -581,11 +581,11 @@ function Responding(notificationIndex, action)
                     if action == "add" then
                         notifications[notificationIndex].responding_state = true
                         SetNewWaypoint(notifications[notificationIndex].coords.x, notifications[notificationIndex].coords.y)
-                        TriggerServerEvent("cd_dispatch:PlayerResponding", responseData)
+                        TriggerServerEvent("onyx_dispatch:PlayerResponding", responseData)
                     elseif action == "remove" then
                         notifications[notificationIndex].responding_state = false
                         SetWaypointOff()
-                        TriggerServerEvent("cd_dispatch:PlayerResponding", responseData)
+                        TriggerServerEvent("onyx_dispatch:PlayerResponding", responseData)
                     else
                         E("6544")
                     end
@@ -841,7 +841,7 @@ end)
 RegisterNUICallback("usersettings", function(settings)
     if T(settings, "table") then
         settings.vehicle = nil
-        TriggerServerEvent("cd_dispatch:SaveUserSettings", settings)
+        TriggerServerEvent("onyx_dispatch:SaveUserSettings", settings)
     else
         E("6123")
     end
@@ -881,7 +881,7 @@ end)
 RegisterNUICallback("setgps", function(data)
     if T(data, "table") then
         if Config.UsingOneSync then
-            TriggerServerEvent("cd_dispatch:SetGPS", data.id)
+            TriggerServerEvent("onyx_dispatch:SetGPS", data.id)
         else
             local targetCoords = GetEntityCoords(GetPlayerPed(GetPlayerFromServerId(data.id)))
             SetNewWaypoint(targetCoords.x, targetCoords.y)
@@ -895,7 +895,7 @@ RegisterNUICallback("dispatchertoggle", function(data)
         local job = Checks("get_job")
         if T(job, "string") then
             SourceInfo.dispatcher = true
-            TriggerServerEvent("cd_dispatch:DispatcherToggle", data.state, job)
+            TriggerServerEvent("onyx_dispatch:DispatcherToggle", data.state, job)
         else
             E("3354")
         end
@@ -905,14 +905,14 @@ RegisterNUICallback("dispatchertoggle", function(data)
 end)
 RegisterNUICallback("assigncall", function(data)
     if T(data, "table") then
-        TriggerServerEvent("cd_dispatch:Dispatcher_AddCall", data.notification)
+        TriggerServerEvent("onyx_dispatch:Dispatcher_AddCall", data.notification)
     else
         E("1544")
     end
 end)
 RegisterNUICallback("updategroups", function(data)
     if T(data, "table") then
-        TriggerServerEvent("cd_dispatch:UpdateGroups", data)
+        TriggerServerEvent("onyx_dispatch:UpdateGroups", data)
     else
         E("7844")
     end
@@ -925,7 +925,7 @@ CreateThread(function()
         Wait(1000)
     end
     SendNUIMessage({
-        gunshots = "cd_dispatch:Sendplayername",
+        gunshots = "onyx_dispatch:Sendplayername",
         values = Config.Debug
     })
     isDispatcherOffline = nil
@@ -998,14 +998,14 @@ function Checks(action, param1, param2)
         end
     elseif action == "enable_nui" then
         local success, err = xpcall(function()
-            TriggerEvent("cd_dispatch:ToggleNUIFocus")
+            TriggerEvent("onyx_dispatch:ToggleNUIFocus")
         end, E2)
         if not success then
             E("5146 ^")
         end
     elseif action == "enable_nui_2" then
         local success, err = xpcall(function()
-            TriggerEvent("cd_dispatch:ToggleNUIFocus_2")
+            TriggerEvent("onyx_dispatch:ToggleNUIFocus_2")
         end, E2)
         if not success then
             E("1555 ^")

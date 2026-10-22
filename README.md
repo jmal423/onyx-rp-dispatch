@@ -20,11 +20,11 @@ No `server.cfg`, iniciar `ox_lib` e `oxmysql` antes de `onyx_dispatch`.
 
 ## Base de dados
 
-`Config.AutoInsertSQL` está ativo por predefinição. O recurso cria a tabela `cd_dispatch` para guardar os callsigns. O nome da tabela foi mantido para preservar compatibilidade com os dados e integrações existentes.
+`Config.AutoInsertSQL` está ativo por predefinição. O recurso cria a tabela `onyx_dispatch` para guardar os callsigns. No arranque, migra a tabela anterior automaticamente e preserva os callsigns existentes.
 
 ## Compatibilidade
 
-O nome do recurso e os exports próprios são `onyx_dispatch`. Os eventos públicos continuam no namespace `cd_dispatch:` para não partir integrações já existentes.
+O nome da resource, dos exports e do namespace de eventos é `onyx_dispatch`. Recursos externos que ainda chamem os eventos antigos têm de atualizar as chamadas para o novo namespace.
 
 ### Usar os exports
 
@@ -40,7 +40,7 @@ local dispatchPlayers = exports['onyx_dispatch']:GetPlayersDispatchData(source)
 local dispatchConfig = exports['onyx_dispatch']:GetConfig()
 ```
 
-Não usar `exports['cd_dispatch']`. O namespace de eventos `cd_dispatch:` e a tabela SQL `cd_dispatch` mantêm-se por compatibilidade; não são o nome da resource nem dos exports.
+Todos os exports, eventos, chaves de locale e a tabela dos callsigns usam `onyx_dispatch`.
 
 ## Alertas de ocorrências
 

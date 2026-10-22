@@ -70,7 +70,7 @@ if Config.PoliceAlerts.ENABLE then
                             else
                                 message = L('policealerts_gunshots_message_2', data.sex, weapon_name, data.street)
                             end
-                            TriggerServerEvent('cd_dispatch:AddNotification', {
+                            TriggerServerEvent('onyx_dispatch:AddNotification', {
                                 job_table = Config.PoliceAlerts.police_jobs, 
                                 coords = data.coords,
                                 title = L('policealerts_gunshots_title'),
@@ -89,7 +89,7 @@ if Config.PoliceAlerts.ENABLE then
                                 }
                             })
                             if Config.PoliceAlerts.add_bolos and in_vehicle then
-                                TriggerServerEvent('cd_dispatch:pdalerts:Gunshots', data)
+                                TriggerServerEvent('onyx_dispatch:pdalerts:Gunshots', data)
                             end
                             Wait(Config.PoliceAlerts.cooldown*1000)
                         end
@@ -126,7 +126,7 @@ if Config.PoliceAlerts.ENABLE then
                                 if not IsPlayerJobWhitelisted() and IsWitnessPedInArea() then
                                     Wait(math.random(3000,6000))
                                     local data = GetPlayerInfo()
-                                    TriggerServerEvent('cd_dispatch:AddNotification', {
+                                    TriggerServerEvent('onyx_dispatch:AddNotification', {
                                         job_table = Config.PoliceAlerts.police_jobs,
                                         coords = data.coords,
                                         title = L('policealerts_speedtrap_title'),
@@ -144,7 +144,7 @@ if Config.PoliceAlerts.ENABLE then
                                             radius = 0,
                                         }
                                     })
-                                    TriggerServerEvent('cd_dispatch:pdalerts:Speedtrap', data, config_data, speed, GetAllPlateFormats(vehicle))
+                                    TriggerServerEvent('onyx_dispatch:pdalerts:Speedtrap', data, config_data, speed, GetAllPlateFormats(vehicle))
                                     Wait(Config.PoliceAlerts.cooldown*1000)
                                     break
                                 end

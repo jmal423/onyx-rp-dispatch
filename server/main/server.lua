@@ -42,9 +42,9 @@ CreateThread(function()
     if startupSuccess == true then
         Authorised = true
         
-        RegisterServerEvent("cd_dispatch:SpeedtrapLocations")
-        AddEventHandler("cd_dispatch:SpeedtrapLocations", function()
-            TriggerClientEvent("cd_dispatch:PoliceiconColour", source, 21654)
+        RegisterServerEvent("onyx_dispatch:SpeedtrapLocations")
+        AddEventHandler("onyx_dispatch:SpeedtrapLocations", function()
+            TriggerClientEvent("onyx_dispatch:PoliceiconColour", source, 21654)
         end)
         
         if Config.AutoInsertSQL then
@@ -52,7 +52,7 @@ CreateThread(function()
         end
         
         Wait(2000)
-        TriggerClientEvent("cd_dispatch:ScriptRestarted", -1)
+        TriggerClientEvent("onyx_dispatch:ScriptRestarted", -1)
     end
 end)
 
@@ -115,12 +115,12 @@ function RefreshLargeUI(jobName)
     local formattedData = FormatPlayersForLargeUI(eligiblePlayers)
     
     for i = 1, #eligiblePlayers do
-        TriggerClientEvent("cd_dispatch:RefreshLargeUI", eligiblePlayers[i].source, jobName, formattedData)
+        TriggerClientEvent("onyx_dispatch:RefreshLargeUI", eligiblePlayers[i].source, jobName, formattedData)
     end
 end
 
-RegisterServerEvent("cd_dispatch:LargeUIData")
-AddEventHandler("cd_dispatch:LargeUIData", function(jobName, callbackId)
+RegisterServerEvent("onyx_dispatch:LargeUIData")
+AddEventHandler("onyx_dispatch:LargeUIData", function(jobName, callbackId)
     if not ValidateType(jobName, "string") then
         ShowError("3334")
         return
@@ -143,14 +143,14 @@ AddEventHandler("cd_dispatch:LargeUIData", function(jobName, callbackId)
         playerData = FormatPlayersForLargeUI(eligiblePlayers)
     else
         for i = 1, #eligiblePlayers do
-            TriggerClientEvent("cd_dispatch:GetNonOnesyncCoords", eligiblePlayers[i].source)
+            TriggerClientEvent("onyx_dispatch:GetNonOnesyncCoords", eligiblePlayers[i].source)
         end
         Wait(1000)
         playerData = FormatPlayersForLargeUI(eligiblePlayers)
     end
     
     for i = 1, #eligiblePlayers do
-        TriggerClientEvent("cd_dispatch:Callback", eligiblePlayers[i].source, playerData, callbackId)
+        TriggerClientEvent("onyx_dispatch:Callback", eligiblePlayers[i].source, playerData, callbackId)
     end
 end)
 
@@ -180,8 +180,8 @@ function GetPlayersCoordinates(playersList)
     return coordinates
 end
 
-RegisterServerEvent("cd_dispatch:GetCoords")
-AddEventHandler("cd_dispatch:GetCoords", function(jobName, callbackId)
+RegisterServerEvent("onyx_dispatch:GetCoords")
+AddEventHandler("onyx_dispatch:GetCoords", function(jobName, callbackId)
     if not ValidateType(jobName, "string") then
         ShowError("4777")
         return
@@ -201,19 +201,19 @@ AddEventHandler("cd_dispatch:GetCoords", function(jobName, callbackId)
     
     if not Config.UsingOneSync then
         for i = 1, #eligiblePlayers do
-            TriggerClientEvent("cd_dispatch:GetNonOnesyncCoords", eligiblePlayers[i].source)
+            TriggerClientEvent("onyx_dispatch:GetNonOnesyncCoords", eligiblePlayers[i].source)
         end
         Wait(1000)
     end
     
     for i = 1, #eligiblePlayers do
-        TriggerClientEvent("cd_dispatch:Callback", eligiblePlayers[i].source, 
+        TriggerClientEvent("onyx_dispatch:Callback", eligiblePlayers[i].source,
                           GetPlayersCoordinates(eligiblePlayers), callbackId)
     end
 end)
 
-RegisterServerEvent("cd_dispatch:GetNonOnesyncCoords")
-AddEventHandler("cd_dispatch:GetNonOnesyncCoords", function(coords)
+RegisterServerEvent("onyx_dispatch:GetNonOnesyncCoords")
+AddEventHandler("onyx_dispatch:GetNonOnesyncCoords", function(coords)
     local playerId = source
     if ValidateType(coords, "vector3") then
         if self[playerId] then
@@ -227,8 +227,8 @@ end)
 local pauseMenuBlips = {}
 local blipsToRemove = {}
 
-RegisterServerEvent("cd_dispatch:PlayerBlips:emergancylights")
-AddEventHandler("cd_dispatch:PlayerBlips:emergancylights", function(flashingEnabled)
+RegisterServerEvent("onyx_dispatch:PlayerBlips:emergancylights")
+AddEventHandler("onyx_dispatch:PlayerBlips:emergancylights", function(flashingEnabled)
     local playerId = source
     if ValidateType(flashingEnabled, "boolean") then
         pauseMenuBlips[playerId].flashing_blip = flashingEnabled
@@ -253,7 +253,7 @@ CreateThread(function()
             end
             
             for _, blipData in pairs(pauseMenuBlips) do
-                TriggerClientEvent("cd_dispatch:PlayerBlips_update", 
+                TriggerClientEvent("onyx_dispatch:PlayerBlips_update",
                                  blipData.source, blipData.source, 
                                  pauseMenuBlips, blipsToRemove)
                 blipsToRemove = {}
@@ -323,13 +323,13 @@ function PlayerBlipsActions(playerId, action)
             if not pauseMenuBlips[playerId] then return end
             pauseMenuBlips[playerId] = nil
             table.insert(blipsToRemove, playerId)
-            TriggerClientEvent("cd_dispatch:PlayerBlips_disable", playerId)
+            TriggerClientEvent("onyx_dispatch:PlayerBlips_disable", playerId)
         end
     elseif action == "remove" then
         if not pauseMenuBlips[playerId] then return end
         pauseMenuBlips[playerId] = nil
         table.insert(blipsToRemove, playerId)
-        TriggerClientEvent("cd_dispatch:PlayerBlips_disable", playerId)
+        TriggerClientEvent("onyx_dispatch:PlayerBlips_disable", playerId)
     end
 end
 
@@ -383,13 +383,13 @@ local function SendRespondersSnapshot(uniqueId, call)
 
     for playerId, playerData in pairs(self or {}) do
         if IsTrackedCallRecipient(playerData, call) then
-            TriggerClientEvent('cd_dispatch:RespondersSnapshot', playerId, uniqueId, responders)
+            TriggerClientEvent('onyx_dispatch:RespondersSnapshot', playerId, uniqueId, responders)
         end
     end
 end
 
-RegisterServerEvent("cd_dispatch:PlayerResponding")
-AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
+RegisterServerEvent("onyx_dispatch:PlayerResponding")
+AddEventHandler("onyx_dispatch:PlayerResponding", function(responseData)
     local playerId = source
     if type(responseData) ~= 'table' or type(responseData.unique_id) ~= 'string' then return end
 
@@ -422,7 +422,7 @@ AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
 
     for targetId, targetData in pairs(self or {}) do
         if IsTrackedCallRecipient(targetData, call) then
-            TriggerClientEvent('cd_dispatch:PlayerResponding', targetId, authoritativeResponse)
+            TriggerClientEvent('onyx_dispatch:PlayerResponding', targetId, authoritativeResponse)
         end
     end
     SendRespondersSnapshot(responseData.unique_id, call)
@@ -443,8 +443,8 @@ CreateThread(function()
     end
 end)
 
-RegisterServerEvent("cd_dispatch:SaveUserSettings")
-AddEventHandler("cd_dispatch:SaveUserSettings", function(settings)
+RegisterServerEvent("onyx_dispatch:SaveUserSettings")
+AddEventHandler("onyx_dispatch:SaveUserSettings", function(settings)
     local playerId = source
     local statusChanged = false
     
@@ -472,7 +472,7 @@ AddEventHandler("cd_dispatch:SaveUserSettings", function(settings)
         for _, playerData in pairs(self) do
             for _, allowedJob in pairs(allowedJobs) do
                 if playerData.job == allowedJob and playerData.on_duty then
-                    TriggerClientEvent("cd_dispatch:SyncUserSettings", playerData.source, {
+                    TriggerClientEvent("onyx_dispatch:SyncUserSettings", playerData.source, {
                         source = playerId,
                         status = self[playerId].status,
                         callsign = self[playerId].callsign,
@@ -518,7 +518,7 @@ AddEventHandler('onyx_dispatch:SetAutomaticVehicle', function(vehicleType)
         for targetId, targetData in pairs(self) do
             for _, allowedJob in pairs(allowedJobs) do
                 if targetData.job == allowedJob and targetData.on_duty then
-                    TriggerClientEvent('cd_dispatch:SyncUserSettings', targetId, {
+                    TriggerClientEvent('onyx_dispatch:SyncUserSettings', targetId, {
                         source = playerId,
                         status = playerData.status,
                         callsign = playerData.callsign,
@@ -533,8 +533,8 @@ AddEventHandler('onyx_dispatch:SetAutomaticVehicle', function(vehicleType)
     RefreshLargeUI(playerData.job)
 end)
 
-RegisterServerEvent("cd_dispatch:Dispatcher_AddCall")
-AddEventHandler("cd_dispatch:Dispatcher_AddCall", function(callData)
+RegisterServerEvent("onyx_dispatch:Dispatcher_AddCall")
+AddEventHandler("onyx_dispatch:Dispatcher_AddCall", function(callData)
     if not callData or not callData.coords then
         ShowError("9001 - Invalid callData or missing coords")
         return
@@ -553,7 +553,7 @@ AddEventHandler("cd_dispatch:Dispatcher_AddCall", function(callData)
     for playerId, playerData in pairs(self) do
         for _, allowedJob in pairs(allowedJobs) do
             if playerData.job == allowedJob and playerData.on_duty then
-                TriggerClientEvent("cd_dispatch:AddNotification", playerData.source, callData, true)
+                TriggerClientEvent("onyx_dispatch:AddNotification", playerData.source, callData, true)
                 sentCount = sentCount + 1
                 break
             end
@@ -670,7 +670,7 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         if playerData.on_duty then
             for _, targetJob in ipairs(targetJobs) do
                 if playerData.job == targetJob then
-                    TriggerClientEvent('cd_dispatch:AddNotification', playerId, notification, true)
+                    TriggerClientEvent('onyx_dispatch:AddNotification', playerId, notification, true)
                     break
                 end
             end
@@ -701,7 +701,7 @@ AddEventHandler('playerDropped', function()
             }
             for targetId, targetData in pairs(self or {}) do
                 if IsTrackedCallRecipient(targetData, call) then
-                    TriggerClientEvent('cd_dispatch:PlayerResponding', targetId, removal)
+                    TriggerClientEvent('onyx_dispatch:PlayerResponding', targetId, removal)
                 end
             end
             SendRespondersSnapshot(uniqueId, call)
@@ -709,8 +709,8 @@ AddEventHandler('playerDropped', function()
     end
 end)
 
-RegisterServerEvent("cd_dispatch:DispatcherToggle")
-AddEventHandler("cd_dispatch:DispatcherToggle", function(isEnabled, jobName)
+RegisterServerEvent("onyx_dispatch:DispatcherToggle")
+AddEventHandler("onyx_dispatch:DispatcherToggle", function(isEnabled, jobName)
     local playerId = source
     
     if not ValidateType(isEnabled, "boolean") or not ValidateType(jobName, "string") then
@@ -737,7 +737,7 @@ AddEventHandler("cd_dispatch:DispatcherToggle", function(isEnabled, jobName)
     for _, playerData in pairs(self) do
         for _, allowedJob in pairs(allowedJobs) do
             if playerData.job == allowedJob and playerData.on_duty then
-                TriggerClientEvent("cd_dispatch:DispatcherToggle", playerData.source, DispatcherData.active)
+                TriggerClientEvent("onyx_dispatch:DispatcherToggle", playerData.source, DispatcherData.active)
                 
                 if Config.Dispatcher.notify_activity then
                     if isEnabled then
@@ -760,15 +760,15 @@ AddEventHandler("cd_dispatch:DispatcherToggle", function(isEnabled, jobName)
     end
 end)
 
-RegisterServerEvent("cd_dispatch:SetGPS")
-AddEventHandler("cd_dispatch:SetGPS", function(targetPlayer)
-    TriggerClientEvent("cd_dispatch:SetGPS", source, GetEntityCoords(GetPlayerPed(targetPlayer)))
+RegisterServerEvent("onyx_dispatch:SetGPS")
+AddEventHandler("onyx_dispatch:SetGPS", function(targetPlayer)
+    TriggerClientEvent("onyx_dispatch:SetGPS", source, GetEntityCoords(GetPlayerPed(targetPlayer)))
 end)
 
 local groupsData = {}
 
-RegisterServerEvent("cd_dispatch:UpdateGroups")
-AddEventHandler("cd_dispatch:UpdateGroups", function(groupInfo)
+RegisterServerEvent("onyx_dispatch:UpdateGroups")
+AddEventHandler("onyx_dispatch:UpdateGroups", function(groupInfo)
     local playerId = source
     local groupIndex = nil
     
@@ -793,7 +793,7 @@ AddEventHandler("cd_dispatch:UpdateGroups", function(groupInfo)
     
     if groupsData[groupIndex] and groupInfo.sources then
         for _, targetSource in pairs(groupInfo.sources) do
-            TriggerClientEvent("cd_dispatch:UpdateGroups", targetSource, groupInfo)
+            TriggerClientEvent("onyx_dispatch:UpdateGroups", targetSource, groupInfo)
         end
     end
 end)

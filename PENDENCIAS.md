@@ -36,9 +36,10 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 
 ## Nome da resource e exports
 
-- **Estado:** confirmado em 2026-10-22. A resource chama-se `onyx_dispatch`; os consumidores usam `exports['onyx_dispatch']`.
-- A pesquisa ao código dos recursos Qbox não encontrou chamadas `exports['cd_dispatch']`. Os dois usos internos encontrados também apontam para `onyx_dispatch`.
-- O prefixo dos eventos `cd_dispatch:` e a tabela SQL `cd_dispatch` foram mantidos para compatibilidade. Não os confundir com o nome da resource/export.
+- **Estado:** renomeação concluída em 2026-10-22. A resource, os exports, os eventos, as chaves de locale e a tabela de callsigns usam `onyx_dispatch`.
+- Os dois consumidores internos usam `exports['onyx_dispatch']`. A pesquisa não encontrou outros recursos Qbox a chamar o namespace antigo.
+- No arranque, a tabela anterior de callsigns é renomeada ou combinada com `onyx_dispatch`; a tabela de origem só é removida após confirmar que todos os identificadores estão presentes na tabela nova.
+- Integrações externas fora deste repositório que chamem os eventos antigos precisam de ser atualizadas para o namespace novo.
 
 ## Small não reaparece após reiniciar a resource
 

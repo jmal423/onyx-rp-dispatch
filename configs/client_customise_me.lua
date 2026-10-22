@@ -37,7 +37,7 @@ CreateThread(function()
             JobData = xPlayer.job or {}
             on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
             while not Authorised do Wait(100) end
-            TriggerServerEvent('cd_dispatch:PlayerLoaded')
+            TriggerServerEvent('onyx_dispatch:PlayerLoaded')
             UpdateDispatchVisibility()
         end)
 
@@ -49,10 +49,10 @@ CreateThread(function()
                 on_duty = JobData.onDuty == true
             end
             if last_job ~= JobData.name then
-                TriggerServerEvent('cd_dispatch:JobSet', GetJob())
+                TriggerServerEvent('onyx_dispatch:JobSet', GetJob())
             end
             if Config.UseFrameworkDutySystem then
-                TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
+                TriggerServerEvent('onyx_dispatch:OnDutyChecks', on_duty)
             end
             UpdateDispatchVisibility()
         end)
@@ -75,7 +75,7 @@ CreateThread(function()
             JobData = QBCore.Functions.GetPlayerData().job or {}
             on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
             while not Authorised do Wait(100) end
-            TriggerServerEvent('cd_dispatch:PlayerLoaded')
+            TriggerServerEvent('onyx_dispatch:PlayerLoaded')
             UpdateDispatchVisibility()
         end)
 
@@ -84,11 +84,11 @@ CreateThread(function()
             local last_job = JobData.name
             JobData = JobInfo or {}
             if last_job ~= JobData.name then
-                TriggerServerEvent('cd_dispatch:JobSet', GetJob())
+                TriggerServerEvent('onyx_dispatch:JobSet', GetJob())
             end
             if Config.UseFrameworkDutySystem then
                 on_duty = JobData.onduty == true
-                TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
+                TriggerServerEvent('onyx_dispatch:OnDutyChecks', on_duty)
             end
             UpdateDispatchVisibility()
         end)
@@ -97,7 +97,7 @@ CreateThread(function()
         AddEventHandler(Config.FrameworkTriggers.duty, function(boolean)
             if type(boolean) ~= 'boolean' or on_duty == boolean or not Config.UseFrameworkDutySystem then return end
             on_duty = boolean
-            TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
+            TriggerServerEvent('onyx_dispatch:OnDutyChecks', on_duty)
             UpdateDispatchVisibility()
         end)
     
@@ -174,10 +174,10 @@ function CheckJob(job_table, job)
     return false
 end
 
-RegisterNetEvent('cd_dispatch:ScriptRestarted')
-AddEventHandler('cd_dispatch:ScriptRestarted', function()
+RegisterNetEvent('onyx_dispatch:ScriptRestarted')
+AddEventHandler('onyx_dispatch:ScriptRestarted', function()
     while not Authorised do Wait(0) end
-    TriggerServerEvent('cd_dispatch:PlayerLoaded')
+    TriggerServerEvent('onyx_dispatch:PlayerLoaded')
 end)
 
 
@@ -194,19 +194,19 @@ CreateThread(function()
     if Config.large_ui.ENABLE then
         RegisterKeyMapping(Config.large_ui.command, L('dispatchlarge_description'), 'keyboard', Config.large_ui.key)
         RegisterCommand(Config.large_ui.command, function()
-            TriggerEvent('cd_dispatch:KEY_largeui') --The event to open the large UI.
+            TriggerEvent('onyx_dispatch:KEY_largeui') --The event to open the large UI.
         end)
     end
     if Config.respond.ENABLE then
         RegisterKeyMapping(Config.respond.command, L('respond_description'), 'keyboard', Config.respond.key)
         RegisterCommand(Config.respond.command, function()
-            TriggerEvent('cd_dispatch:KEY_responding') --The event to toggle the responding.
+            TriggerEvent('onyx_dispatch:KEY_responding') --The event to toggle the responding.
         end)
     end
     if Config.move_mode.ENABLE then
         TriggerEvent('chat:addSuggestion', '/moverdispatch', L('movemode_description'))
         RegisterCommand(Config.move_mode.command, function()
-            TriggerEvent('cd_dispatch:EnableMoveMode') --The event to enable move mode.
+            TriggerEvent('onyx_dispatch:EnableMoveMode') --The event to enable move mode.
         end)
     end
     if Config.small_ui_left.ENABLE then
@@ -290,8 +290,8 @@ CreateThread(function()
     end
 end)
 
-RegisterNetEvent('cd_dispatch:DutyState')
-AddEventHandler('cd_dispatch:DutyState', function(duty)
+RegisterNetEvent('onyx_dispatch:DutyState')
+AddEventHandler('onyx_dispatch:DutyState', function(duty)
     if type(duty) ~= 'boolean' then return end
     on_duty = duty
     UpdateDispatchVisibility()
@@ -405,11 +405,11 @@ function TabletAnimation(boolean)
     end
 end
 
-RegisterNetEvent('cd_dispatch:OnDutyChecks')
-AddEventHandler('cd_dispatch:OnDutyChecks', function(boolean)
+RegisterNetEvent('onyx_dispatch:OnDutyChecks')
+AddEventHandler('onyx_dispatch:OnDutyChecks', function(boolean)
     if type(boolean) == 'boolean' and Config.UseFrameworkDutySystem and on_duty ~= boolean then
         on_duty = boolean
-        TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
+        TriggerServerEvent('onyx_dispatch:OnDutyChecks', on_duty)
         UpdateDispatchVisibility()
     end
 end)
@@ -444,7 +444,7 @@ if Config.Debug then
         print(string.format('^6On Duty:^0 %s', on_duty))
         print(string.format('^6Is Allowed:^0 %s', IsAllowed()))
         print('^6-----------------------^0')
-        TriggerServerEvent('cd_dispatch:Debug')
+        TriggerServerEvent('onyx_dispatch:Debug')
     end
 
     CreateThread(function()
@@ -460,7 +460,7 @@ end
 if Config.EnableTestCommand then
     RegisterCommand('dispatchtest', function() --THIS IS A TEST COMMAND.
         local data = exports['onyx_dispatch']:GetPlayerInfo()
-        TriggerServerEvent('cd_dispatch:AddNotification', {
+        TriggerServerEvent('onyx_dispatch:AddNotification', {
             job_table = {'police', 'sheriff', },
             coords = data.coords,
             title = '10-15 - Store Robbery',

@@ -1,7 +1,7 @@
 tablet_prop = nil
 
-RegisterNetEvent('cd_dispatch:ForceCloseLargeUI')
-AddEventHandler('cd_dispatch:ForceCloseLargeUI', function()
+RegisterNetEvent('onyx_dispatch:ForceCloseLargeUI')
+AddEventHandler('onyx_dispatch:ForceCloseLargeUI', function()
     NUI_status = false
     SetNuiFocus(false, false)
     SetNuiFocusKeepInput(false)
@@ -14,8 +14,8 @@ AddEventHandler('cd_dispatch:ForceCloseLargeUI', function()
     StopAnimTask(PlayerPedId(), 'amb@world_human_seat_wall_tablet@female@base', 'base', 8.0, -8.0, -1, 50, 0, false, false, false)
 end)
 
-RegisterNetEvent('cd_dispatch:ToggleNUIFocus')
-AddEventHandler('cd_dispatch:ToggleNUIFocus', function()
+RegisterNetEvent('onyx_dispatch:ToggleNUIFocus')
+AddEventHandler('onyx_dispatch:ToggleNUIFocus', function()
     NUI_status = true
     while NUI_status do
         Wait(5)
@@ -24,8 +24,8 @@ AddEventHandler('cd_dispatch:ToggleNUIFocus', function()
     SetNuiFocus(false, false)
 end)
 
-RegisterNetEvent('cd_dispatch:ToggleNUIFocus_2')
-AddEventHandler('cd_dispatch:ToggleNUIFocus_2', function()
+RegisterNetEvent('onyx_dispatch:ToggleNUIFocus_2')
+AddEventHandler('onyx_dispatch:ToggleNUIFocus_2', function()
     NUI_status = true
     while NUI_status do
         Wait(5)

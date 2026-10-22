@@ -1,7 +1,7 @@
 if Config.JobCallCommands.ENABLE then
 
-    RegisterServerEvent('cd_dispatch:CallCommand')
-    AddEventHandler('cd_dispatch:CallCommand', function(data, data_2)
+    RegisterServerEvent('onyx_dispatch:CallCommand')
+    AddEventHandler('onyx_dispatch:CallCommand', function(data, data_2)
         local _source = source
         local OnDuty = 0
         
@@ -18,7 +18,7 @@ if Config.JobCallCommands.ENABLE then
         if OnDuty > 0 then
             Notif(_source, 2, 'dispatch_callcommand', data_2.job_label, data_2.message)
             if data_2.anonymous then
-                TriggerClientEvent('cd_dispatch:AddNotification', -1, {
+                TriggerClientEvent('onyx_dispatch:AddNotification', -1, {
                     job_table = data_2.job_table,
                     coords = data.coords,
                     title = L('dispatch_call_reply_title'),
@@ -37,7 +37,7 @@ if Config.JobCallCommands.ENABLE then
                     }
                 })
             else
-                TriggerClientEvent('cd_dispatch:AddNotification', -1, {
+                TriggerClientEvent('onyx_dispatch:AddNotification', -1, {
                     job_table = data_2.job_table,
                     coords = data.coords,
                     title = L('dispatch_call_reply_title'),
@@ -63,8 +63,8 @@ if Config.JobCallCommands.ENABLE then
     end)
 
 
-    RegisterServerEvent('cd_dispatch:CallCommand:Reply')
-    AddEventHandler('cd_dispatch:CallCommand:Reply', function(data)
+    RegisterServerEvent('onyx_dispatch:CallCommand:Reply')
+    AddEventHandler('onyx_dispatch:CallCommand:Reply', function(data)
         local _source = source
         if GetPlayerName(data.target_id) then
             for c, d in pairs(self) do
