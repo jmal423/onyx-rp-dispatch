@@ -1,36 +1,80 @@
-# ONYX Dispatch
+<div align="center">
 
-Recurso de dispatch para FiveM, instalado como `onyx_dispatch` em `resources/[standalone]`.
+# ONYX DISPATCH
 
-## Estrutura
+### Centro de ocorrências e gestão de unidades para FiveM
 
-- `client/`: interface de jogo, unidades, alertas e comandos de chamada.
-- `server/`: estado partilhado, persistência e encaminhamento de alertas.
-- `configs/`: opções, eventos/framework e idiomas.
-- `html/`: interface NUI, mapas, ícones, bibliotecas e sons.
+Interface NUI, alertas policiais, códigos de rádio e localização de equipas — numa resource preparada para servidores Qbox.
 
-## Dependências
+<p>
+  <img alt="FiveM" src="https://img.shields.io/badge/FiveM-FXServer-00A86B?style=for-the-badge&logo=rockstargames&logoColor=white">
+  <img alt="Qbox" src="https://img.shields.io/badge/framework-Qbox-5B8DEF?style=for-the-badge">
+  <img alt="Lua 5.4" src="https://img.shields.io/badge/Lua-5.4-6E4C9A?style=for-the-badge&logo=lua&logoColor=white">
+  <img alt="Idioma" src="https://img.shields.io/badge/idioma-pt--PT-D62828?style=for-the-badge">
+</p>
 
-- `ox_lib`
-- `oxmysql`
-- assetpacks do recurso original
-- FXServer com build 4960 ou superior
+[Instalação manual](INSTALL.md) · [Instalação com IA](AI_INSTALL.md) · [Pendências e estado](PENDENCIAS.md)
 
-No `server.cfg`, iniciar `ox_lib` e `oxmysql` antes de `onyx_dispatch`.
+</div>
 
-Para instalar manualmente num servidor Qbox, segue [INSTALL.md](INSTALL.md). Para delegar a instalação a um agente de IA, começa pelo prompt e procedimento em [AI_INSTALL.md](AI_INSTALL.md).
+---
 
-## Base de dados
+## ✦ O que inclui
 
-`Config.AutoInsertSQL` está ativo por predefinição. O recurso cria a tabela `onyx_dispatch` para guardar os callsigns. No arranque, migra a tabela anterior automaticamente e preserva os callsigns existentes.
+| Área | Funcionalidade |
+|---|---|
+| **Central** | Painel de ocorrências, mapa de dispatch, estado e dados das unidades. |
+| **Unidades** | Chamadasigns, viatura atribuída, estado de serviço e resposta a ocorrências. |
+| **Mapa** | Marcadores de unidades no mapa do dispatch e blips no mapa/minimapa do GTA. |
+| **Alertas** | Alertas policiais configuráveis para disparos e radares de velocidade. |
+| **Rádio** | Atalhos para 10-20, 10-99 e pedido conjunto LSPD/Sheriff. |
+| **Acesso** | Acesso baseado no emprego e no estado de serviço do framework. |
+| **Interface** | NUI adaptável a diferentes resoluções, com posições guardadas no cliente. |
 
-## Compatibilidade
+### Atalhos predefinidos
 
-O nome da resource, dos exports e do namespace de eventos é `onyx_dispatch`. Recursos externos que ainda chamem os eventos antigos têm de atualizar as chamadas para o novo namespace.
+| Atalho | Ação |
+|---|---|
+| `Alt + 1` | Enviar 10-20 — localização da unidade |
+| `Alt + 2` | Enviar 10-99 — assistência à própria força |
+| `Alt + 3` | Enviar 10-99 conjunto — LSPD e Sheriff |
+| `K` | Abrir/fechar o mapa do dispatch |
+| `G` | Responder à ocorrência selecionada |
+| `←` / `→` | Ocorrência anterior / seguinte no painel pequeno |
 
-### Usar os exports
+Os mapeamentos podem ser alterados nas definições de teclas do FiveM. O painel pequeno aparece automaticamente para unidades autorizadas quando estão de serviço.
 
-As integrações devem apontar para o nome atual da resource:
+## ↗ Instalação rápida
+
+**Requisitos:** Qbox com camada de compatibilidade QB, `ox_lib`, `oxmysql`, FXServer build 4960+ e os asset packs licenciados exigidos pelo manifest.
+
+1. Coloca a pasta completa em `resources/[standalone]/onyx_dispatch`.
+2. Confirma os nomes dos recursos e dos empregos do teu servidor.
+3. Ajusta `configs/config.lua`, em especial `Config.AllowedJobs`, `Config.BlipData` e as permissões do modo operador.
+4. Inicia `oxmysql`, `ox_lib`, Qbox e a camada QB compatível antes da resource.
+5. Adiciona `ensure onyx_dispatch` ao `server.cfg`.
+6. Inicia a resource e confirma a ligação à base de dados e a persistência dos callsigns.
+
+> Para os passos completos, exemplos de configuração e checklist de validação, segue [INSTALL.md](INSTALL.md). Para delegar o processo a um agente, usa o prompt em [AI_INSTALL.md](AI_INSTALL.md).
+
+## ⚙️ Requisitos e configuração
+
+- **Framework alvo:** Qbox através da camada de compatibilidade QB chamada `qb-core` por predefinição. Se o teu servidor usar outro nome ou eventos, configura `Config.FrameworkTriggers.qbcore`.
+- **Base de dados:** `oxmysql`. Com `Config.AutoInsertSQL = true`, a resource cria a tabela `onyx_dispatch` e tenta preservar os callsigns numa migração existente.
+- **Empregos:** os valores incluídos (`police`, `sheriff`, `ambulance`) são exemplos. Usa os nomes exatos de `job.name` do teu servidor.
+- **Agrupamento:** `Config.AllowedJobs` define quem tem acesso e que unidades são agrupadas; cada `job_table` define os destinatários de uma chamada específica.
+- **Chamadas civis:** os comandos estão desativados por predefinição. Revê os destinatários antes de os ativares.
+- **Modo operador:** opcional. A alteração de canal de rádio suporta `pma-voice`, `mumble-voip` e Toko; outros VOIP precisam de uma integração própria.
+
+## ◉ Alertas: incluído e por integrar
+
+**Incluído:** alertas policiais configuráveis para disparos e radares, com filtros de empregos, armas, zonas e cooldown. Os códigos 10-20 e 10-99 são enviados manualmente pelos atalhos de rádio.
+
+**Ainda requer integração com outros recursos:** assaltos, pessoas armadas, explosões e incêndios. A resource não deteta automaticamente esses eventos por defeito. O estado atual está em [PENDENCIAS.md](PENDENCIAS.md).
+
+## ⌘ Exports
+
+Os exports client e server usam o nome da resource `onyx_dispatch`:
 
 ```lua
 -- Client
@@ -42,18 +86,24 @@ local dispatchPlayers = exports['onyx_dispatch']:GetPlayersDispatchData(source)
 local dispatchConfig = exports['onyx_dispatch']:GetConfig()
 ```
 
-Todos os exports, eventos, chaves de locale e a tabela dos callsigns usam `onyx_dispatch`.
+Os eventos públicos também usam o namespace `onyx_dispatch`. Atualiza integrações externas para os nomes atuais antes de substituir uma instalação existente.
 
-## Alertas de ocorrências
+## 🗂 Estrutura
 
-- O alerta automático 10-13 deteta disparos não silenciados e respeita a whitelist de armas, empregos, zonas e cooldown configurados.
-- 10-20 e 10-99 são códigos de rádio manuais; não representam deteção automática de assaltos ou outras ocorrências.
-- Alertas automáticos 10-90, 10-72, explosões e incêndios ainda não estão integrados. Os recursos Qbox de assalto atualmente encaminham os seus alertas para `qbx_police`, sem os enviar para o painel Onyx.
-- O levantamento, limites e próximos passos estão em [PENDENCIAS.md](PENDENCIAS.md).
+```text
+onyx_dispatch/
+├── client/       # Interface de jogo, unidades e alertas
+├── configs/      # Configuração do framework, empregos, teclas e idiomas
+├── html/         # Interface NUI, mapas, imagens, bibliotecas e sons
+├── server/       # Ocorrências, unidades, alertas e persistência
+├── AI_INSTALL.md # Procedimento e prompt para instalação assistida por IA
+├── INSTALL.md    # Guia de instalação Qbox
+└── fxmanifest.lua
+```
 
-## Segurança e manutenção
+## ⚠️ Notas de distribuição
 
-- Não guardar credenciais, ficheiros de configuração do servidor, logs ou cache neste repositório.
-- As chamadas entre NUI e Lua usam o nome do recurso fornecido pelo FiveM; não dependem de um URL externo.
-- Antes de adicionar integrações externas, validar o destino e os dados no servidor.
-- Manter ficheiros de bibliotecas e assets originais enquanto forem referenciados pela interface ou pelo código.
+- Mantém os assets e bibliotecas referenciados pela NUI; não distribuas uma cópia incompleta.
+- Inclui apenas asset packs que tens autorização para redistribuir.
+- Não guardes neste repositório credenciais, ficheiros `secrets`, logs ou dados da base de dados.
+- A instalação deve ser validada no servidor de destino. Uma revisão do código ou do manifest não substitui o teste dentro do FiveM.
