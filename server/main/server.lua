@@ -466,11 +466,6 @@ AddEventHandler("cd_dispatch:SaveUserSettings", function(settings)
         end
     end
     
-    if settings.vehicle and settings.vehicle ~= self[playerId].vehicle then
-        self[playerId].vehicle = settings.vehicle
-        PlayerBlipsActions(playerId, "update")
-    end
-    
     local allowedJobs = CheckMultiJobs(self[playerId].job)
     if ValidateType(allowedJobs, "table") then
         for _, playerData in pairs(self) do
@@ -495,6 +490,46 @@ AddEventHandler("cd_dispatch:SaveUserSettings", function(settings)
     else
         ShowError("7841")
     end
+end)
+
+local automaticVehicleTypes = {
+    foot = true,
+    car = true,
+    motorcycle = true,
+    helicopter = true,
+    boat = true,
+}
+
+RegisterServerEvent('onyx_dispatch:SetAutomaticVehicle')
+AddEventHandler('onyx_dispatch:SetAutomaticVehicle', function(vehicleType)
+    local playerId = source
+    local playerData = self and self[playerId]
+
+    if not playerData or not playerData.on_duty then return end
+    if Config.PauseMenuBlips.blip_type ~= 'auto' or not automaticVehicleTypes[vehicleType] then return end
+    if playerData.vehicle == vehicleType then return end
+
+    playerData.vehicle = vehicleType
+    PlayerBlipsActions(playerId, 'update')
+
+    local allowedJobs = CheckMultiJobs(playerData.job)
+    if type(allowedJobs) == 'table' then
+        for targetId, targetData in pairs(self) do
+            for _, allowedJob in pairs(allowedJobs) do
+                if targetData.job == allowedJob and targetData.on_duty then
+                    TriggerClientEvent('cd_dispatch:SyncUserSettings', targetId, {
+                        source = playerId,
+                        status = playerData.status,
+                        callsign = playerData.callsign,
+                        vehicle = playerData.vehicle,
+                    })
+                    break
+                end
+            end
+        end
+    end
+
+    RefreshLargeUI(playerData.job)
 end)
 
 RegisterServerEvent("cd_dispatch:Dispatcher_AddCall")

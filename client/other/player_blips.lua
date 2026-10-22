@@ -165,15 +165,9 @@ if Config.PauseMenuBlips.ENABLE then
                     else
                         auto_vehicle_blip.current = 'foot'
                     end
-                    if auto_vehicle_blip.forced.current then
-                        if auto_vehicle_blip.forced.last == auto_vehicle_blip.current then
-                            auto_vehicle_blip.current = auto_vehicle_blip.forced.current
-                        else
-                            auto_vehicle_blip.forced = {}
-                        end
-                    end
                     if auto_vehicle_blip.current ~= auto_vehicle_blip.last then
-                        TriggerServerEvent('cd_dispatch:SaveUserSettings', {vehicle = auto_vehicle_blip.current})
+                        TriggerServerEvent('onyx_dispatch:SetAutomaticVehicle', auto_vehicle_blip.current)
+                        auto_vehicle_blip.last = auto_vehicle_blip.current
                     end
                 end
             end

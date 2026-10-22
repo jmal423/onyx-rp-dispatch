@@ -56,7 +56,6 @@ isDispatcher = false
 NUI_status = false
 SourceInfo = {}
 auto_vehicle_blip = {}
-auto_vehicle_blip.forced = {}
 function GetPlayerNotifications()
     return notifications
 end
@@ -554,7 +553,8 @@ AddEventHandler("cd_dispatch:SyncUserSettings", function(settings)
         action = "syncusersettings",
         values = settings
     })
-    if Config.PauseMenuBlips.blip_type == "auto" then
+    if Config.PauseMenuBlips.blip_type == "auto"
+        and settings.source == GetPlayerServerId(PlayerId()) then
         auto_vehicle_blip.last = settings.vehicle
     end
 end)
@@ -787,16 +787,8 @@ RegisterNUICallback("moveend_smallui", function()
 end)
 RegisterNUICallback("usersettings", function(settings)
     if T(settings, "table") then
+        settings.vehicle = nil
         TriggerServerEvent("cd_dispatch:SaveUserSettings", settings)
-        if Config.PauseMenuBlips.blip_type ~= "auto" then
-            return
-        end
-        if auto_vehicle_blip.forced.last ~= nil then
-            if auto_vehicle_blip.forced.last then
-                auto_vehicle_blip.last = auto_vehicle_blip.current
-            end
-        end
-        auto_vehicle_blip.forced.current = settings.vehicle
     else
         E("6123")
     end
