@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="docs/brand/onyx-server-logo.png" alt="Logótipo ONYX RP" width="280">
+
 # ONYX DISPATCH
 
 ### Centro de ocorrências e gestão de unidades para FiveM
