@@ -34,6 +34,13 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - **Validação confirmada:** barra de controlos do mapa sem sobrepor os cabeçalhos laterais em 800×600.
 - **Validação pendente:** alterar entre 720p e 4K; abrir/fechar ESC e ox_inventory em 800×600 e confirmar que o toast regressa à mesma posição; confirmar que a NUI continua correta com o mapa grande aberto.
 
+### Tamanho dos ícones no mapa do dispatch em resoluções pequenas
+
+- **Estado:** por ajustar.
+- **Problema:** os ícones/blips desenhados no mapa do dispatch ficam demasiado grandes em resoluções pequenas.
+- **Âmbito:** ajustar apenas os marcadores do mapa NUI do dispatch, com escala responsiva. Não alterar os blips do mapa/minimapa do GTA.
+- **Validação:** comparar 800×600, 720p e 4K; garantir que os ícones ficam legíveis sem tapar o mapa nem mudar de tamanho de forma excessiva entre resoluções.
+
 ## Nome da resource e exports
 
 - **Estado:** renomeação concluída em 2026-10-22. A resource, os exports, os eventos, as chaves de locale e a tabela de callsigns usam `onyx_dispatch`.
