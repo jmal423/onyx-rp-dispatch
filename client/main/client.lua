@@ -237,7 +237,6 @@ RegisterNetEvent("cd_dispatch:SendSourceData")
 AddEventHandler("cd_dispatch:SendSourceData", function(sourceData, dispatcherState)
     if T(sourceData, "table") then
         if T(dispatcherState, "boolean") then
-            TriggerEvent('cd_dispatch:PlayerSyncComplete')
             -- The server rebuilds this payload after a resource restart. Keep the
             -- local job name in sync before checking access or showing the small UI;
             -- the framework's job event is not guaranteed to fire again on restart.
