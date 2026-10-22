@@ -71,13 +71,13 @@ html {
 #dispatchHeader.dispatch-alert-urgent::after {
   background-image: linear-gradient(
     110deg,
-    rgba(17, 73, 166, 0.24),
-    rgba(216, 37, 61, 0.72),
-    rgba(29, 87, 186, 0.42),
-    rgba(17, 73, 166, 0.24)
+    rgba(17, 73, 166, 0.12),
+    rgba(205, 42, 61, 0.48),
+    rgba(29, 87, 186, 0.22),
+    rgba(17, 73, 166, 0.12)
   );
-  animation: dispatch-alert-urgent-flow 1.35s ease-in-out infinite alternate,
-    dispatch-alert-urgent-breathe 0.95s ease-in-out infinite;
+  animation: dispatch-alert-urgent-flow 1.7s ease-in-out infinite alternate,
+    dispatch-alert-urgent-breathe 1.7s ease-in-out infinite;
 }
 
 #dispatchCallContent {
@@ -111,14 +111,62 @@ html {
 
 #dispatchCallContent.dispatch-alert-urgent::before {
   background-image: linear-gradient(
-    115deg,
-    rgba(255, 57, 67, 0.12),
-    rgba(255, 118, 36, 0.48),
-    rgba(235, 35, 78, 0.34),
-    rgba(255, 57, 67, 0.12)
+    110deg,
+    rgba(20, 68, 137, 0.1),
+    rgba(162, 38, 55, 0.25),
+    rgba(29, 81, 159, 0.18),
+    rgba(20, 68, 137, 0.1)
   );
-  animation: dispatch-alert-urgent-flow 1.35s ease-in-out infinite alternate,
-    dispatch-alert-urgent-breathe 0.95s ease-in-out infinite;
+  animation: dispatch-alert-urgent-flow 1.7s ease-in-out infinite alternate,
+    dispatch-alert-urgent-breathe 1.7s ease-in-out infinite;
+}
+
+#commands {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+#commands::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  opacity: 0;
+  background-size: 240% 240%;
+  background-position: 0% 50%;
+  pointer-events: none;
+}
+
+#commands.dispatch-alert-normal::before {
+  background-image: linear-gradient(
+    115deg,
+    rgba(32, 181, 163, 0.1),
+    rgba(42, 144, 218, 0.34),
+    rgba(126, 96, 220, 0.2),
+    rgba(32, 181, 163, 0.1)
+  );
+  animation: dispatch-alert-normal-flow 7s ease-in-out infinite alternate,
+    dispatch-alert-normal-breathe 3.2s ease-in-out infinite;
+}
+
+#commands.dispatch-alert-urgent::before {
+  background-image: linear-gradient(
+    110deg,
+    rgba(20, 68, 137, 0.12),
+    rgba(162, 38, 55, 0.28),
+    rgba(29, 81, 159, 0.2),
+    rgba(20, 68, 137, 0.12)
+  );
+  animation: dispatch-alert-urgent-flow 1.7s ease-in-out infinite alternate,
+    dispatch-alert-urgent-breathe 1.7s ease-in-out infinite;
+}
+
+#commands.dispatch-alert-normal #buttonGroup > button,
+#commands.dispatch-alert-urgent #buttonGroup > button {
+  position: relative;
+  z-index: 1;
+  background-color: transparent !important;
 }
 
 @keyframes dispatch-alert-normal-flow {
@@ -127,8 +175,8 @@ html {
 }
 
 @keyframes dispatch-alert-urgent-flow {
-  from { background-position: 0% 50%; filter: brightness(0.85); }
-  to { background-position: 100% 50%; filter: brightness(1.45); }
+  from { background-position: 0% 50%; filter: brightness(0.95); }
+  to { background-position: 100% 50%; filter: brightness(1.1); }
 }
 
 @keyframes dispatch-alert-normal-breathe {
@@ -137,8 +185,8 @@ html {
 }
 
 @keyframes dispatch-alert-urgent-breathe {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 0.96; }
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.66; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -150,10 +198,17 @@ html {
   }
 
   #dispatchCallContent.dispatch-alert-normal::before,
-  #dispatchCallContent.dispatch-alert-urgent::before {
+  #dispatchCallContent.dispatch-alert-urgent::before,
+  #commands.dispatch-alert-normal::before,
+  #commands.dispatch-alert-urgent::before {
     animation: none;
     opacity: 0.35;
     background-position: 50% 50%;
+  }
+
+  #commands.dispatch-alert-normal #buttonGroup > button,
+  #commands.dispatch-alert-urgent #buttonGroup > button {
+    background-color: #343a40 !important;
   }
 }
 .toast-distance {
