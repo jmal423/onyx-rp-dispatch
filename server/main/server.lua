@@ -325,12 +325,111 @@ function PlayerBlipsActions(playerId, action)
     end
 end
 
+local trackedDispatchCalls = {}
+local trackedCallLifetime = 3600
+
+local function TrackDispatchCall(uniqueId, coords, jobs)
+    if type(uniqueId) ~= 'string' or uniqueId == '' or type(coords) ~= 'vector3' or type(jobs) ~= 'table' then return end
+
+    local allowedJobs = {}
+    for _, job in ipairs(jobs) do
+        if type(job) == 'string' then allowedJobs[job] = true end
+    end
+    if not next(allowedJobs) then return end
+
+    trackedDispatchCalls[uniqueId] = {
+        coords = coords,
+        jobs = allowedJobs,
+        responders = {},
+        expires = os.time() + trackedCallLifetime,
+    }
+end
+
+local function IsTrackedCallRecipient(playerData, call)
+    return playerData and playerData.on_duty and call.jobs[playerData.job] == true
+end
+
+local function SendRespondersSnapshot(uniqueId, call)
+    local responders = {}
+    for playerId in pairs(call.responders) do
+        local unit = self and self[playerId]
+        local ped = GetPlayerPed(playerId)
+        if unit and ped and ped ~= 0 and DoesEntityExist(ped) then
+            local distance = #(call.coords - GetEntityCoords(ped))
+            responders[#responders + 1] = {
+                source = playerId,
+                callsign = unit.callsign or L('unknown'),
+                name = unit.char_name or L('unknown'),
+                distance = math.floor(distance + 0.5),
+            }
+        else
+            call.responders[playerId] = nil
+        end
+    end
+    table.sort(responders, function(first, second)
+        if first.distance == second.distance then
+            return first.callsign < second.callsign
+        end
+        return first.distance < second.distance
+    end)
+
+    for playerId, playerData in pairs(self or {}) do
+        if IsTrackedCallRecipient(playerData, call) then
+            TriggerClientEvent('cd_dispatch:RespondersSnapshot', playerId, uniqueId, responders)
+        end
+    end
+end
+
 RegisterServerEvent("cd_dispatch:PlayerResponding")
 AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
-    for _, playerData in pairs(self) do
-        for _, allowedJob in pairs(responseData.job_table) do
-            if playerData.job == allowedJob then
-                TriggerClientEvent("cd_dispatch:PlayerResponding", playerData.source, responseData)
+    local playerId = source
+    if type(responseData) ~= 'table' or type(responseData.unique_id) ~= 'string' then return end
+
+    local call = trackedDispatchCalls[responseData.unique_id]
+    local unit = self and self[playerId]
+    if not call or call.expires <= os.time() or not unit then return end
+
+    local action = responseData.action
+    if action ~= 'add' and action ~= 'remove' then return end
+    if action == 'add' then
+        if not IsTrackedCallRecipient(unit, call) or call.responders[playerId] then return end
+        call.responders[playerId] = true
+    else
+        if not call.responders[playerId] then return end
+        call.responders[playerId] = nil
+    end
+
+    local responderCount = 0
+    for _ in pairs(call.responders) do responderCount = responderCount + 1 end
+    local authoritativeResponse = {
+        unique_id = responseData.unique_id,
+        action = action,
+        responding = action == 'add' and responderCount - 1 or responderCount + 1,
+        char_info = {
+            source = playerId,
+            callsign = unit.callsign or L('unknown'),
+            char_name = unit.char_name or L('unknown'),
+        },
+    }
+
+    for targetId, targetData in pairs(self or {}) do
+        if IsTrackedCallRecipient(targetData, call) then
+            TriggerClientEvent('cd_dispatch:PlayerResponding', targetId, authoritativeResponse)
+        end
+    end
+    SendRespondersSnapshot(responseData.unique_id, call)
+end)
+
+CreateThread(function()
+    while true do
+        local interval = Config.UpdateDistanceUI and Config.UpdateDistanceUI.timer or 3
+        Wait(math.max(1, tonumber(interval) or 3) * 1000)
+        local now = os.time()
+        for uniqueId, call in pairs(trackedDispatchCalls) do
+            if call.expires <= now then
+                trackedDispatchCalls[uniqueId] = nil
+            elseif next(call.responders) then
+                SendRespondersSnapshot(uniqueId, call)
             end
         end
     end
@@ -401,6 +500,8 @@ AddEventHandler("cd_dispatch:Dispatcher_AddCall", function(callData)
         ShowError("9002 - CheckMultiJobs returned nil for job: " .. tostring(callData.job))
         return
     end
+
+    TrackDispatchCall(callData.unique_id, callData.coords, allowedJobs)
 
     local sentCount = 0
     for playerId, playerData in pairs(self) do
@@ -516,6 +617,8 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         },
     }
 
+    TrackDispatchCall(notification.unique_id, coords, targetJobs)
+
     for playerId, playerData in pairs(self) do
         if playerData.on_duty then
             for _, targetJob in ipairs(targetJobs) do
@@ -529,7 +632,34 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
 end)
 
 AddEventHandler('playerDropped', function()
-    radioCodeCooldowns[source] = nil
+    local playerId = source
+    radioCodeCooldowns[playerId] = nil
+
+    for uniqueId, call in pairs(trackedDispatchCalls) do
+        if call.responders[playerId] then
+            call.responders[playerId] = nil
+            local responderCount = 0
+            for _ in pairs(call.responders) do responderCount = responderCount + 1 end
+
+            local unit = self and self[playerId]
+            local removal = {
+                unique_id = uniqueId,
+                action = 'remove',
+                responding = responderCount + 1,
+                char_info = {
+                    source = playerId,
+                    callsign = unit and unit.callsign or '',
+                    char_name = unit and unit.char_name or '',
+                },
+            }
+            for targetId, targetData in pairs(self or {}) do
+                if IsTrackedCallRecipient(targetData, call) then
+                    TriggerClientEvent('cd_dispatch:PlayerResponding', targetId, removal)
+                end
+            end
+            SendRespondersSnapshot(uniqueId, call)
+        end
+    end
 end)
 
 RegisterServerEvent("cd_dispatch:DispatcherToggle")

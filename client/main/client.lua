@@ -506,6 +506,20 @@ AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
         E("0231")
     end
 end)
+RegisterNetEvent('cd_dispatch:RespondersSnapshot')
+AddEventHandler('cd_dispatch:RespondersSnapshot', function(uniqueId, responders)
+    if type(uniqueId) ~= 'string' or type(responders) ~= 'table' or not notifications then return end
+
+    local notificationIndex = FindUniqueID(uniqueId)
+    if notificationIndex then
+        SendNUIMessage({
+            action = 'responders_snapshot',
+            unique_id = uniqueId,
+            count = notificationIndex,
+            responders = responders,
+        })
+    end
+end)
 RegisterNetEvent("cd_dispatch:StopSpammings")
 AddEventHandler("cd_dispatch:StopSpammings", function()
     Wait(500)
@@ -549,12 +563,10 @@ function Responding(notificationIndex, action)
         if T(action, "string") then
             if notifications then
                 if notifications[notificationIndex] then
-                    local responseData = {}
-                    responseData.action = action
-                    responseData.job_table = notifications[notificationIndex].job_table
-                    responseData.responding = notifications[notificationIndex].responding
-                    responseData.unique_id = notifications[notificationIndex].unique_id
-                    responseData.char_info = SourceInfo
+                    local responseData = {
+                        action = action,
+                        unique_id = notifications[notificationIndex].unique_id,
+                    }
                     if action == "add" then
                         notifications[notificationIndex].responding_state = true
                         SetNewWaypoint(notifications[notificationIndex].coords.x, notifications[notificationIndex].coords.y)
