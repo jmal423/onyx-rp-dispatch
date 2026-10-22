@@ -482,6 +482,11 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
     street = EscapeRadioCodeText(street, 100)
     if street == '' then street = L('unknown') end
 
+    local callsign = EscapeRadioCodeText(unit.callsign or L('unknown'), 32)
+    if callsign:sub(1, 1) == '[' and callsign:sub(-1) == ']' then
+        callsign = callsign:sub(2, -2)
+    end
+
     radioCodeSequence = radioCodeSequence + 1
     local notification = {
         job_table = targetJobs,
@@ -489,7 +494,7 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         title = L(titleKey),
         message = L(
             messageKey,
-            EscapeRadioCodeText(unit.callsign or L('unknown'), 32),
+            callsign,
             EscapeRadioCodeText(unit.char_name or L('unknown'), 64),
             street
         ),
