@@ -236,6 +236,13 @@ RegisterNetEvent("cd_dispatch:SendSourceData")
 AddEventHandler("cd_dispatch:SendSourceData", function(sourceData, dispatcherState)
     if T(sourceData, "table") then
         if T(dispatcherState, "boolean") then
+            -- The server rebuilds this payload after a resource restart. Keep the
+            -- local job name in sync before checking access or showing the small UI;
+            -- the framework's job event is not guaranteed to fire again on restart.
+            if type(sourceData.job) == "string" then
+                JobData = JobData or {}
+                JobData.name = sourceData.job
+            end
             if Config.UseFrameworkDutySystem and type(sourceData.on_duty) == "boolean" then
                 on_duty = sourceData.on_duty
             end
