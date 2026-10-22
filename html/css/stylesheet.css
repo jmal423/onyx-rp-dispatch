@@ -372,6 +372,26 @@ html {
   overflow: auto;
 
 }
+#dispatchGroup:empty {
+  display: flex;
+  min-height: clamp(12rem, 30vh, 26rem);
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  overflow: hidden;
+  background-color: rgba(33, 37, 41, 0.72);
+  text-align: center;
+}
+
+#dispatchGroup:empty::before {
+  content: "Sem ocorrências ativas\AOs novos alertas da central aparecem aqui.";
+  color: #f8f9fa;
+  font-size: clamp(1rem, 1.15vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
 #dispatchGroup:first-child {
   border-top-left-radius: 0px !important;
   border-top-right-radius: 0px !important;
