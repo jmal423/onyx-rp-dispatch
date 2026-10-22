@@ -13,6 +13,17 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - **Limitação atual:** `Config.AllowedJobs` usa um único grupo partilhado (`police`, `ambulance`, `sheriff`), pelo que não exprime a visibilidade distinta da lista pretendida. As permissões do dispatcher também não estão separadas por força de forma segura. É necessário separar destinatários de chamadas, visibilidade de unidades e permissões administrativas, validando tudo no servidor.
 - **Próximo passo:** encaminhar chamadas médicas apenas para EMS; depois configurar e testar um chefe de dispatch por job/grade. O servidor de teste usa o job `sheriff`; confirmar `bcso` ao preparar o servidor principal.
 
+### Atalhos de rádio planeados
+
+- **Estado:** esquema confirmado pelo utilizador em 2026-10-22; implementação por fazer.
+- `Alt+1`: 10-20 — comunicar localização da unidade.
+- `Alt+2`: pedido de ajuda à própria força.
+- `Alt+3`: 10-99 urgente — pedir apoio à própria força.
+- `Alt+4`: 10-99 urgente — pedir apoio conjunto LSPD e Sheriff.
+- `Alt+5`: pedido de ajuda aos EMS, disponível para a polícia; encaminhar apenas para EMS, sem enviar chamados policiais para EMS.
+- Os dois atalhos 10-99 são urgentes. Ao implementar, confirmar que as binds configuráveis apresentadas na interface correspondem às teclas efetivamente configuradas e que os destinatários respeitam as regras por força acima.
+- O nome/código apresentado para os pedidos de ajuda de `Alt+2` e `Alt+5` ainda precisa de ser definido antes da implementação.
+
 ### Filtros da lista lateral — implementação inicial
 
 - **Estado:** implementado em 2026-10-22; falta teste no FiveM.
