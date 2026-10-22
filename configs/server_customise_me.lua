@@ -151,7 +151,7 @@ end)
 function GetCharacterInfo(source)
     local identifier = GetIdentifier(source)
     local data = {}
-    data.char_name, data.callsign = L('unknown'), L('unknown')
+    data.char_name, data.callsign = L('unknown'), ''
 
     if Config.Framework == 'esx' then 
         local xPlayer = ESX.GetPlayerFromId(source)

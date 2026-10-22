@@ -303,11 +303,18 @@ function PlayerBlipsActions(playerId, action)
                 pauseMenuBlips[playerId].radio_channel = self[playerId].radio_channel or 0
             end
             
-            local callsign = self[playerId].callsign or L('unknown')
-            if type(callsign) == 'string' and callsign:sub(1, 1) == '[' and callsign:sub(-1) == ']' then
-                callsign = callsign:sub(2, -2)
+            local callsign = self[playerId].callsign
+            if type(callsign) == 'string' then
+                callsign = callsign:match('^%s*(.-)%s*$')
+                if callsign:sub(1, 1) == '[' and callsign:sub(-1) == ']' then
+                    callsign = callsign:sub(2, -2)
+                end
             end
-            pauseMenuBlips[playerId].name = L("playerblip", callsign, self[playerId].char_name)
+            if callsign and callsign ~= '' and callsign ~= L('unknown') then
+                pauseMenuBlips[playerId].name = L("playerblip", callsign, self[playerId].char_name)
+            else
+                pauseMenuBlips[playerId].name = self[playerId].char_name or L('unknown')
+            end
             pauseMenuBlips[playerId].job = self[playerId].job
             pauseMenuBlips[playerId].job_table = allowedJobs
             pauseMenuBlips[playerId].source = playerId
@@ -358,7 +365,7 @@ local function SendRespondersSnapshot(uniqueId, call)
             local distance = #(call.coords - GetEntityCoords(ped))
             responders[#responders + 1] = {
                 source = playerId,
-                callsign = unit.callsign or L('unknown'),
+                callsign = unit.callsign or '',
                 name = unit.char_name or L('unknown'),
                 distance = math.floor(distance + 0.5),
             }
@@ -407,7 +414,7 @@ AddEventHandler("cd_dispatch:PlayerResponding", function(responseData)
         responding = action == 'add' and responderCount - 1 or responderCount + 1,
         char_info = {
             source = playerId,
-            callsign = unit.callsign or L('unknown'),
+            callsign = unit.callsign or '',
             char_name = unit.char_name or L('unknown'),
         },
     }
@@ -590,10 +597,11 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
     street = EscapeRadioCodeText(street, 100)
     if street == '' then street = L('unknown') end
 
-    local callsign = EscapeRadioCodeText(unit.callsign or L('unknown'), 32)
+    local callsign = EscapeRadioCodeText(unit.callsign or '', 32):match('^%s*(.-)%s*$')
     if callsign:sub(1, 1) == '[' and callsign:sub(-1) == ']' then
         callsign = callsign:sub(2, -2)
     end
+    local callsignPrefix = callsign ~= '' and callsign ~= L('unknown') and ('[' .. callsign .. '] ') or ''
 
     radioCodeSequence = radioCodeSequence + 1
     local notification = {
@@ -602,7 +610,7 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         title = L(titleKey),
         message = L(
             messageKey,
-            callsign,
+            callsignPrefix,
             EscapeRadioCodeText(unit.char_name or L('unknown'), 64),
             street
         ),
