@@ -54,6 +54,7 @@ isRespondingOnCooldown = false
 uiStates = {}
 isDispatcher = false
 NUI_status = false
+local smallUiSuppressedByMenu = false
 SourceInfo = {}
 auto_vehicle_blip = {}
 function GetPlayerNotifications()
@@ -611,7 +612,7 @@ end
 function ShowSmallUI()
     uiStates.small = true
     SendNUIMessage({
-        action = GetNUIState(uiStates.small)
+        action = GetNUIState(uiStates.small and not smallUiSuppressedByMenu)
     })
 end
 function HideSmallUI()
@@ -620,6 +621,29 @@ function HideSmallUI()
         action = GetNUIState(uiStates.small)
     })
 end
+
+CreateThread(function()
+    while true do
+        local playerState = LocalPlayer and LocalPlayer.state
+        local inventoryOpen = playerState and (
+            playerState.invOpen == true or
+            playerState.invBusy == true or
+            playerState.inv_busy == true
+        )
+        local menuOpen = IsPauseMenuActive() or inventoryOpen
+        local shouldSuppress = uiStates.small == true and uiStates.large ~= true and menuOpen
+
+        if shouldSuppress ~= smallUiSuppressedByMenu then
+            smallUiSuppressedByMenu = shouldSuppress
+            if uiStates.small == true and uiStates.large ~= true then
+                SendNUIMessage({ action = GetNUIState(not shouldSuppress) })
+            end
+        end
+
+        Wait(200)
+    end
+end)
+
 function GetTime()
     local hour = GetClockHours()
     if hour > 6 and hour < 22 then
@@ -794,6 +818,19 @@ RegisterNUICallback("getglobalcoords", function(data)
 end)
 RegisterNUICallback("moveend_smallui", function()
     NUI_status = false
+end)
+RegisterNUICallback('dispatchViewportChanged', function(_, cb)
+    uiStates = uiStates or {}
+
+    if not uiStates.large then
+        if Checks('is_allowed') then
+            ShowSmallUI()
+        else
+            HideSmallUI()
+        end
+    end
+
+    if cb then cb({}) end
 end)
 RegisterNUICallback('dispatchKeybindsReady', function(_, cb)
     if GetDispatchKeybindLabels then

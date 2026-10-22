@@ -20,7 +20,8 @@ body {
 }
 
 html {
-  font-size: clamp(14px, calc(0.5vw + 0.4vh), 32px);
+  /* Keep controls compact at 720p while allowing the UI to grow on 4K. */
+  font-size: clamp(12px, calc(0.5vw + 0.4vh), 32px);
 }
 #buttonGroup > button {
   border-top-left-radius: 0;
@@ -219,9 +220,8 @@ html {
   overflow: hidden !important;
   left: 1px;
   top: 50%;
-  transform: translateY(calc(-50% - 0.5px)) !important;
-  -webkit-transform: translateZ(0) !important;
-  transform: translateZ(0) !important;
+  -webkit-transform: translate3d(0, -50%, 0) !important;
+  transform: translate3d(0, -50%, 0) !important;
 }
 .jumbotron {
   z-index: -1 !important;
@@ -415,6 +415,42 @@ html {
 }
 
 /* Unit list*/
+#onyxUnitFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(33, 37, 41, 0.88);
+}
+
+.onyx-unit-filter-button {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
+  padding: 0.3rem 0.65rem;
+  color: #dee2e6;
+  background: #343a40;
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.onyx-unit-filter-button[aria-pressed="true"] {
+  border-color: #4dabf7;
+  color: #fff;
+  background: #1769aa;
+}
+
+.onyx-unit-filter-button:focus-visible {
+  outline: 2px solid #91cfff;
+  outline-offset: 2px;
+}
+
+.onyx-unit-filter-hidden,
+.onyx-unit-group-filter-hidden {
+  display: none !important;
+}
+
 .unit-group{
   width:100%;
   
@@ -586,7 +622,7 @@ border: 0;
 }
 
 #settingsModal .modal-dialog {
-  width: min(72vw, 58rem);
+  width: min(92vw, 54rem);
   max-width: none;
   min-width: 0;
 }
@@ -611,7 +647,7 @@ border: 0;
 
 @media screen and (max-width: 1280px) {
   #toastContainer {
-    width: clamp(18rem, 26vw, 24rem);
+    width: clamp(16rem, 22vw, 20rem);
   }
 
   #dispatchLarge,
@@ -624,13 +660,13 @@ border: 0;
   }
 
   #settingsModal .modal-dialog {
-    width: calc(100vw - 2rem);
+    width: min(92vw, 54rem);
   }
 }
 
 @media screen and (max-height: 760px) {
   #toastContainer {
-    max-height: 72vh;
+    max-height: 68vh;
   }
 
   #dispatchGroup {
@@ -638,6 +674,23 @@ border: 0;
   }
 
   #settingsModal .modal-content {
-    max-height: calc(100vh - 2rem);
+    max-height: calc(100vh - 1.5rem);
+  }
+
+  #settingsModal .modal-header,
+  #settingsModal .modal-footer {
+    padding: 0.65rem 1rem;
+  }
+
+  #settingsModal .modal-body {
+    padding: 0.8rem 1rem;
+  }
+
+  #settingsModal .form-group {
+    margin-bottom: 0.7rem;
+  }
+
+  #settingsModal hr {
+    margin: 0.7rem 0;
   }
 }

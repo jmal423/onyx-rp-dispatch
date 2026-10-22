@@ -39,7 +39,7 @@ if Config.PauseMenuBlips.ENABLE then
 
                 SetBlipSprite(PlayerBlips[d.source].blip, d.blip_sprite)
                 SetBlipDisplay(PlayerBlips[d.source].blip, 4)
-                SetBlipScale(PlayerBlips[d.source].blip, 0.87)
+                SetBlipScale(PlayerBlips[d.source].blip, Config.PauseMenuBlips.unit_blip_scale or 1.0)
                 SetBlipColour(PlayerBlips[d.source].blip, d.blip_colour[1])
                 SetBlipFlashes(PlayerBlips[d.source].blip, false)
                 ShowHeadingIndicatorOnBlip(PlayerBlips[d.source].blip, true)
@@ -59,7 +59,7 @@ if Config.PauseMenuBlips.ENABLE then
                 else
                     SetBlipAsShortRange(PlayerBlips[d.source].blip, true)
                 end
-                if d.flashing_blip then
+                if Config.PauseMenuBlips.flashing_blips and d.flashing_blip then
                     TriggerEvent('cd_dispatch:PlayerBlips_flash', PlayerBlips[d.source])
                 end
             else

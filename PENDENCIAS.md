@@ -2,6 +2,36 @@
 
 Atualizar este ficheiro quando uma pendência for investigada, alterada, confirmada ou resolvida.
 
+## Acesso ao dispatch por força
+
+- **Estado:** regras de produto confirmadas em 2026-10-22; implementação por fazer.
+- **EMS (`ambulance`):** vê apenas as unidades EMS na lista e recebe apenas pedidos de ajuda médica. Não recebe assaltos, tiros/10-13 nem alertas de pessoas armadas.
+- **Polícia (`police`) e Sheriff (`sheriff`):** cada força vê a lista de unidades das três forças — LSPD, Sheriff e EMS — e recebe os alertas policiais e médicos relevantes.
+- **Chamadas médicas/revive:** são encaminhadas apenas para EMS. Polícia e Sheriff não recebem chamadas de revive; ver unidades EMS no mapa/lista não lhes dá acesso aos alertas médicos.
+- **Filtros da lista de unidades:** botões por força (LSPD, Sheriff e EMS) ocultam/mostram unidades apenas na lista lateral. Os blips no mapa não são afetados e continuam visíveis.
+- **Chefias:** cada força deve poder ter a sua própria chefia de dispatch, sem conceder automaticamente autoridade sobre as outras forças. A recomendação é configurar a permissão por job e grade Qbox, no servidor; os níveis concretos ainda não foram definidos.
+- **Limitação atual:** `Config.AllowedJobs` usa um único grupo partilhado (`police`, `ambulance`, `sheriff`), pelo que não exprime a visibilidade distinta da lista pretendida. As permissões do dispatcher também não estão separadas por força de forma segura. É necessário separar destinatários de chamadas, visibilidade de unidades e permissões administrativas, validando tudo no servidor.
+- **Próximo passo:** encaminhar chamadas médicas apenas para EMS; depois configurar e testar um chefe de dispatch por job/grade. O servidor de teste usa o job `sheriff`; confirmar `bcso` ao preparar o servidor principal.
+
+### Filtros da lista lateral — implementação inicial
+
+- **Estado:** implementado em 2026-10-22; falta teste no FiveM.
+- LSPD/Sheriff podem alternar a visibilidade de cada força na lista lateral. A escolha fica guardada no armazenamento local da NUI.
+- EMS vê só unidades EMS na lista e não recebe botões para revelar unidades policiais.
+- Os filtros são aplicados apenas às linhas da lista; não alteram os dados usados para desenhar os blips do mapa.
+- Foi acrescentado o job de cada unidade aos dados da interface para permitir a filtragem sem alterar a lógica de blips.
+- **Teste manual:** em serviço, abrir o mapa grande com um jogador LSPD, Sheriff e EMS online. Alternar cada botão e confirmar que só a lista lateral muda; fechar/abrir a NUI e confirmar que a preferência se mantém. Entrar como EMS e confirmar que só aparece a unidade EMS na lista, enquanto os blips continuam no mapa.
+
+## Redimensionamento da NUI e small invisível
+
+- **Estado:** correção implementada em 2026-10-22; falta teste no FiveM.
+- Ao mudar a resolução, a NUI espera 250 ms para estabilizar, volta a ajustar o mapa à janela e pede ao cliente Lua para reapresentar o small se o mapa grande estiver fechado e o jogador continuar autorizado/de serviço. A posição do small é guardada como proporção da área útil, para manter a colocação relativa entre resoluções e reinícios da NUI.
+- Corrigida a transformação CSS do `#toastContainer`, que estava a ser sobrescrita e podia deslocar o small verticalmente.
+- **Ajuste 720p:** reduzido o mínimo da escala global de 14 px para 12 px, a largura mínima do toast e a largura máxima das definições. Em ecrãs baixos, as margens e espaçamentos das definições também diminuem para evitar um modal desproporcional.
+- **Menus:** o small é temporariamente ocultado enquanto o Pause Menu ou inventário está aberto e reaparece ao fechar. A deteção usa `IsPauseMenuActive()` e os state bags `invOpen`, `invBusy` e `inv_busy`.
+- **Teste manual:** abrir o dispatch, alternar entre resoluções pequenas e 4K, confirmar que o small continua visível quando o mapa está fechado e que o mapa grande volta a mostrar a ilha inteira centrada. Confirmar também que redimensionar com o mapa grande aberto não o fecha nem mostra o small por cima.
+- **Teste manual dos menus:** abrir/fechar o Pause Menu e o inventário ox_inventory em serviço; confirmar que só o small desaparece e que reaparece no mesmo sítio ao fechar. Confirmar que o small continua oculto se o jogador sair de serviço enquanto um menu está aberto.
+
 ## Small não reaparece após reiniciar a resource
 
 - **Estado:** por resolver; investigação pausada por prioridade do utilizador.
@@ -12,3 +42,16 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - **Próxima investigação:** recolher logs temporários em cada etapa: autorização NUI, pedido `PlayerLoaded`, emprego/duty no servidor, `DutyState`, `SendSourceData`, resultado de `IsAllowed()` e mensagem `show_small`. Corrigir a etapa comprovadamente interrompida e testar no servidor após restart da resource.
 - **Ideia para investigar:** a notificação de arranque “O recurso ainda está a carregar. Tente novamente dentro de alguns segundos” pode indicar uma janela em que o small tenta abrir antes de a resource/NUI ou os dados do jogador estarem prontos. Na próxima investigação, identificar quem dispara essa notificação e comparar o seu momento com `PlayerLoaded`, estado de serviço e `show_small`; só depois decidir se é preciso sincronizar ou repetir a apresentação do small.
 - **Atualização (2026-10-22):** continua por resolver e não foi alterado nesta atualização dos códigos de rádio.
+
+## Alertas de ocorrências ingame: assaltos, pessoa armada, explosões e incêndios
+
+- **Estado:** por implementar; levantamento inicial concluído em 2026-10-22.
+- **Pedido:** adicionar alertas ingame para 10-90 (assalto), 10-72 (pessoa armada), explosões, incêndios e ocorrências semelhantes.
+- **Já existe no Onyx Dispatch:** 10-13 automático para disparos não silenciados, com whitelist global de armas/empregos e cooldown; 10-20 e pedidos 10-99 são códigos de rádio separados, não detetores de crimes.
+- **Assaltos Qbox:** `qbx_storerobbery`, `qbx_bankrobbery`, `qbx_jewelery`, `qbx_houserobbery` e `qbx_truckrobbery` têm pontos de servidor que validam o início/alarme do assalto. Os alertas encontrados são enviados para `police:server:policeAlert` ou para a interface policial Qbox; o Onyx Dispatch não os consome atualmente. Ligar aos eventos depois da validação, evitando eventos de tentativa inválida, duplicados e chamadas repetidas do mesmo alarme.
+- **10-72:** não criar alerta só porque alguém tem uma arma equipada; isso produziria falsos positivos. Falta fechar um critério de ocorrência, por exemplo apontar uma arma a outra pessoa em público, e validar a deteção no servidor antes de distribuir o alerta.
+- **Explosões:** não há detetor no Onyx Dispatch. A implementação deve usar eventos de explosão do servidor com tipos permitidos, cooldown e agregação de explosões próximas para evitar spam e ruído de explosões secundárias.
+- **Incêndios:** não há detetor global no Onyx Dispatch. Ligar aos recursos que iniciam incêndios; evitar polling global no cliente, que pode gerar alertas imprecisos. O Qbox Bank Robbery inicia fogo de thermite no cliente, pelo que esse fluxo pode ser integrado na origem.
+- **Destinatários:** aplicar a regra em “Acesso ao dispatch por força”: LSPD/Sheriff recebem alertas policiais; EMS não recebe assaltos, tiros ou pessoas armadas. Chamadas médicas/revive vão apenas para EMS.
+- **Próximo passo:** definir critério de 10-72 e destinatários por tipo de ocorrência; depois implementar adaptadores para assaltos e explosões/incêndios sem alterar os fluxos de pagamento ou validação dos recursos Qbox.
+- **Validação:** esta entrada documenta apenas inspeção estática do código. Nenhuma ocorrência nova foi implementada ou testada em jogo.

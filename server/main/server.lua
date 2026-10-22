@@ -81,6 +81,7 @@ function FormatPlayersForLargeUI(playersList)
         
         formattedData[#formattedData + 1] = {
             id = self[player.source].source,
+            job = self[player.source].job,
             name = self[player.source].char_name,
             callsign = self[player.source].callsign,
             channel = self[player.source].radio_channel,

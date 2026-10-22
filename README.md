@@ -26,6 +26,13 @@ No `server.cfg`, iniciar `ox_lib` e `oxmysql` antes de `onyx_dispatch`.
 
 O nome do recurso e os exports próprios são `onyx_dispatch`. Os eventos públicos continuam no namespace `cd_dispatch:` para não partir integrações já existentes.
 
+## Alertas de ocorrências
+
+- O alerta automático 10-13 deteta disparos não silenciados e respeita a whitelist de armas, empregos, zonas e cooldown configurados.
+- 10-20 e 10-99 são códigos de rádio manuais; não representam deteção automática de assaltos ou outras ocorrências.
+- Alertas automáticos 10-90, 10-72, explosões e incêndios ainda não estão integrados. Os recursos Qbox de assalto atualmente encaminham os seus alertas para `qbx_police`, sem os enviar para o painel Onyx.
+- O levantamento, limites e próximos passos estão em [PENDENCIAS.md](PENDENCIAS.md).
+
 ## Segurança e manutenção
 
 - Não guardar credenciais, ficheiros de configuração do servidor, logs ou cache neste repositório.

@@ -82,14 +82,15 @@ Config.PauseMenuBlips = {
     ENABLE = true, --Do you want to use the built in player blips (on the pause menu & mini-map)?
     data_update_timer = 1, --(in seconds) How many seconds should the blip data from the server side be sent to the client side to be updated?
     blip_type = 'auto', --Detect the assigned vehicle category automatically for each on-duty unit.
-    flashing_blips = true, --Do you want blips to flash when a player's vehicle has it's emergancy lights enabled?
+    flashing_blips = false, --As unidades não piscam no mapa quando ligam a sirene.
+    unit_blip_scale = 1.0, --Tamanho dos blips das unidades no mapa e minimapa do GTA.
     bundle_blips = false, --Do you want to bundle the blips together so they do not spam the pause menu legend?
     radiochannel_on_blips = true, --Do you want a players radio chanel to be displayed on blips?
     minimize_longdistance_blips = true, --Do you want long distance blips to be minimized(smaller size) on the mini-map instead of them being hidden?
     
     blip_sprites = { --These are the blip sprites (icons). More blips can be found here - https://docs.fivem.net/docs/game-references/blips.
-        ['static'] = 1,
-        ['foot'] = 1,
+        ['static'] = 57,
+        ['foot'] = 57,
         ['car'] = 56,
         ['motorcycle'] = 226,
         ['helicopter'] = 43,
@@ -102,7 +103,7 @@ Config.BlipData = { --You need to add all the jobs that will be able to use the 
     --pausemenu_blip_colour: The colour of the player blips on dispatch UI map. The 1st one is the default colour and the 2nd one is the flashing colour. More blip colours can be found here - https://docs.fivem.net/docs/game-references/blips.
 
     ['police'] =    {largeui_blip_colour = 'blue',      pausemenu_blip_colour = {3, 1}},
-    ['sheriff'] =   {largeui_blip_colour = 'orange',    pausemenu_blip_colour = {5, 1}},
+    ['sheriff'] =   {largeui_blip_colour = 'orange',    pausemenu_blip_colour = {9, 1}},
     ['ambulance'] = {largeui_blip_colour = 'red',       pausemenu_blip_colour = {1, 0}},
     ['mechanic'] =  {largeui_blip_colour = 'orange',    pausemenu_blip_colour = {17, 0}},
     --['CHANGE_ME'] = {largeui_blip_colour = 'blue', pausemenu_blip_colour = {3, 1}},
