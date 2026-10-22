@@ -24,7 +24,8 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - Os dois atalhos 10-99 são urgentes. As binds continuam configuráveis em `Config.RadioCodes` e nas definições de teclas do FiveM.
 - A lista original define 10-14 como “Transporte de ferido ao hospital”; não corresponde a pedir EMS e não deve ser reutilizado para `Alt+5`. O título de `Alt+5` ficou definido como “Pedido de assistência médica — Polícia”.
 - O servidor valida emprego e serviço e define os destinatários: códigos de força para a própria força; Alt+4 apenas para LSPD/Sheriff; Alt+5 apenas para polícia, enviado apenas a EMS.
-- **Teste manual:** em serviço, confirmar Alt+1 a Alt+4 com polícia/Sheriff e Alt+5 com polícia; validar que EMS recebe Alt+5 e que polícia/Sheriff não recebem esse pedido. Confirmar bloqueio fora de serviço, bloqueio de Alt+4 para EMS e cooldown.
+- A Polícia recebe confirmação quando o Alt+5 é enviado, aviso quando não há EMS de serviço e atualizações quando uma unidade EMS responde ou retira a resposta. O alerta médico continua visível apenas para EMS.
+- **Teste manual:** em serviço, confirmar Alt+1 a Alt+4 com polícia/Sheriff e Alt+5 com polícia; validar que o alerta acionável chega apenas aos EMS, enquanto a Polícia emissora recebe confirmação e atualização quando uma unidade responde/retira resposta. Confirmar aviso quando não há EMS de serviço, bloqueio fora de serviço, bloqueio de Alt+4 para EMS e cooldown.
 
 ### Filtros da lista lateral — implementação inicial
 

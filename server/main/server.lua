@@ -336,7 +336,13 @@ end
 local trackedDispatchCalls = {}
 local trackedCallLifetime = 3600
 
-local function TrackDispatchCall(uniqueId, coords, jobs)
+local function EscapeRadioCodeText(value, limit)
+    if type(value) ~= 'string' then value = tostring(value or '') end
+    value = value:gsub('[%c]', ' '):sub(1, limit)
+    return value:gsub('&', '&amp;'):gsub('<', '&lt;'):gsub('>', '&gt;')
+end
+
+local function TrackDispatchCall(uniqueId, coords, jobs, requester)
     if type(uniqueId) ~= 'string' or uniqueId == '' or type(coords) ~= 'vector3' or type(jobs) ~= 'table' then return end
 
     local allowedJobs = {}
@@ -349,6 +355,7 @@ local function TrackDispatchCall(uniqueId, coords, jobs)
         coords = coords,
         jobs = allowedJobs,
         responders = {},
+        requester = requester,
         expires = os.time() + trackedCallLifetime,
     }
 end
@@ -361,13 +368,14 @@ local function SendRespondersSnapshot(uniqueId, call)
     local responders = {}
     for playerId in pairs(call.responders) do
         local unit = self and self[playerId]
+        local responder = call.responders[playerId]
         local ped = GetPlayerPed(playerId)
-        if unit and ped and ped ~= 0 and DoesEntityExist(ped) then
+        if unit and responder and ped and ped ~= 0 and DoesEntityExist(ped) then
             local distance = #(call.coords - GetEntityCoords(ped))
             responders[#responders + 1] = {
                 source = playerId,
-                callsign = unit.callsign or '',
-                name = unit.char_name or L('unknown'),
+                callsign = responder.callsign,
+                name = responder.name,
                 distance = math.floor(distance + 0.5),
             }
         else
@@ -401,7 +409,10 @@ AddEventHandler("onyx_dispatch:PlayerResponding", function(responseData)
     if action ~= 'add' and action ~= 'remove' then return end
     if action == 'add' then
         if not IsTrackedCallRecipient(unit, call) or call.responders[playerId] then return end
-        call.responders[playerId] = true
+        call.responders[playerId] = {
+            callsign = unit.callsign or '',
+            name = unit.char_name or L('unknown'),
+        }
     else
         if not call.responders[playerId] then return end
         call.responders[playerId] = nil
@@ -419,6 +430,25 @@ AddEventHandler("onyx_dispatch:PlayerResponding", function(responseData)
             char_name = unit.char_name or L('unknown'),
         },
     }
+
+    if call.requester and call.requester ~= playerId and GetPlayerName(call.requester) then
+        local callsign = EscapeRadioCodeText(unit.callsign or '', 32):match('^%s*(.-)%s*$')
+        if callsign ~= '' and callsign ~= L('unknown') then
+            callsign = '[' .. callsign .. '] '
+        else
+            callsign = ''
+        end
+        local localeKey = action == 'add'
+            and 'radio_code_medical_responder_enroute'
+            or 'radio_code_medical_responder_withdrawn'
+        SendNotification(
+            call.requester,
+            2,
+            localeKey,
+            callsign,
+            EscapeRadioCodeText(unit.char_name or L('unknown'), 64)
+        )
+    end
 
     for targetId, targetData in pairs(self or {}) do
         if IsTrackedCallRecipient(targetData, call) then
@@ -569,12 +599,6 @@ local radioCodeJobs = {
     ambulance = true,
 }
 
-local function EscapeRadioCodeText(value, limit)
-    if type(value) ~= 'string' then value = tostring(value or '') end
-    value = value:gsub('[%c]', ' '):sub(1, limit)
-    return value:gsub('&', '&amp;'):gsub('<', '&lt;'):gsub('>', '&gt;')
-end
-
 RegisterNetEvent('onyx_dispatch:SendRadioCode')
 AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
     local sourceId = source
@@ -679,16 +703,27 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         },
     }
 
-    TrackDispatchCall(notification.unique_id, coords, targetJobs)
+    local medicalRequester = code == 'medical-assistance-police' and sourceId or nil
+    TrackDispatchCall(notification.unique_id, coords, targetJobs, medicalRequester)
 
+    local recipientCount = 0
     for playerId, playerData in pairs(self) do
         if playerData.on_duty then
             for _, targetJob in ipairs(targetJobs) do
                 if playerData.job == targetJob then
+                    recipientCount = recipientCount + 1
                     TriggerClientEvent('onyx_dispatch:AddNotification', playerId, notification, true)
                     break
                 end
             end
+        end
+    end
+
+    if medicalRequester then
+        if recipientCount > 0 then
+            SendNotification(sourceId, 2, 'radio_code_medical_request_sent')
+        else
+            SendNotification(sourceId, 3, 'radio_code_medical_no_ems')
         end
     end
 end)
@@ -698,7 +733,12 @@ AddEventHandler('playerDropped', function()
     radioCodeCooldowns[playerId] = nil
 
     for uniqueId, call in pairs(trackedDispatchCalls) do
+        if call.requester == playerId then
+            call.requester = nil
+        end
+
         if call.responders[playerId] then
+            local responder = call.responders[playerId]
             call.responders[playerId] = nil
             local responderCount = 0
             for _ in pairs(call.responders) do responderCount = responderCount + 1 end
@@ -710,10 +750,25 @@ AddEventHandler('playerDropped', function()
                 responding = responderCount + 1,
                 char_info = {
                     source = playerId,
-                    callsign = unit and unit.callsign or '',
-                    char_name = unit and unit.char_name or '',
+                    callsign = responder and responder.callsign or (unit and unit.callsign or ''),
+                    char_name = responder and responder.name or (unit and unit.char_name or ''),
                 },
             }
+            if call.requester and GetPlayerName(call.requester) then
+                local callsign = removal.char_info.callsign
+                if callsign ~= '' and callsign ~= L('unknown') then
+                    callsign = '[' .. callsign .. '] '
+                else
+                    callsign = ''
+                end
+                SendNotification(
+                    call.requester,
+                    2,
+                    'radio_code_medical_responder_withdrawn',
+                    callsign,
+                    removal.char_info.char_name or L('unknown')
+                )
+            end
             for targetId, targetData in pairs(self or {}) do
                 if IsTrackedCallRecipient(targetData, call) then
                     TriggerClientEvent('onyx_dispatch:PlayerResponding', targetId, removal)

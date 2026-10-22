@@ -41,7 +41,7 @@ Interface NUI, alertas policiais, códigos de rádio e localização de equipas 
 | `Alt + 2` | Enviar 10-32 — pedir apoio à própria força |
 | `Alt + 3` | Enviar 10-99 urgente — assistência à própria força |
 | `Alt + 4` | Enviar 10-99 urgente conjunto — LSPD e Sheriff |
-| `Alt + 5` | Polícia pede assistência médica aos EMS |
+| `Alt + 5` | Polícia pede assistência médica aos EMS; recebe confirmação e aviso quando uma unidade responder |
 | `K` | Abrir/fechar o mapa do dispatch |
 | `G` | Responder à ocorrência selecionada |
 | `←` / `→` | Ocorrência anterior / seguinte no painel pequeno |
