@@ -70,6 +70,8 @@ Os mapeamentos podem ser alterados nas definições de teclas do FiveM. O painel
 - **Chamadas civis:** os comandos estão desativados por predefinição. Revê os destinatários antes de os ativares.
 - **Cooldown de rádio:** 3 segundos por grupo, ajustável em `Config.RadioCodes.cooldown`.
 - **Modo operador:** opcional. A alteração de canal de rádio suporta `pma-voice`, `mumble-voip` e Toko; outros VOIP precisam de uma integração própria.
+- **Chefia do dispatch:** o grau mais alto configurado no Qbox de cada emprego em `Config.Dispatcher.Perms` pode ativar o modo operador. A validação é feita no servidor e o modo termina ao sair de serviço.
+- **Encaminhamento entre forças:** `Config.Dispatcher.AlertRouting` separa alertas policiais, pedidos médicos e cópias silenciosas para observadores. Ajusta os empregos antes de instalar noutro servidor.
 
 ## ◉ Alertas: incluído e por integrar
 
@@ -89,7 +91,21 @@ local notifications = exports['onyx_dispatch']:GetPlayerNotifications()
 -- Server
 local dispatchPlayers = exports['onyx_dispatch']:GetPlayersDispatchData(source)
 local dispatchConfig = exports['onyx_dispatch']:GetConfig()
+
+-- Server, dentro de outro recurso (após validar o evento original):
+local sent, operationalCount, observerCount = exports['onyx_dispatch']:SendAlert({
+    category = 'police',
+    jobs = { 'police', 'sheriff' },
+    observer_jobs = {},
+    coords = GetEntityCoords(GetPlayerPed(source)),
+    title = '10-90 - Assalto em curso',
+    message = 'Alarme confirmado no estabelecimento.',
+    flash = true,
+    sound = 4,
+})
 ```
+
+`SendAlert` e os exemplos de integração estão detalhados em [INTEGRATION.md](INTEGRATION.md). A exportação é apenas server-side; valida a categoria e só entrega a unidades de serviço configuradas em `AlertRouting`.
 
 Os eventos públicos também usam o namespace `onyx_dispatch`. Atualiza integrações externas para os nomes atuais antes de substituir uma instalação existente.
 
@@ -103,6 +119,7 @@ onyx_dispatch/
 ├── server/       # Ocorrências, unidades, alertas e persistência
 ├── AI_INSTALL.md # Procedimento e prompt para instalação assistida por IA
 ├── INSTALL.md    # Guia de instalação Qbox
+├── INTEGRATION.md # API server-side para alertas de outros recursos
 └── fxmanifest.lua
 ```
 

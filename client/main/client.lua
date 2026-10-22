@@ -246,6 +246,7 @@ AddEventHandler("onyx_dispatch:SendSourceData", function(sourceData, dispatcherS
             SourceInfo.char_name = sourceData.char_name
             SourceInfo.callsign = sourceData.callsign
             SourceInfo.phone_number = sourceData.phone_number
+            SourceInfo.can_dispatch = sourceData.can_dispatch == true
             if Config.Dispatcher.ENABLE then
                 SourceInfo.dispatcher = Checks("is_dispatcher")
             else
@@ -280,6 +281,15 @@ AddEventHandler("onyx_dispatch:SendSourceData", function(sourceData, dispatcherS
         end
     else
         E("8751")
+    end
+end)
+RegisterNetEvent("onyx_dispatch:DispatcherPermission")
+AddEventHandler("onyx_dispatch:DispatcherPermission", function(canDispatch)
+    SourceInfo.can_dispatch = canDispatch == true
+    if Config.Dispatcher.ENABLE then
+        SourceInfo.dispatcher = SourceInfo.can_dispatch
+        SendNUIMessage({ action = "currentplayer", values = SourceInfo })
+        SourceInfo.dispatcher = nil
     end
 end)
 if Config.UpdateDistanceUI.ENABLE then

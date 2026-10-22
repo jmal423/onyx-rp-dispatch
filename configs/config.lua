@@ -122,10 +122,16 @@ Config.Dispatcher = {
     ENABLE = true, --Do you want to use the build in dispatcher system? (this is optional)
     notify_activity = true, --Do you want players to be notified when a dispatcher comes online/goes offline? 
 
-    Perms = { --A list of jobs and the minimum job grade for those who are allowed to use the dispatcher features.
-        ['police'] = 0,
-        ['ambulance'] = 0,
-        ['mechanic'] = 0,
+    Perms = { --'highest' grants dispatcher controls to the highest grade defined by the framework for that job.
+        ['police'] = 'highest',
+        ['sheriff'] = 'highest',
+        ['ambulance'] = 'highest',
+    },
+
+    AlertRouting = {
+        police = { 'police', 'sheriff' }, -- Operational recipients for police events (robbery, shots, armed person, etc.).
+        medical = { 'ambulance' }, -- Operational recipients for medical assistance calls.
+        medical_observers = { 'police', 'sheriff' }, -- Optional read-only audience for medical calls.
     },
 
     AutoRefreshBlips = {

@@ -88,6 +88,52 @@ function GetFrameworkPlayerJob(source)
     return nil
 end
 
+local function GetConfiguredHighestJobGrade(jobName)
+    local jobDefinition
+    if Config.Framework == 'qbcore' and QBCore and QBCore.Shared and QBCore.Shared.Jobs then
+        jobDefinition = QBCore.Shared.Jobs[jobName]
+    elseif Config.Framework == 'esx' and ESX and ESX.Jobs then
+        jobDefinition = ESX.Jobs[jobName]
+    end
+
+    local grades = jobDefinition and (jobDefinition.grades or jobDefinition.Grades)
+    if type(grades) ~= 'table' then return nil end
+
+    local highest
+    for key, gradeData in pairs(grades) do
+        local level = type(gradeData) == 'table' and tonumber(gradeData.level or gradeData.grade) or tonumber(key)
+        if level and (highest == nil or level > highest) then highest = level end
+    end
+    return highest
+end
+
+function CanOperateDispatch(source)
+    if not Config.Dispatcher.ENABLE then return false end
+
+    local jobName = GetFrameworkPlayerJob(source)
+    local requiredGrade = jobName and Config.Dispatcher.Perms[jobName]
+    if requiredGrade == nil then return false end
+
+    local playerGrade
+    if Config.Framework == 'qbcore' then
+        local player = QBCore and QBCore.Functions.GetPlayer(source)
+        local grade = player and player.PlayerData and player.PlayerData.job and player.PlayerData.job.grade
+        playerGrade = type(grade) == 'table' and tonumber(grade.level) or tonumber(grade)
+    elseif Config.Framework == 'esx' then
+        local player = ESX and ESX.GetPlayerFromId(source)
+        playerGrade = player and player.job and tonumber(player.job.grade)
+    end
+    if not playerGrade then return false end
+
+    if requiredGrade == 'highest' then
+        local highestGrade = GetConfiguredHighestJobGrade(jobName)
+        return highestGrade ~= nil and playerGrade == highestGrade
+    end
+
+    requiredGrade = tonumber(requiredGrade)
+    return requiredGrade ~= nil and playerGrade >= requiredGrade
+end
+
 function CheckJob(source, job)
     if CheckMultiJobs(job) and self[source].on_duty then
         return true
@@ -140,8 +186,10 @@ AddEventHandler('onyx_dispatch:PlayerLoaded', function()
         color = '#539D1B'
     }
     self[_source].on_duty = IsPlayerOnDuty(_source)
+    self[_source].can_dispatch = CanOperateDispatch(_source)
     TriggerClientEvent('onyx_dispatch:DutyState', _source, self[_source].on_duty)
-    TriggerClientEvent('onyx_dispatch:SendSourceData', _source, self[_source], DispatcherData.active)
+    TriggerClientEvent('onyx_dispatch:DispatcherPermission', _source, self[_source].can_dispatch)
+    TriggerClientEvent('onyx_dispatch:SendSourceData', _source, self[_source], IsDispatchActiveForJob(self[_source].job))
     PlayerBlipsActions(_source, 'update')
     if CheckMultiJobs(self[_source].job) then
         RefreshLargeUI(self[_source].job)
@@ -224,11 +272,16 @@ AddEventHandler('onyx_dispatch:JobSet', function(job)
         job = GetFrameworkPlayerJob(_source) -- Never accept a job identity supplied by the client.
         if type(job) ~= 'string' then return end
         local old_job = self[_source].job
+        if self[_source].dispatcher and (job ~= old_job or not CanOperateDispatch(_source)) then
+            SetDispatcherState(_source, false, true)
+        end
         self[_source].job = job
+        self[_source].can_dispatch = CanOperateDispatch(_source)
+        TriggerClientEvent('onyx_dispatch:DispatcherPermission', _source, self[_source].can_dispatch)
         PlayerBlipsActions(_source, 'update')
         if CheckMultiJobs(job) then
             RefreshLargeUI(job)
-            TriggerClientEvent('onyx_dispatch:SendSourceData', _source, self[_source], DispatcherData.active)
+            TriggerClientEvent('onyx_dispatch:SendSourceData', _source, self[_source], IsDispatchActiveForJob(self[_source].job))
         end
         if CheckMultiJobs(old_job) then
             RefreshLargeUI(old_job)
@@ -356,7 +409,12 @@ AddEventHandler('onyx_dispatch:OnDutyChecks', function(boolean)
         local duty = IsPlayerOnDuty(_source)
 
         self[_source].on_duty = duty
+        self[_source].can_dispatch = CanOperateDispatch(_source)
+        if not duty and self[_source].dispatcher then
+            SetDispatcherState(_source, false, true)
+        end
         TriggerClientEvent('onyx_dispatch:DutyState', _source, duty)
+        TriggerClientEvent('onyx_dispatch:DispatcherPermission', _source, self[_source].can_dispatch)
         if duty then
             PlayerBlipsActions(_source, 'update')
         else
@@ -370,7 +428,7 @@ function PlayerDropped(source)
     if self and source and self[source] then
         PlayerBlipsActions(source, 'remove')
         if self[source].dispatcher then
-            TriggerEvent('onyx_dispatch:DispatcherToggle', false, self[source].job)
+            SetDispatcherState(source, false, true)
         end
         if CheckMultiJobs(self[source].job) then
             RefreshLargeUI(self[source].job)

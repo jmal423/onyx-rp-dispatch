@@ -1,12 +1,5 @@
 function IsDispatcher()
-    local job = GetJob()
-    local grade = GetJob_grade()
-    if Config.Dispatcher.Perms[job] ~= nil then
-        if grade >= Config.Dispatcher.Perms[job] then
-            return true
-        end
-    end
-    return false
+    return SourceInfo and SourceInfo.can_dispatch == true
 end
 
 function ChangeRadio(new_channel)

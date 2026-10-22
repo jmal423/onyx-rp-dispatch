@@ -59,8 +59,17 @@ end)
 self = {}
 DispatcherData = {
     active = false,
-    count = 0
+    count = 0,
+    byJob = {}
 }
+for jobName in pairs(Config.Dispatcher.Perms or {}) do
+    DispatcherData.byJob[jobName] = { active = false, count = 0 }
+end
+
+function IsDispatchActiveForJob(jobName)
+    local state = DispatcherData.byJob and DispatcherData.byJob[jobName]
+    return state ~= nil and state.active == true
+end
 
 function FormatPlayersForLargeUI(playersList)
     local formattedData = {}
@@ -96,7 +105,7 @@ function FormatPlayersForLargeUI(playersList)
     return formattedData
 end
 function RefreshLargeUI(jobName)
-    if not Config.Dispatcher.ENABLE or not DispatcherData.active then
+    if not Config.Dispatcher.ENABLE or not IsDispatchActiveForJob(jobName) then
         return
     end
     
@@ -366,6 +375,192 @@ local function TrackDispatchCall(uniqueId, coords, jobs, requester, observerJobs
     }
 end
 
+local externalAlertSequence = 0
+local configuredDispatchJobs = {}
+for _, jobGroup in pairs(Config.AllowedJobs or {}) do
+    for _, jobName in pairs(jobGroup) do
+        if type(jobName) == 'string' then configuredDispatchJobs[jobName] = true end
+    end
+end
+
+function SendAlert(data)
+    if type(data) ~= 'table' or type(data.jobs) ~= 'table' then
+        return false, 'invalid_payload'
+    end
+    if data.category ~= 'police' and data.category ~= 'medical' then
+        return false, 'invalid_category'
+    end
+
+    local coords = data.coords
+    if type(coords) == 'table' then
+        local x, y, z = tonumber(coords.x), tonumber(coords.y), tonumber(coords.z)
+        if not x or not y or not z then return false, 'invalid_coords' end
+        coords = vector3(x, y, z)
+    end
+    if type(coords) ~= 'vector3' or coords.x ~= coords.x or coords.y ~= coords.y or coords.z ~= coords.z
+        or math.abs(coords.x) > 10000 or math.abs(coords.y) > 10000 or math.abs(coords.z) > 10000 then
+        return false, 'invalid_coords'
+    end
+
+    if type(data.title) ~= 'string' or data.title == '' or type(data.message) ~= 'string' or data.message == '' then
+        return false, 'invalid_text'
+    end
+
+    local function ValidateJobList(jobList)
+        if jobList == nil then return {}, {} end
+        if type(jobList) ~= 'table' then return nil, nil end
+        local selected, selectedSet = {}, {}
+        for _, jobName in ipairs(jobList) do
+            if type(jobName) ~= 'string' or not configuredDispatchJobs[jobName] then
+                return nil, nil
+            end
+            if not selectedSet[jobName] then
+                selected[#selected + 1] = jobName
+                selectedSet[jobName] = true
+            end
+        end
+        return selected, selectedSet
+    end
+
+    local jobs, seenJobs = ValidateJobList(data.jobs)
+    if not jobs then return false, 'unknown_job' end
+    local configuredRecipients = {}
+    for _, jobName in ipairs((Config.Dispatcher.AlertRouting or {})[data.category] or {}) do
+        configuredRecipients[jobName] = true
+    end
+    for _, jobName in ipairs(jobs) do
+        if not configuredRecipients[jobName] then
+            return false, 'invalid_routing'
+        end
+    end
+    if #jobs == 0 then return false, 'no_jobs' end
+
+    local observerJobs, observerJobSet = ValidateJobList(data.observer_jobs)
+    if not observerJobs then return false, 'unknown_job' end
+    local configuredObservers = {}
+    for _, jobName in ipairs((Config.Dispatcher.AlertRouting or {})[data.category .. '_observers'] or {}) do
+        configuredObservers[jobName] = true
+    end
+    for _, jobName in ipairs(observerJobs) do
+        if seenJobs[jobName] then return false, 'invalid_payload' end
+        if not configuredObservers[jobName] then
+            return false, 'invalid_routing'
+        end
+        observerJobSet[jobName] = true
+    end
+
+    local recipients, observers = {}, {}
+    for playerId, playerData in pairs(self or {}) do
+        if playerData.on_duty and seenJobs[playerData.job] then
+            recipients[#recipients + 1] = playerId
+        elseif playerData.on_duty and observerJobSet[playerData.job] then
+            observers[#observers + 1] = playerId
+        end
+    end
+    if #recipients == 0 then return false, 'no_recipients' end
+
+    externalAlertSequence = externalAlertSequence + 1
+    local uniqueId = type(data.unique_id) == 'string' and data.unique_id:sub(1, 96) or nil
+    if not uniqueId or uniqueId == '' then
+        uniqueId = ('external:%s:%s:%s'):format(GetCurrentResourceName(), os.time(), externalAlertSequence)
+    elseif not uniqueId:match('^[%w_:%-%.]+$') then
+        return false, 'invalid_payload'
+    end
+    if trackedDispatchCalls[uniqueId] then return false, 'duplicate_id' end
+
+    local title = EscapeRadioCodeText(data.title, 100)
+    local blipData = type(data.blip) == 'table' and data.blip or {}
+    local function NumberInRange(value, minimum, maximum, fallback, integer)
+        local number = tonumber(value)
+        if not number or number ~= number or number == math.huge or number == -math.huge then
+            number = fallback
+        end
+        number = math.max(minimum, math.min(maximum, number))
+        return integer and math.floor(number) or number
+    end
+    local notification = {
+        job_table = jobs,
+        coords = coords,
+        title = title,
+        message = EscapeRadioCodeText(data.message, 500),
+        flash = data.flash == true and 1 or 0,
+        unique_id = uniqueId,
+        sound = NumberInRange(data.sound, 0, 4, 0, true),
+        blip = {
+            sprite = NumberInRange(blipData.sprite, 1, 1000, 161, true),
+            scale = NumberInRange(blipData.scale, 0.1, 2.0, 1.0),
+            colour = NumberInRange(blipData.colour, 0, 255, 3, true),
+            flashes = blipData.flashes == true or data.flash == true,
+            text = EscapeRadioCodeText(blipData.text or title, 100),
+            time = NumberInRange(blipData.time, 1, 60, 5, true),
+            radius = NumberInRange(blipData.radius, 0, 500, 0),
+        },
+    }
+
+    TrackDispatchCall(uniqueId, coords, jobs, nil, observerJobs)
+    for _, playerId in ipairs(recipients) do
+        TriggerClientEvent('onyx_dispatch:AddNotification', playerId, notification, true)
+    end
+    if #observerJobs > 0 then
+        local observerNotification = {}
+        for key, value in pairs(notification) do observerNotification[key] = value end
+        observerNotification.job_table = observerJobs
+        observerNotification.sound = 0
+        observerNotification.read_only = true
+        for _, playerId in ipairs(observers) do
+            TriggerClientEvent('onyx_dispatch:AddNotification', playerId, observerNotification, true)
+        end
+    end
+    return true, #recipients, #observers
+end
+
+function SetDispatcherState(playerId, isEnabled, force)
+    local dispatcher = self and self[playerId]
+    if not dispatcher then return false end
+
+    local actualJob = GetFrameworkPlayerJob(playerId)
+    if force and not isEnabled then actualJob = dispatcher.job end
+    if type(actualJob) ~= 'string' or actualJob ~= dispatcher.job then return false end
+    if isEnabled and (not dispatcher.on_duty or not CanOperateDispatch(playerId)) then return false end
+    if not isEnabled and not force and not dispatcher.dispatcher and not CanOperateDispatch(playerId) then return false end
+    if dispatcher.dispatcher == isEnabled then return true end
+
+    local allowedJobs = CheckMultiJobs(actualJob)
+    if type(allowedJobs) ~= 'table' then return false end
+    local teamState = DispatcherData.byJob[actualJob]
+    if not teamState then return false end
+
+    dispatcher.dispatcher = isEnabled
+    if isEnabled then
+        teamState.count = teamState.count + 1
+    else
+        teamState.count = math.max(0, teamState.count - 1)
+    end
+    teamState.active = teamState.count > 0
+    DispatcherData.count = DispatcherData.count + (isEnabled and 1 or -1)
+    DispatcherData.count = math.max(0, DispatcherData.count)
+    DispatcherData.active = DispatcherData.count > 0
+
+    for _, playerData in pairs(self) do
+        if playerData.job == actualJob and playerData.on_duty then
+            TriggerClientEvent('onyx_dispatch:DispatcherToggle', playerData.source, teamState.active)
+            if Config.Dispatcher.notify_activity then
+                if isEnabled then
+                    SendNotification(playerData.source, 2, 'dispatcher_joined',
+                        dispatcher.callsign, dispatcher.char_name, teamState.count)
+                else
+                    SendNotification(playerData.source, 2, 'dispatcher_left',
+                        dispatcher.callsign, dispatcher.char_name, teamState.count)
+                end
+                if not teamState.active then
+                    SendNotification(playerData.source, 2, 'dispatcher_all_offline')
+                end
+            end
+        end
+    end
+    return true
+end
+
 local function IsTrackedCallRecipient(playerData, call)
     return playerData and playerData.on_duty and call.jobs[playerData.job] == true
 end
@@ -576,6 +771,10 @@ end)
 
 RegisterServerEvent("onyx_dispatch:Dispatcher_AddCall")
 AddEventHandler("onyx_dispatch:Dispatcher_AddCall", function(callData)
+    local caller = self and self[source]
+    if not caller or not caller.on_duty or caller.dispatcher ~= true or not CanOperateDispatch(source) then
+        return
+    end
     if not callData or not callData.coords then
         ShowError("9001 - Invalid callData or missing coords")
         return
@@ -820,46 +1019,7 @@ AddEventHandler("onyx_dispatch:DispatcherToggle", function(isEnabled, jobName)
         return
     end
     
-    if type(playerId) == "number" then
-        self[playerId].dispatcher = isEnabled
-    end
-    
-    if isEnabled then
-        DispatcherData.count = DispatcherData.count + 1
-        DispatcherData.active = true
-    else
-        DispatcherData.count = DispatcherData.count - 1
-        if DispatcherData.count <= 0 then
-            DispatcherData.count = 0
-            DispatcherData.active = false
-        end
-    end
-    
-    local allowedJobs = CheckMultiJobs(jobName)
-    for _, playerData in pairs(self) do
-        for _, allowedJob in pairs(allowedJobs) do
-            if playerData.job == allowedJob and playerData.on_duty then
-                TriggerClientEvent("onyx_dispatch:DispatcherToggle", playerData.source, DispatcherData.active)
-                
-                if Config.Dispatcher.notify_activity then
-                    if isEnabled then
-                        SendNotification(playerData.source, 2, "dispatcher_joined",
-                                       self[playerId].callsign, self[playerId].char_name,
-                                       DispatcherData.count)
-                    else
-                        SendNotification(playerData.source, 2, "dispatcher_left",
-                                       self[playerId].callsign, self[playerId].char_name,
-                                       DispatcherData.count)
-                    end
-                    
-                    if not DispatcherData.active then
-                        SendNotification(playerData.source, 2, "dispatcher_all_offline")
-                    end
-                end
-                break
-            end
-        end
-    end
+    SetDispatcherState(playerId, isEnabled, false)
 end)
 
 RegisterServerEvent("onyx_dispatch:SetGPS")

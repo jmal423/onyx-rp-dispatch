@@ -43,7 +43,7 @@ Não atives alertas civis, integrações de assaltos, modo operador ou eventos d
 2. Faz backup dos ficheiros de configuração antes de os alterar. Não substituas configurações locais por defaults do repositório.
 3. Em `configs/config.lua`, configura explicitamente `Config.Framework = 'qbcore'`, `Config.Database = 'oxmysql'` e `Config.Notification` para um sistema presente no servidor. Define `Config.Language = 'PT'` se o servidor usar português.
 4. Se a camada QB tiver outro nome/eventos, ajusta `Config.FrameworkTriggers.qbcore` e confirma que o framework fornece `GetCoreObject`, carregamento de personagem, atualização de emprego e estado de serviço.
-5. Atualiza `Config.AllowedJobs`, `Config.BlipData`, `Config.Dispatcher.Perms`, `Config.PoliceAlerts` e, se ativado, cada `job_table` em `Config.JobCallCommands`. Usa exclusivamente os nomes de emprego confirmados.
+5. Atualiza `Config.AllowedJobs`, `Config.BlipData`, `Config.Dispatcher.Perms`, `Config.Dispatcher.AlertRouting`, `Config.PoliceAlerts` e, se ativado, cada `job_table` em `Config.JobCallCommands`. Usa exclusivamente os nomes de emprego confirmados. O valor `'highest'` em `Dispatcher.Perms` dá a permissão ao grau mais alto que o Qbox define para esse emprego.
 6. Mantém `Config.AutoInsertSQL = true` quando `oxmysql` e a base de dados já estiverem configurados. Faz/valida backup da base de dados antes do primeiro arranque. A resource cria `onyx_dispatch` e tenta preservar os callsigns existentes durante a migração. Nunca apagues manualmente a tabela de origem.
 7. Acrescenta a linha `ensure onyx_dispatch` depois de `oxmysql`, `ox_lib`, Qbox e da camada QB compatível no `server.cfg`. Faz backup do ficheiro antes de editar e não alteres credenciais ou outras linhas sem relação com a instalação.
 8. Confirma exports e eventos externos. Os nomes próprios da resource são `onyx_dispatch`; não renomeies a pasta nem reintroduzas namespaces antigos.
@@ -60,6 +60,8 @@ Não atives alertas civis, integrações de assaltos, modo operador ou eventos d
 
 - `police`, `sheriff` e `ambulance` são exemplos desta cópia, não garantias sobre outro servidor.
 - `Config.AllowedJobs` determina acesso e agrupamento; `job_table` define os destinatários de cada chamada.
+- `Config.Dispatcher.AlertRouting` limita os empregos operacionais por categoria; `observer_jobs` são cópias silenciosas e só de leitura para monitorização.
 - Os alertas automáticos incluídos não integram automaticamente os assaltos, pessoas armadas, explosões ou incêndios de outros recursos.
+- Outros recursos podem criar alertas através do export server-side `exports['onyx_dispatch']:SendAlert(...)`; segue o contrato e os exemplos de validação em `INTEGRATION.md`. Não chames a exportação a partir do cliente nem cries um evento de rede aberto para a encaminhar.
 - O modo operador só controla o rádio nos VOIP implementados. Um VOIP diferente requer código de integração em `client/other/dispatcher.lua`.
 - A configuração atual é alvo Qbox com camada QB e `oxmysql`; suporte ESX/custom exige configuração e validação próprias.

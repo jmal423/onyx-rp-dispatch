@@ -4,14 +4,14 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 
 ## Acesso ao dispatch por força
 
-- **Estado:** regras de produto confirmadas em 2026-10-22; implementação por fazer.
+- **Estado:** regras de encaminhamento e permissões de chefia implementadas em 2026-10-22; falta validação no FiveM.
 - **EMS (`ambulance`):** vê apenas as unidades EMS na lista e recebe apenas pedidos de ajuda médica. Não recebe assaltos, tiros/10-13 nem alertas de pessoas armadas.
 - **Polícia (`police`) e Sheriff (`sheriff`):** cada força vê a lista de unidades das três forças — LSPD, Sheriff e EMS — e recebe os alertas policiais e médicos relevantes.
 - **Chamadas médicas/revive:** são encaminhadas apenas para EMS. Polícia e Sheriff não recebem chamadas de revive; ver unidades EMS no mapa/lista não lhes dá acesso aos alertas médicos.
 - **Filtros da lista de unidades:** botões por força (LSPD, Sheriff e EMS) ocultam/mostram unidades apenas na lista lateral. Os blips no mapa não são afetados e continuam visíveis.
-- **Chefias:** cada força deve poder ter a sua própria chefia de dispatch, sem conceder automaticamente autoridade sobre as outras forças. A recomendação é configurar a permissão por job e grade Qbox, no servidor; os níveis concretos ainda não foram definidos.
-- **Limitação atual:** `Config.AllowedJobs` usa um único grupo partilhado (`police`, `ambulance`, `sheriff`), pelo que não exprime a visibilidade distinta da lista pretendida. As permissões do dispatcher também não estão separadas por força de forma segura. É necessário separar destinatários de chamadas, visibilidade de unidades e permissões administrativas, validando tudo no servidor.
-- **Próximo passo:** encaminhar chamadas médicas apenas para EMS; depois configurar e testar um chefe de dispatch por job/grade. O servidor de teste usa o job `sheriff`; confirmar `bcso` ao preparar o servidor principal.
+- **Chefias:** `Config.Dispatcher.Perms` usa `'highest'` para police, sheriff e ambulance. O grau máximo é lido das definições reais do framework e validado no servidor. Cada emprego tem o seu próprio estado/contador de operador; sair de serviço desativa o modo.
+- **Segurança do modo operador:** o servidor ignora o emprego enviado pelo cliente e confirma o emprego atual, estado de serviço e grau antes de aceitar a ativação.
+- **Teste pendente:** confirmar no servidor que apenas o grau máximo de cada emprego pode ativar o modo operador, que os estados são independentes por força e que a permissão acompanha alterações de emprego e serviço. O servidor de teste usa o job `sheriff`; confirmar `bcso` ao preparar o servidor principal.
 
 ### Atalhos de rádio
 
@@ -84,7 +84,7 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 
 ## Alertas de ocorrências ingame: assaltos, pessoa armada, explosões e incêndios
 
-- **Estado:** por implementar; levantamento inicial concluído em 2026-10-22.
+- **Estado:** export genérico server-side disponível para integração por outros recursos; os adaptadores específicos continuam por implementar.
 - **Pedido:** adicionar alertas ingame para 10-90 (assalto), 10-72 (pessoa armada), explosões, incêndios e ocorrências semelhantes.
 - **Já existe no Onyx Dispatch:** 10-13 automático para disparos não silenciados, com whitelist global de armas/empregos e cooldown; 10-20 e pedidos 10-99 são códigos de rádio separados, não detetores de crimes.
 - **Assaltos Qbox:** `qbx_storerobbery`, `qbx_bankrobbery`, `qbx_jewelery`, `qbx_houserobbery` e `qbx_truckrobbery` têm pontos de servidor que validam o início/alarme do assalto. Os alertas encontrados são enviados para `police:server:policeAlert` ou para a interface policial Qbox; o Onyx Dispatch não os consome atualmente. Ligar aos eventos depois da validação, evitando eventos de tentativa inválida, duplicados e chamadas repetidas do mesmo alarme.
@@ -92,5 +92,8 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - **Explosões:** não há detetor no Onyx Dispatch. A implementação deve usar eventos de explosão do servidor com tipos permitidos, cooldown e agregação de explosões próximas para evitar spam e ruído de explosões secundárias.
 - **Incêndios:** não há detetor global no Onyx Dispatch. Ligar aos recursos que iniciam incêndios; evitar polling global no cliente, que pode gerar alertas imprecisos. O Qbox Bank Robbery inicia fogo de thermite no cliente, pelo que esse fluxo pode ser integrado na origem.
 - **Destinatários:** aplicar a regra em “Acesso ao dispatch por força”: LSPD/Sheriff recebem alertas policiais; EMS não recebe assaltos, tiros ou pessoas armadas. Chamadas médicas/revive vão apenas para EMS.
-- **Próximo passo:** definir critério de 10-72 e destinatários por tipo de ocorrência; depois implementar adaptadores para assaltos e explosões/incêndios sem alterar os fluxos de pagamento ou validação dos recursos Qbox.
+- **Workflow disponível:** `exports['onyx_dispatch']:SendAlert({...})`; só envia a empregos configurados e a unidades de serviço. Ver `INTEGRATION.md` para payload, retornos e exemplos.
+- **Observadores:** `observer_jobs` envia cópias silenciosas e só de leitura, com atualizações de unidades em resposta. Pode ser usado para a polícia acompanhar pedidos médicos sem lhes dar a ação de responder.
+- **Política configurável:** `Config.Dispatcher.AlertRouting` define destinos de `police`, `medical` e `medical_observers`; a exportação rejeita empregos fora dessas listas e de `Config.AllowedJobs`.
+- **Próximo passo:** definir critério de 10-72 e destinatários por tipo de ocorrência; depois adicionar chamadas ao export nos pontos server-side de sucesso dos recursos de assalto, explosão e incêndio, sem alterar os fluxos de pagamento ou validação Qbox.
 - **Validação:** esta entrada documenta apenas inspeção estática do código. Nenhuma ocorrência nova foi implementada ou testada em jogo.

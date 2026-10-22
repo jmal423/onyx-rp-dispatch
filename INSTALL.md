@@ -54,7 +54,8 @@ Os nomes têm de coincidir exatamente com `job.name` do teu Qbox. A configuraç�
 
 - `Config.AllowedJobs`: empregos autorizados a usar o dispatch e agrupamento de unidades que se veem entre si.
 - `Config.BlipData`: define cores para cada emprego que aparece no mapa. Adiciona uma entrada para cada emprego incluído em `AllowedJobs`.
-- `Config.Dispatcher.Perms`: emprego e grade mínima para funções do modo operador.
+- `Config.Dispatcher.Perms`: empregos autorizados a ativar o modo operador. O valor `'highest'` seleciona automaticamente o grau mais alto definido em `QBCore.Shared.Jobs[job].grades`; a validação ocorre no servidor.
+- `Config.Dispatcher.AlertRouting`: empregos autorizados a receber alertas policiais/médicos e observadores silenciosos. Adapta estes nomes ao servidor; EMS não deve ser adicionado aos destinatários operacionais de alertas policiais.
 - `Config.PoliceAlerts.police_jobs`: empregos que recebem os alertas policiais automáticos.
 - `Config.PoliceAlerts.whitelisted_jobs`: empregos que não devem gerar esses alertas (por exemplo, disparos de agentes).
 - `Config.JobCallCommands`: comandos de chamadas civis, desativados por predefinição com `ENABLE = false`. Se os ativares, revê o `job_table` de cada comando.
@@ -68,6 +69,8 @@ As teclas são editáveis em `Config.RadioCodes`, `Config.large_ui`, `Config.res
 Se ativares o modo operador, configura `Config.Dispatcher.VoipResource` para o VOIP suportado pelo teu servidor (`pmavoice`, `mumble`, `toko` ou `other`). A opção `other` exige implementar as funções de rádio em `client/other/dispatcher.lua`. O dispatch e os alertas básicos não precisam do modo operador.
 
 Os exports próprios e eventos públicos usam o namespace `onyx_dispatch`. Atualiza scripts externos que ainda chamem outros nomes; não assumas compatibilidade automática com integrações antigas. Exemplos de exports estão no [README](README.md).
+
+Para integrar alertas server-side de assaltos, explosões, incêndios ou outros recursos, segue [INTEGRATION.md](INTEGRATION.md). Chama a exportação apenas depois de o recurso de origem validar o evento.
 
 ## 6. Testar no servidor
 
