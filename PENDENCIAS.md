@@ -78,9 +78,9 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 - **Evidência disponível:** o log mostra `Loaded Successfully!` da NUI, mas não confirma a sincronização do jogador nem a decisão de visibilidade.
 - **Tentativas:** commits `4bac49e`, `75a61d2`, `c7b3803` e `6770fb1` alteraram o fluxo de restart/sincronização; não resolveram o problema e foram revertidos.
 - **Estado do código:** rollback aplicado; manter o comportamento anterior a essas quatro tentativas até retomar a investigação.
-- **Próxima investigação:** recolher logs temporários em cada etapa: autorização NUI, pedido `PlayerLoaded`, emprego/duty no servidor, `DutyState`, `SendSourceData`, resultado de `IsAllowed()` e mensagem `show_small`. Corrigir a etapa comprovadamente interrompida e testar no servidor após restart da resource.
+- **Próxima investigação:** ativar temporariamente `Config.Debug = true`, reiniciar a resource uma vez quando for conveniente e recolher as linhas `[onyx_dispatch][restart-trace]` do F8 e da consola. A instrumentação regista autorização/handshake NUI, `ScriptRestarted`, pedido e resposta `PlayerLoaded`, emprego/duty, decisão `IsAllowed()`, envio de `show_small` e confirmação de visibilidade do elemento pela NUI. Depois desligar novamente `Config.Debug`.
 - **Ideia para investigar:** a notificação de arranque “O recurso ainda está a carregar. Tente novamente dentro de alguns segundos” pode indicar uma janela em que o small tenta abrir antes de a resource/NUI ou os dados do jogador estarem prontos. Na próxima investigação, identificar quem dispara essa notificação e comparar o seu momento com `PlayerLoaded`, estado de serviço e `show_small`; só depois decidir se é preciso sincronizar ou repetir a apresentação do small.
-- **Atualização (2026-10-22):** continua por resolver e não foi alterado nesta atualização dos códigos de rádio.
+- **Atualização (2026-10-22):** continua por resolver. Foram acrescentados logs de diagnóstico temporários, todos condicionados por `Config.Debug`; o comportamento normal não foi alterado. Ainda falta reproduzir a falha no FiveM com os logs ativos.
 
 ## Alertas de ocorrências ingame: assaltos, pessoa armada, explosões e incêndios
 

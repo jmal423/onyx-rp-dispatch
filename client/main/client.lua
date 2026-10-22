@@ -1,6 +1,12 @@
 Authorised = false
 isLoaded = false
 isDispatcherOffline = false
+
+function DispatchRestartTrace(stage, details)
+    if not Config.Debug then return end
+    print(string.format('[onyx_dispatch][restart-trace][client] %s %s', stage, json.encode(details or {})))
+end
+
 CreateThread(function()
     SetNuiFocus(false, false)
     Wait(1000)
@@ -21,6 +27,7 @@ AddEventHandler("onyx_dispatch:PoliceiconColour", function(color)
         if type(color) == "number" then
             if color - 8952 == 12702 then
                 isLoaded = true
+                DispatchRestartTrace('nui_handshake_received', { authorised = Authorised })
                 SendNUIMessage({
                     mapdayhours = 845
                 })
@@ -42,9 +49,14 @@ end)
 RegisterNUICallback("dispatcheroffline", function()
     isDispatcherOffline = true
     Authorised = true
+    DispatchRestartTrace('nui_authorised', { isLoaded = isLoaded })
     if Config.Debug then
         print("Loaded Successfully!")
     end
+end)
+RegisterNUICallback('dispatchRestartTrace', function(data, cb)
+    DispatchRestartTrace('nui_show_small_ack', data)
+    cb({ ok = true })
 end)
 Authorised = isDispatcherOffline
 notifications = {}
@@ -238,6 +250,10 @@ AddEventHandler("onyx_dispatch:EnableMoveMode", function()
 end)
 RegisterNetEvent("onyx_dispatch:SendSourceData")
 AddEventHandler("onyx_dispatch:SendSourceData", function(sourceData, dispatcherState)
+    DispatchRestartTrace('source_data_event_received', {
+        source_data_type = type(sourceData),
+        dispatcher_state_type = type(dispatcherState)
+    })
     if T(sourceData, "table") then
         if T(dispatcherState, "boolean") then
             if Config.UseFrameworkDutySystem and type(sourceData.on_duty) == "boolean" then
@@ -266,13 +282,22 @@ AddEventHandler("onyx_dispatch:SendSourceData", function(sourceData, dispatcherS
             })
             SourceInfo.dispatcher = nil
             SourceInfo.job = nil
+            local allowed = IsAllowed()
+            DispatchRestartTrace('source_data_received', {
+                job = sourceData.job,
+                on_duty = on_duty,
+                dispatcher_state = dispatcherState,
+                source_info_loaded = HasSourceInfoLoaded(),
+                allowed = allowed,
+                callsign = SourceInfo.callsign
+            })
             if Config.PauseMenuBlips.blip_type == "auto" then
                 auto_vehicle_blip.last = sourceData.vehicle
             end
             if Config.Debug then
                 print("DEBUG: SourceInfo updated: " .. json.encode(SourceInfo))
             end
-            if IsAllowed() then
+            if allowed then
                 if not uiStates.large then ShowSmallUI() end
             else
                 if uiStates.large then HideLargeUI() end
@@ -280,6 +305,10 @@ AddEventHandler("onyx_dispatch:SendSourceData", function(sourceData, dispatcherS
             end
         end
     else
+        DispatchRestartTrace('source_data_rejected', {
+            source_data_type = type(sourceData),
+            dispatcher_state_type = type(dispatcherState)
+        })
         E("8751")
     end
 end)
@@ -638,14 +667,34 @@ function HideLargeUI()
 end
 function ShowSmallUI()
     uiStates.small = true
+    local action = GetNUIState(uiStates.small and not smallUiSuppressedByMenu)
+    if Config.Debug then
+        SendNUIMessage({ action = 'dispatch_debug', enabled = true })
+    end
+    DispatchRestartTrace('small_ui_message_sent', {
+        action = action,
+        authorised = Authorised,
+        allowed = IsAllowed(),
+        source_info_loaded = HasSourceInfoLoaded(),
+        suppressed_by_menu = smallUiSuppressedByMenu,
+        large = uiStates.large == true
+    })
     SendNUIMessage({
-        action = GetNUIState(uiStates.small and not smallUiSuppressedByMenu)
+        action = action
     })
 end
 function HideSmallUI()
     uiStates.small = false
+    local action = GetNUIState(uiStates.small)
+    DispatchRestartTrace('small_ui_message_sent', {
+        action = action,
+        authorised = Authorised,
+        allowed = IsAllowed(),
+        suppressed_by_menu = smallUiSuppressedByMenu,
+        large = uiStates.large == true
+    })
     SendNUIMessage({
-        action = GetNUIState(uiStates.small)
+        action = action
     })
 end
 

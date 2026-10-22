@@ -187,9 +187,15 @@ AddEventHandler('onyx_dispatch:PlayerLoaded', function()
     }
     self[_source].on_duty = IsPlayerOnDuty(_source)
     self[_source].can_dispatch = CanOperateDispatch(_source)
+    if Config.Debug then
+        print(string.format('[onyx_dispatch][restart-trace][server] player_loaded_received %s', json.encode({ source = _source, job = self[_source].job, on_duty = self[_source].on_duty, callsign = self[_source].callsign })))
+    end
     TriggerClientEvent('onyx_dispatch:DutyState', _source, self[_source].on_duty)
     TriggerClientEvent('onyx_dispatch:DispatcherPermission', _source, self[_source].can_dispatch)
     TriggerClientEvent('onyx_dispatch:SendSourceData', _source, self[_source], IsDispatchActiveForJob(self[_source].job))
+    if Config.Debug then
+        print(string.format('[onyx_dispatch][restart-trace][server] source_data_sent %s', json.encode({ source = _source, job = self[_source].job, on_duty = self[_source].on_duty })))
+    end
     PlayerBlipsActions(_source, 'update')
     if CheckMultiJobs(self[_source].job) then
         RefreshLargeUI(self[_source].job)

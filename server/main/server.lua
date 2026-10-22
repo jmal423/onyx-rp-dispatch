@@ -7,6 +7,7 @@ local supportText = [[
 ]] .. divider
 
 local startupSuccess = nil
+local restartHandshakeLogged = {}
 
 if not Config then
     print(divider .. "\n\n^8[" .. resourceName .. "]^1 [unable_to_start]\n^0Config.lua Syntax Error\n\n" .. supportText)
@@ -44,6 +45,10 @@ CreateThread(function()
         
         RegisterServerEvent("onyx_dispatch:SpeedtrapLocations")
         AddEventHandler("onyx_dispatch:SpeedtrapLocations", function()
+            if Config.Debug and not restartHandshakeLogged[source] then
+                restartHandshakeLogged[source] = true
+                print(string.format('[onyx_dispatch][restart-trace][server] nui_handshake_request_received %s', json.encode({ source = source })))
+            end
             TriggerClientEvent("onyx_dispatch:PoliceiconColour", source, 21654)
         end)
         
@@ -52,6 +57,9 @@ CreateThread(function()
         end
         
         Wait(2000)
+        if Config.Debug then
+            print('[onyx_dispatch][restart-trace][server] script_restarted_broadcast')
+        end
         TriggerClientEvent("onyx_dispatch:ScriptRestarted", -1)
     end
 end)

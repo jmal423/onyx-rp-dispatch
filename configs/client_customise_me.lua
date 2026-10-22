@@ -11,6 +11,13 @@ JobData, on_duty = {}, false
 
 local function UpdateDispatchVisibility()
     if not Authorised then return end
+    DispatchRestartTrace('visibility_check', {
+        job = JobData and JobData.name,
+        on_duty = on_duty,
+        allowed = IsAllowed(),
+        source_info_loaded = HasSourceInfoLoaded(),
+        large = uiStates and uiStates.large == true
+    })
     if IsAllowed() then
         if HasSourceInfoLoaded() and not uiStates.large then ShowSmallUI() end
     else
@@ -68,14 +75,17 @@ CreateThread(function()
         end
         JobData = QBCore.Functions.GetPlayerData().job or {}
         on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
+        DispatchRestartTrace('framework_initialised', { framework = 'qbcore', job = JobData.name, on_duty = on_duty })
         UpdateDispatchVisibility()
 
         RegisterNetEvent(Config.FrameworkTriggers.load)
         AddEventHandler(Config.FrameworkTriggers.load, function()
             JobData = QBCore.Functions.GetPlayerData().job or {}
             on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
+            DispatchRestartTrace('framework_player_loaded', { framework = 'qbcore', job = JobData.name, on_duty = on_duty })
             while not Authorised do Wait(100) end
             TriggerServerEvent('onyx_dispatch:PlayerLoaded')
+            DispatchRestartTrace('player_loaded_requested', { framework = 'qbcore', job = JobData.name, on_duty = on_duty })
             UpdateDispatchVisibility()
         end)
 
@@ -176,8 +186,12 @@ end
 
 RegisterNetEvent('onyx_dispatch:ScriptRestarted')
 AddEventHandler('onyx_dispatch:ScriptRestarted', function()
+    DispatchRestartTrace('script_restarted_received', { authorised = Authorised, job = JobData and JobData.name, on_duty = on_duty })
+    local waitStarted = GetGameTimer()
     while not Authorised do Wait(0) end
+    DispatchRestartTrace('nui_authorisation_wait_complete', { waited_ms = GetGameTimer() - waitStarted })
     TriggerServerEvent('onyx_dispatch:PlayerLoaded')
+    DispatchRestartTrace('player_loaded_requested', { reason = 'resource_restart', job = JobData and JobData.name, on_duty = on_duty })
 end)
 
 
@@ -294,6 +308,7 @@ RegisterNetEvent('onyx_dispatch:DutyState')
 AddEventHandler('onyx_dispatch:DutyState', function(duty)
     if type(duty) ~= 'boolean' then return end
     on_duty = duty
+    DispatchRestartTrace('duty_state_received', { on_duty = duty, job = JobData and JobData.name })
     UpdateDispatchVisibility()
 end)
 
