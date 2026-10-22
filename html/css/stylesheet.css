@@ -35,24 +35,6 @@ html {
 .toastHeader {
   background-color: rgb(52, 58, 64);
 }
-#dispatchHeader.dispatch-alert-urgent {
-  background-image: linear-gradient(
-    110deg,
-    #173e69 0%,
-    #294a72 28%,
-    #8d293d 52%,
-    #b52d42 72%,
-    #173e69 100%
-  ) !important;
-  background-size: 220% 100%;
-  animation: dispatch-alert-header-urgent 2.2s ease-in-out infinite alternate;
-}
-
-@keyframes dispatch-alert-header-urgent {
-  from { background-position: 0% 50%; filter: brightness(0.9); }
-  to { background-position: 100% 50%; filter: brightness(1.2); }
-}
-
 #dispatchCallContent {
   position: relative;
   isolation: isolate;
@@ -115,12 +97,6 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #dispatchHeader.dispatch-alert-urgent {
-    animation: none;
-    filter: none;
-    background-position: 50% 50%;
-  }
-
   #dispatchCallContent.dispatch-alert-normal::before,
   #dispatchCallContent.dispatch-alert-urgent::before {
     animation: none;
