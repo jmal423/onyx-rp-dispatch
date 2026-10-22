@@ -656,7 +656,7 @@ border: 0;
   }
 
   #refreshBar {
-    width: min(72vw, 44rem);
+    width: min(44rem, calc(100vw - clamp(36rem, 48vw, 44rem) - 1rem));
   }
 
   #settingsModal .modal-dialog {
