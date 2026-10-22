@@ -403,8 +403,7 @@ AddEventHandler("cd_dispatch:AddNotification", function(notificationData, isDisp
                 if notificationData.blip then
                     local blip = AddBlipForCoord(notifications[currentNotificationIndex].coords.x, notifications[currentNotificationIndex].coords.y, notifications[currentNotificationIndex].coords.z)
                     SetBlipSprite(blip, notificationData.blip.sprite)
-                    -- Keep incident markers visible without changing the configured icon.
-                    SetBlipScale(blip, math.max(tonumber(notificationData.blip.scale) or 1.0, 1.15))
+                    SetBlipScale(blip, notificationData.blip.scale)
                     SetBlipColour(blip, notificationData.blip.colour)
                     if notificationData.blip.flashes then
                         SetBlipFlashes(blip, true)
