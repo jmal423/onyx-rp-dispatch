@@ -102,6 +102,7 @@ Config.BlipData = { --You need to add all the jobs that will be able to use the 
     --pausemenu_blip_colour: The colour of the player blips on dispatch UI map. The 1st one is the default colour and the 2nd one is the flashing colour. More blip colours can be found here - https://docs.fivem.net/docs/game-references/blips.
 
     ['police'] =    {largeui_blip_colour = 'blue',      pausemenu_blip_colour = {3, 1}},
+    ['sheriff'] =   {largeui_blip_colour = 'orange',    pausemenu_blip_colour = {5, 1}},
     ['ambulance'] = {largeui_blip_colour = 'red',       pausemenu_blip_colour = {1, 0}},
     ['mechanic'] =  {largeui_blip_colour = 'orange',    pausemenu_blip_colour = {17, 0}},
     --['CHANGE_ME'] = {largeui_blip_colour = 'blue', pausemenu_blip_colour = {3, 1}},

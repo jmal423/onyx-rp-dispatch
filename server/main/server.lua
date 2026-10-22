@@ -654,8 +654,8 @@ AddEventHandler('onyx_dispatch:SendRadioCode', function(code, street)
         sound = sound,
         blip = {
             sprite = blipSprite,
-            scale = 1.5,
-            colour = 3,
+            scale = code == '10-20' and 0.95 or 1.1,
+            colour = code == '10-20' and 3 or 1,
             flashes = flash == 1,
             text = L(titleKey),
             time = 5,
