@@ -3,11 +3,10 @@ if Config.PanicButton.ENABLE then
     if Config.PanicButton.key ~= '' then
         RegisterKeyMapping(Config.PanicButton.command, L('panic_description'), 'keyboard', Config.PanicButton.key)
     end
-    TriggerEvent('chat:addSuggestion', '/'..Config.PanicButton.command, L('panic_description'))
     
     local function IsAllowed_panic(job)
         for c, d in pairs(Config.PanicButton.job_table) do
-            if job == d and on_duty then
+            if job == d and IsAllowed() then
                 return Config.PanicButton.job_table
             end
         end
@@ -28,6 +27,7 @@ if Config.PanicButton.ENABLE then
 
     RegisterCommand(Config.PanicButton.command, function(source, args)
         if cooldown > 0 then return Notif(3, 'ping_cooldown', cooldown) end
+        if not IsAllowed_panic(GetJob()) then return Notif(3, 'no_perms') end
         TriggerEvent('cd_dispatch:PanicButtonEvent')
         PingCooldown()
     end)

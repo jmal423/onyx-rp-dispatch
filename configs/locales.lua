@@ -1,11 +1,11 @@
 Locales = { 
     ['EN'] = { --english
-        ['dispatchsmall_description'] = 'Open the small UI',
-        ['dispatchlarge_description'] = 'Open the large UI',
-        ['respond_description'] = 'Respond to dispatch calls',
+        ['dispatchsmall_description'] = 'Dispatch panel is shown automatically while on duty',
+        ['dispatchlarge_description'] = 'Open the large dispatch map',
+        ['respond_description'] = 'Respond to the selected dispatch call',
         ['movemode_description'] = 'Enable move mode on the dispatch UI',
-        ['scrollleft_description'] = 'Scroll left through dispatch alerts',
-        ['scrollright_description'] = 'Scroll right through dispatch alerts',
+        ['scrollleft_description'] = 'Show the previous dispatch call',
+        ['scrollright_description'] = 'Show the next dispatch call',
         ['panic_description'] = 'Press your panic button',
         ['cooldown'] = 'There is a 1 second cooldown when responding',
         ['still_loading'] = 'The resource is still loading. Please try again in a few seconds',

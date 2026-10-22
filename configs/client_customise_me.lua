@@ -7,7 +7,17 @@
 
 
 ESX, QBCore = nil, nil
-JobData, on_duty = {}, true
+JobData, on_duty = {}, false
+
+local function UpdateDispatchVisibility()
+    if not Authorised then return end
+    if IsAllowed() then
+        if HasSourceInfoLoaded() and not uiStates.large then ShowSmallUI() end
+    else
+        if uiStates.large then HideLargeUI() end
+        HideSmallUI()
+    end
+end
 
 CreateThread(function()
     if Config.Framework == 'esx' then
@@ -19,27 +29,32 @@ CreateThread(function()
             Wait(100)
         end
         JobData = ESX.PlayerData.job or {}
-        if JobData.onDuty ~= nil and Config.UseFrameworkDutySystem then on_duty = JobData.onDuty end 
+        on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
+        UpdateDispatchVisibility()
 
         RegisterNetEvent(Config.FrameworkTriggers.load)
         AddEventHandler(Config.FrameworkTriggers.load, function(xPlayer)
             JobData = xPlayer.job or {}
-            if JobData.onDuty ~= nil and Config.UseFrameworkDutySystem then on_duty = JobData.onDuty end 
+            on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
             while not Authorised do Wait(1000) end
             TriggerServerEvent('cd_dispatch:PlayerLoaded')
+            UpdateDispatchVisibility()
         end)
 
         RegisterNetEvent(Config.FrameworkTriggers.job)
         AddEventHandler(Config.FrameworkTriggers.job, function(job)
-            local last_job = GetJob()
+            local last_job = JobData.name
             JobData = job or {}
-            if last_job ~= job.name then
+            if Config.UseFrameworkDutySystem then
+                on_duty = JobData.onDuty == true
+            end
+            if last_job ~= JobData.name then
                 TriggerServerEvent('cd_dispatch:JobSet', GetJob())
             end
-            if job.onDuty ~= nil and Config.UseFrameworkDutySystem and job.onDuty ~= on_duty then
-                on_duty = job.onDuty
+            if Config.UseFrameworkDutySystem then
                 TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
             end
+            UpdateDispatchVisibility()
         end)
 
 
@@ -52,34 +67,44 @@ CreateThread(function()
             Wait(100)
         end
         JobData = QBCore.Functions.GetPlayerData().job or {}
-        if JobData.onduty ~= nil and Config.UseFrameworkDutySystem then on_duty = JobData.onduty end
+        on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
+        UpdateDispatchVisibility()
 
         RegisterNetEvent(Config.FrameworkTriggers.load)
         AddEventHandler(Config.FrameworkTriggers.load, function()
             JobData = QBCore.Functions.GetPlayerData().job or {}
-            if JobData.onduty ~= nil and Config.UseFrameworkDutySystem then on_duty = JobData.onduty end
+            on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
             while not Authorised do Wait(1000) end
             TriggerServerEvent('cd_dispatch:PlayerLoaded')
+            UpdateDispatchVisibility()
         end)
 
         RegisterNetEvent(Config.FrameworkTriggers.job)
         AddEventHandler(Config.FrameworkTriggers.job, function(JobInfo)
-            local last_job = GetJob()
+            local last_job = JobData.name
             JobData = JobInfo or {}
-            if last_job == JobInfo.name then return end
-            TriggerServerEvent('cd_dispatch:JobSet', GetJob())
+            if last_job ~= JobData.name then
+                TriggerServerEvent('cd_dispatch:JobSet', GetJob())
+            end
+            if Config.UseFrameworkDutySystem then
+                on_duty = JobData.onduty == true
+                TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
+            end
+            UpdateDispatchVisibility()
         end)
 
         RegisterNetEvent(Config.FrameworkTriggers.duty)
         AddEventHandler(Config.FrameworkTriggers.duty, function(boolean)
-            if on_duty == boolean or not Config.UseFrameworkDutySystem then return end
+            if type(boolean) ~= 'boolean' or on_duty == boolean or not Config.UseFrameworkDutySystem then return end
             on_duty = boolean
             TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
+            UpdateDispatchVisibility()
         end)
     
 
     elseif Config.Framework == 'other' then
-        --add your framework code here.
+        -- Custom frameworks must explicitly provide a trusted duty integration.
+        on_duty = false
 
     end
 end)
@@ -127,6 +152,7 @@ function GetJob_label()
 end
 
 function IsAllowed()
+    if not JobData or type(JobData.name) ~= 'string' then return false end
     local job = GetJob()
     if CheckMultiJobs(job) and on_duty then
         return true
@@ -165,47 +191,43 @@ end)
 
 CreateThread(function()
     while not Authorised do Wait(1000) end 
-    if Config.small_ui.ENABLE then
-        RegisterKeyMapping(Config.small_ui.command, L('dispatchsmall_description'), 'keyboard', Config.small_ui.key)
-        TriggerEvent('chat:addSuggestion', '/'..Config.small_ui.command, L('dispatchsmall_description'))
-        RegisterCommand(Config.small_ui.command, function()
-            TriggerEvent('cd_dispatch:KEY_smallui') --The event to toggle the small UI.
-        end)
-    end
     if Config.large_ui.ENABLE then
         RegisterKeyMapping(Config.large_ui.command, L('dispatchlarge_description'), 'keyboard', Config.large_ui.key)
-        TriggerEvent('chat:addSuggestion', '/'..Config.large_ui.command, L('dispatchlarge_description'))
         RegisterCommand(Config.large_ui.command, function()
             TriggerEvent('cd_dispatch:KEY_largeui') --The event to open the large UI.
         end)
     end
     if Config.respond.ENABLE then
         RegisterKeyMapping(Config.respond.command, L('respond_description'), 'keyboard', Config.respond.key)
-        TriggerEvent('chat:addSuggestion', '/'..Config.respond.command, L('respond_description'))
         RegisterCommand(Config.respond.command, function()
             TriggerEvent('cd_dispatch:KEY_responding') --The event to toggle the responding.
         end)
     end
     if Config.move_mode.ENABLE then
-        TriggerEvent('chat:addSuggestion', '/'..Config.move_mode.command, L('movemode_description'))
+        TriggerEvent('chat:addSuggestion', '/moverdispatch', L('movemode_description'))
         RegisterCommand(Config.move_mode.command, function()
             TriggerEvent('cd_dispatch:EnableMoveMode') --The event to enable move mode.
         end)
     end
     if Config.small_ui_left.ENABLE then
         RegisterKeyMapping(Config.small_ui_left.command, L('scrollleft_description'), 'keyboard', Config.small_ui_left.key)
-        TriggerEvent('chat:addSuggestion', '/'..Config.small_ui_left.command, L('scrollleft_description'))
         RegisterCommand(Config.small_ui_left.command, function()
             Decreasecount() --The function to scroll left through notifications on the small UI.
         end)
     end
     if Config.small_ui_right.ENABLE then
         RegisterKeyMapping(Config.small_ui_right.command, L('scrollright_description'), 'keyboard', Config.small_ui_right.key)
-        TriggerEvent('chat:addSuggestion', '/'..Config.small_ui_right.command, L('scrollright_description'))
         RegisterCommand(Config.small_ui_right.command, function()
             Increasecount() --The function to scroll right through notifications on the small UI.
         end)
     end
+end)
+
+RegisterNetEvent('cd_dispatch:DutyState')
+AddEventHandler('cd_dispatch:DutyState', function(duty)
+    if type(duty) ~= 'boolean' then return end
+    on_duty = duty
+    UpdateDispatchVisibility()
 end)
 
 
@@ -327,9 +349,10 @@ end
 
 RegisterNetEvent('cd_dispatch:OnDutyChecks')
 AddEventHandler('cd_dispatch:OnDutyChecks', function(boolean)
-    if type(boolean) == 'boolean' and on_duty ~= boolean then
+    if type(boolean) == 'boolean' and Config.UseFrameworkDutySystem and on_duty ~= boolean then
         on_duty = boolean
-        TriggerServerEvent('cd_dispatch:OnDutyChecks', boolean)
+        TriggerServerEvent('cd_dispatch:OnDutyChecks', on_duty)
+        UpdateDispatchVisibility()
     end
 end)
 

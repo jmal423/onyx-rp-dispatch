@@ -43,7 +43,7 @@ Config.FrameworkTriggers = {
 
 
 Config.UsingOneSync = true --Do you use OneSync legacy or infinity?
-Config.UseFrameworkDutySystem = false --Do you want to use your frameworks (esx/qbcore) built-in duty system?
+Config.UseFrameworkDutySystem = true --Dispatch visibility and access follow the framework duty state.
 Config.Debug = false --To enable debug prints.
 Config.EnableTestCommand = false --The test command is 'dispatchtest'.
 
@@ -58,8 +58,7 @@ Config.EnableTestCommand = false --The test command is 'dispatchtest'.
 
 Config.AllowedJobs = { --A list of jobs who are allowed to use this dispatch.
 --This will group different jobs together. Eg., so 2 jobs {'police', 'ambulance'} can both see can see each other on the dispatch UI and the pause menu/mini-map blips.
-    [1] = {'police', 'ambulance'}, --police & ambulance group
-    [2] = {'mechanic', }, --mechanic group
+    [1] = {'police', 'ambulance', 'sheriff'}, --Current emergency service jobs.
     --[3] = {'1st_job', '2nd_job', }, --add more here
 }
 
@@ -148,7 +147,7 @@ Config.Dispatcher = {
 
 
 Config.JobCallCommands = { 
-    ENABLE = true,--Do you want to use the job chat commands eg., /911 to send a notification to the police.
+    ENABLE = false,--Only /moverdispatch is exposed as a dispatch chat command.
 
     --label: The job display label.
     --command: The chat command.
@@ -179,9 +178,9 @@ Config.JobCallCommands = {
 
 Config.PanicButton = {
     ENABLE = true, --Do you want to allow dispatch users to use the built-in panic button?
-    command = 'panic', --The chat command.
-    key = '', --The key press. This is not used by default. You can choose keys here - https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/.
-    job_table = {'police', 'ambulance', }, --A list of jobs who can use the panic button. (every job in this list will be notified if a panic button is pressed).
+    command = '_onyx_dispatch_panic', --Internal key mapping command.
+    key = 'f10', --Change this in FiveM key bindings.
+    job_table = {'police', 'ambulance', 'sheriff'}, --A list of jobs who can use the panic button. (every job in this list will be notified if a panic button is pressed).
     cooldown = 10, --(in seconds) This cooldown is to prevent a player spamming the panic button.
     play_sound_in_distance = true --Do you want the panic button sound to play to all nearby players?
 }
@@ -197,7 +196,7 @@ Config.PanicButton = {
 
 Config.Ping = {
     ENABLE = true, --Do you want to allow players who have access to the dispatch to ping their location to other players of the same job?
-    command = 'dispatchping', --The chat command.
+    command = '_onyx_dispatch_ping', --Internal key mapping command.
     key = 'up', --The key press. You can choose other keys here - https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/.
     cooldown = 10, --(in seconds) This cooldown is to prevent a player spamming pings.
 }
@@ -214,7 +213,7 @@ Config.Ping = {
 Config.PoliceAlerts = {
     ENABLE = true, --Do you want to use the built in police alerts?
     police_jobs = {'police', }, --The jobs who will be notified from these police alerts.
-    whitelisted_jobs = {'police', 'ambulance', }, --These jobs will NOT trigger these police alerts.
+    whitelisted_jobs = {'police', 'ambulance', 'sheriff'}, --These jobs will NOT trigger these police alerts.
     cooldown = 30, --(in seconds) This cooldown is to prevent alerts from being spammed by the same player.
     add_bolos = true, --(requires cd_radar) Do you want to add a bolo for the vehicle that was used in the crime?
     require_witness_peds = {
@@ -305,36 +304,36 @@ Config.PoliceAlerts = {
 
 Config.small_ui = {
     ENABLE = true, --Do you want to enable the small UI?
-    command = 'dispatchsmall', --The chat command.
-    key = 'u' --The key press. You can choose other keys here - https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/.
+    command = '_onyx_dispatch_small', --Panel visibility is automatic while on duty.
+    key = ''
 }
 
 Config.large_ui = {
     ENABLE = true, --Do you want to enable the large map UI?
-    command = 'dispatchlarge',
-    key = 'l'
+    command = '_onyx_dispatch_large',
+    key = 'k'
 }
 
 Config.respond = {
     ENABLE = true, --Do you want to enable the units responding feature?
-    command = 'respond', 
+    command = '_onyx_dispatch_respond',
     key = 'g'
 }
 
 Config.move_mode = {
     ENABLE = true, --Do you want to enable the move mode feature?
-    command = 'movemode'
+    command = 'moverdispatch'
 }
 
 Config.small_ui_left = {
     ENABLE = true, --Do you want to enable the small UI left scroll?
-    command = 'scrollleft', 
+    command = '_onyx_dispatch_previous',
     key = 'left'
 }
 
 Config.small_ui_right = {
     ENABLE = true, --Do you want to enable the small UI right scroll?
-    command = 'scrollright', 
+    command = '_onyx_dispatch_next',
     key = 'right'
 }
 

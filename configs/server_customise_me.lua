@@ -63,6 +63,31 @@ function GetJob(source)
     end
 end
 
+function IsPlayerOnDuty(source)
+    if not Config.UseFrameworkDutySystem then return false end
+
+    if Config.Framework == 'esx' then
+        local player = ESX.GetPlayerFromId(source)
+        return player ~= nil and player.job ~= nil and player.job.onDuty == true
+    elseif Config.Framework == 'qbcore' then
+        local player = QBCore.Functions.GetPlayer(source)
+        return player ~= nil and player.PlayerData.job ~= nil and player.PlayerData.job.onduty == true
+    end
+
+    return false
+end
+
+function GetFrameworkPlayerJob(source)
+    if Config.Framework == 'esx' then
+        local player = ESX.GetPlayerFromId(source)
+        return player and player.job and player.job.name or nil
+    elseif Config.Framework == 'qbcore' then
+        local player = QBCore.Functions.GetPlayer(source)
+        return player and player.PlayerData.job and player.PlayerData.job.name or nil
+    end
+    return nil
+end
+
 function CheckJob(source, job)
     if CheckMultiJobs(job) and self[source].on_duty then
         return true
@@ -114,17 +139,8 @@ AddEventHandler('cd_dispatch:PlayerLoaded', function()
         name = 'Available',
         color = '#539D1B'
     }
-    self[_source].on_duty = true
-    if Config.UseFrameworkDutySystem then
-        if Config.Framework == 'esx' then
-            local xPlayer = ESX.GetPlayerFromId(_source)
-            if xPlayer and xPlayer.job.onDuty ~= nil then
-                self[_source].on_duty = xPlayer.job.onDuty
-            end
-        elseif Config.Framework == 'qbcore' then
-            self[_source].on_duty = QBCore.Functions.GetPlayer(_source).PlayerData.job.onduty
-        end
-    end
+    self[_source].on_duty = IsPlayerOnDuty(_source)
+    TriggerClientEvent('cd_dispatch:DutyState', _source, self[_source].on_duty)
     TriggerClientEvent('cd_dispatch:SendSourceData', _source, self[_source], DispatcherData.active)
     PlayerBlipsActions(_source, 'update')
     if CheckMultiJobs(self[_source].job) then
@@ -201,7 +217,9 @@ end
 RegisterServerEvent('cd_dispatch:JobSet')
 AddEventHandler('cd_dispatch:JobSet', function(job)
     local _source = source
-    if self and self[_source] and type(job) == 'string' then
+    if self and self[_source] then
+        job = GetFrameworkPlayerJob(_source) -- Never accept a job identity supplied by the client.
+        if type(job) ~= 'string' then return end
         local old_job = self[_source].job
         self[_source].job = job
         PlayerBlipsActions(_source, 'update')
@@ -331,11 +349,15 @@ RegisterNetEvent('cd_dispatch:OnDutyChecks')
 AddEventHandler('cd_dispatch:OnDutyChecks', function(boolean)
     local _source = source
     while not self do Wait(1000) end
-    if self[_source] and type(boolean) == 'boolean' then
-        self[_source].on_duty = boolean
-        if boolean then
+    if self[_source] and Config.UseFrameworkDutySystem and type(boolean) == 'boolean' then
+        local duty = IsPlayerOnDuty(_source)
+
+        self[_source].on_duty = duty
+        TriggerClientEvent('cd_dispatch:DutyState', _source, duty)
+        if duty then
             PlayerBlipsActions(_source, 'update')
         else
+            TriggerClientEvent('cd_dispatch:ForceCloseLargeUI', _source)
             PlayerBlipsActions(_source, 'remove')
         end
     end

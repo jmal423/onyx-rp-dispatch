@@ -96,20 +96,13 @@ end
 RegisterNetEvent("cd_dispatch:KEY_smallui")
 AddEventHandler("cd_dispatch:KEY_smallui", function()
     if Checks("is_allowed") then
-        if not uiStates.small then
-            if HasSourceInfoLoaded() then
-                ShowSmallUI()
-                return
-            else
-                Notif(2, "still_loading")
-            end
-        end
+        if HasSourceInfoLoaded() and not uiStates.large then ShowSmallUI() end
     else
         if Config.Debug then
             E("9711 - no_perms/off_duty")
         end
+        HideSmallUI()
     end
-    HideSmallUI()
 end)
 RegisterNetEvent("cd_dispatch:KEY_largeui")
 AddEventHandler("cd_dispatch:KEY_largeui", function()
@@ -243,6 +236,9 @@ RegisterNetEvent("cd_dispatch:SendSourceData")
 AddEventHandler("cd_dispatch:SendSourceData", function(sourceData, dispatcherState)
     if T(sourceData, "table") then
         if T(dispatcherState, "boolean") then
+            if Config.UseFrameworkDutySystem and type(sourceData.on_duty) == "boolean" then
+                on_duty = sourceData.on_duty
+            end
             SourceInfo.char_name = sourceData.char_name
             SourceInfo.callsign = sourceData.callsign
             SourceInfo.phone_number = sourceData.phone_number
@@ -254,6 +250,11 @@ AddEventHandler("cd_dispatch:SendSourceData", function(sourceData, dispatcherSta
             isDispatcher = dispatcherState
             SourceInfo.job = sourceData.job
             SourceInfo.source = sourceData.source
+            uiStates = uiStates or {}
+            if not IsAllowed() then
+                uiStates.large = false
+                if NUI_status then TriggerEvent('cd_dispatch:ForceCloseLargeUI') end
+            end
             SendNUIMessage({
                 action = "currentplayer",
                 values = SourceInfo
@@ -265,6 +266,12 @@ AddEventHandler("cd_dispatch:SendSourceData", function(sourceData, dispatcherSta
             end
             if Config.Debug then
                 print("DEBUG: SourceInfo updated: " .. json.encode(SourceInfo))
+            end
+            if IsAllowed() then
+                if not uiStates.large then ShowSmallUI() end
+            else
+                if uiStates.large then HideLargeUI() end
+                HideSmallUI()
             end
         end
     else
@@ -569,7 +576,11 @@ end
 function HideLargeUI()
     uiStates.large = false
     NUI_status = false
-    ShowSmallUI()
+    if Checks("is_allowed") then
+        ShowSmallUI()
+    else
+        HideSmallUI()
+    end
     TabletAnimation(false)
     FreezeEntityPosition(PlayerPedId(), false)
 end

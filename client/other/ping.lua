@@ -1,7 +1,6 @@
 if Config.Ping.ENABLE then
 
     RegisterKeyMapping(Config.Ping.command, L('ping_description'), 'keyboard', Config.Ping.key)
-    TriggerEvent('chat:addSuggestion', '/'..Config.Ping.command, L('ping_description'))
     
     local cooldown = 0
     local function PingCooldown()

@@ -1,5 +1,19 @@
 tablet_prop = nil
 
+RegisterNetEvent('cd_dispatch:ForceCloseLargeUI')
+AddEventHandler('cd_dispatch:ForceCloseLargeUI', function()
+    NUI_status = false
+    SetNuiFocus(false, false)
+    SetNuiFocusKeepInput(false)
+    if tablet_prop and DoesEntityExist(tablet_prop) then
+        NetworkRequestControlOfEntity(tablet_prop)
+        SetEntityAsMissionEntity(tablet_prop, true, true)
+        DeleteEntity(tablet_prop)
+        tablet_prop = nil
+    end
+    StopAnimTask(PlayerPedId(), 'amb@world_human_seat_wall_tablet@female@base', 'base', 8.0, -8.0, -1, 50, 0, false, false, false)
+end)
+
 RegisterNetEvent('cd_dispatch:ToggleNUIFocus')
 AddEventHandler('cd_dispatch:ToggleNUIFocus', function()
     NUI_status = true
