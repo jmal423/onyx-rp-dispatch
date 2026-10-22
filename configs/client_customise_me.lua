@@ -9,27 +9,6 @@
 ESX, QBCore = nil, nil
 JobData, on_duty = {}, false
 
-local playerSyncRequested = false
-local playerSyncPending = false
-
-local function RequestPlayerSync()
-    if playerSyncRequested or playerSyncPending then return end
-    playerSyncPending = true
-
-    CreateThread(function()
-        while not Authorised or type(JobData.name) ~= 'string' do
-            Wait(100)
-        end
-
-        playerSyncPending = false
-        playerSyncRequested = true
-        TriggerServerEvent('cd_dispatch:PlayerLoaded')
-    end)
-end
-
-RegisterNetEvent('cd_dispatch:ClientAuthorised')
-AddEventHandler('cd_dispatch:ClientAuthorised', RequestPlayerSync)
-
 local function UpdateDispatchVisibility()
     if not Authorised then return end
     if IsAllowed() then
@@ -52,13 +31,13 @@ CreateThread(function()
         JobData = ESX.PlayerData.job or {}
         on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
         UpdateDispatchVisibility()
-        RequestPlayerSync()
 
         RegisterNetEvent(Config.FrameworkTriggers.load)
         AddEventHandler(Config.FrameworkTriggers.load, function(xPlayer)
             JobData = xPlayer.job or {}
             on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
-            RequestPlayerSync()
+            while not Authorised do Wait(100) end
+            TriggerServerEvent('cd_dispatch:PlayerLoaded')
             UpdateDispatchVisibility()
         end)
 
@@ -90,13 +69,13 @@ CreateThread(function()
         JobData = QBCore.Functions.GetPlayerData().job or {}
         on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
         UpdateDispatchVisibility()
-        RequestPlayerSync()
 
         RegisterNetEvent(Config.FrameworkTriggers.load)
         AddEventHandler(Config.FrameworkTriggers.load, function()
             JobData = QBCore.Functions.GetPlayerData().job or {}
             on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
-            RequestPlayerSync()
+            while not Authorised do Wait(100) end
+            TriggerServerEvent('cd_dispatch:PlayerLoaded')
             UpdateDispatchVisibility()
         end)
 
@@ -194,6 +173,26 @@ function CheckJob(job_table, job)
     end
     return false
 end
+
+RegisterNetEvent('cd_dispatch:ScriptRestarted')
+AddEventHandler('cd_dispatch:ScriptRestarted', function()
+    -- A resource restart does not fire the framework's player-loaded event again.
+    -- Re-read the live job/duty data before asking the server to rebuild dispatch state.
+    if Config.Framework == 'qbcore' then
+        while not QBCore do Wait(50) end
+        local playerData = QBCore.Functions.GetPlayerData()
+        JobData = playerData and playerData.job or {}
+        on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
+    elseif Config.Framework == 'esx' then
+        while not ESX or not ESX.PlayerData do Wait(50) end
+        JobData = ESX.PlayerData.job or {}
+        on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
+    end
+
+    while not Authorised do Wait(100) end
+    TriggerServerEvent('cd_dispatch:PlayerLoaded')
+end)
+
 
 --██╗  ██╗███████╗██╗   ██╗███████╗     █████╗ ███╗   ██╗██████╗      ██████╗ ██████╗ ███╗   ███╗███╗   ███╗ █████╗ ███╗   ██╗██████╗ ███████╗
 --██║ ██╔╝██╔════╝╚██╗ ██╔╝██╔════╝    ██╔══██╗████╗  ██║██╔══██╗    ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝

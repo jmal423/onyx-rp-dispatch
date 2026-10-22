@@ -51,6 +51,8 @@ CreateThread(function()
             InsertSQL()
         end
         
+        Wait(2000)
+        TriggerClientEvent("cd_dispatch:ScriptRestarted", -1)
     end
 end)
 
