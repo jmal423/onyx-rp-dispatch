@@ -374,9 +374,11 @@ html {
 }
 #dispatchGroup:empty {
   display: flex;
-  min-height: clamp(12rem, 30vh, 26rem);
+  min-height: clamp(10rem, 18vh, 16rem);
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 1.5rem;
   overflow: hidden;
   background-color: rgba(33, 37, 41, 0.72);
@@ -384,12 +386,19 @@ html {
 }
 
 #dispatchGroup:empty::before {
-  content: "Sem ocorrências ativas\AOs novos alertas da central aparecem aqui.";
+  content: "Sem ocorrências ativas";
   color: #f8f9fa;
   font-size: clamp(1rem, 1.15vw, 1.35rem);
   font-weight: 600;
-  line-height: 1.65;
-  white-space: pre-line;
+  line-height: 1.25;
+}
+
+#dispatchGroup:empty::after {
+  content: "Os novos alertas da central aparecem aqui.";
+  max-width: 30ch;
+  color: #adb5bd;
+  font-size: clamp(0.8rem, 0.9vw, 1.05rem);
+  line-height: 1.4;
 }
 
 #dispatchGroup:first-child {
