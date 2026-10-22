@@ -150,11 +150,6 @@ Config.IncidentAlerts = {
         scan_interval = 2000,
         cooldown = 120,
     },
-    NearbyGunshots = {
-        ENABLE = true, -- Detect shots fired by nearby players as well as the existing local-player alert.
-        scan_radius = 180,
-        cooldown = 20,
-    },
     Explosions = {
         ENABLE = true, -- Uses the FXServer explosionEvent (OneSync required).
         source_cooldown = 5,
@@ -163,7 +158,7 @@ Config.IncidentAlerts = {
     },
     Fires = {
         ENABLE = true,
-        scan_radius = 180,
+        scan_radius = 180, -- A reporting client must have the detected fire loaded nearby.
         scan_interval = 5000,
         cooldown = 120,
     },

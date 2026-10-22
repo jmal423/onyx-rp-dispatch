@@ -1,6 +1,6 @@
 # Integrar outros recursos com o ONYX Dispatch
 
-Usa o export server-side `SendAlert` para ligar um assalto ou outro evento confirmado ao dispatch. Disparos, jogadores armados junto a vias, explosões e incêndios próximos de unidades policiais já têm deteção integrada; continua a usar o export para assaltos e eventos especiais de outros recursos. O export não cria eventos de rede; chama-o a partir do servidor do recurso que detetou e validou a ocorrência.
+Usa o export server-side `SendAlert` para ligar um assalto ou outro evento confirmado ao dispatch. Disparos próprios de jogadores fora da whitelist, jogadores armados junto a vias, explosões e incêndios observados por clientes já têm deteção integrada; os alertas são encaminhados globalmente à Polícia e Sheriff de serviço, sem exigir unidades policiais perto do evento. A cobertura de incêndios depende de algum cliente ter o fogo carregado no jogo. Continua a usar o export para assaltos e eventos especiais de outros recursos. O export não cria eventos de rede; chama-o a partir do servidor do recurso que detetou e validou a ocorrência.
 
 ## Exemplo
 

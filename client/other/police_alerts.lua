@@ -1,9 +1,9 @@
 if Config.PoliceAlerts.ENABLE then
     
-    local function IsPlayerJobWhitelisted()
+    local function IsPlayerJobWhitelisted(requireOnDuty)
         local job = GetJob()
         for c, d in pairs(Config.PoliceAlerts.whitelisted_jobs) do
-            if job == d and on_duty then
+            if job == d and (not requireOnDuty or on_duty) then
                 return true
             end
         end
@@ -50,7 +50,6 @@ if Config.PoliceAlerts.ENABLE then
 
     if Config.PoliceAlerts.GunShots.ENABLE then
         CreateThread(function()
-            while not Authorised do Wait(1000) end
             while true do
                 wait = 500
                 local ped = PlayerPedId()
@@ -123,7 +122,7 @@ if Config.PoliceAlerts.ENABLE then
                         local config_data = Config.PoliceAlerts.SpeedTrap.Locations[cd]
                         if #(config_data.coords-GetEntityCoords(ped)) < config_data.distance then
                             if speed > config_data.speed_limit then
-                                if not IsPlayerJobWhitelisted() and IsWitnessPedInArea() then
+                                if not IsPlayerJobWhitelisted(true) and IsWitnessPedInArea() then
                                     Wait(math.random(3000,6000))
                                     local data = GetPlayerInfo()
                                     TriggerServerEvent('onyx_dispatch:AddNotification', {

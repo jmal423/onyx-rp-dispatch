@@ -44,10 +44,6 @@ local function CreateIncident(kind, coords, targetData)
         title = '10-72 - Pessoa armada'
         message = ('Jogador armado avistado perto da via pública%s.'):format(targetData and targetData.name and (' (' .. targetData.name .. ')') or '')
         sound, flash, sprite = 2, false, 156
-    elseif kind == 'NearbyGunshots' then
-        title = '10-13 - Disparos'
-        message = ('Foram detetados disparos nas proximidades%s.'):format(targetData and targetData.name and (' (' .. targetData.name .. ')') or '')
-        sound, flash, sprite = 3, true, 313
     elseif kind == 'Fires' then
         title = 'Incêndio reportado'
         message = 'Fogo detetado nas proximidades.'
@@ -92,17 +88,23 @@ AddEventHandler('onyx_dispatch:ReportIncident', function(data)
     local reporterId = source
     if type(data) ~= 'table' then return end
 
-    local reporter = self and self[reporterId]
-    if not reporter or not reporter.on_duty or GetJob(reporterId) ~= reporter.job
-        or not IsPoliceServiceJob(reporter.job) then return end
-
     local kind = data.kind
     local configKey = kind == 'armed_player' and 'ArmedPlayers'
-        or kind == 'nearby_gunshot' and 'NearbyGunshots'
         or kind == 'fire' and 'Fires'
         or nil
     local settings = configKey and incidentConfig[configKey]
     if not settings or settings.ENABLE ~= true then return end
+
+    local reporter = self and self[reporterId]
+    local reporterPed = GetPlayerPed(reporterId)
+    if kind == 'armed_player' then
+        if not reporter or not reporter.on_duty or GetJob(reporterId) ~= reporter.job
+            or not IsPoliceServiceJob(reporter.job) then return end
+    elseif kind == 'fire' then
+        if not reporterPed or reporterPed == 0 or not DoesEntityExist(reporterPed) then return end
+    else
+        return
+    end
 
     local now = os.time()
     local sourceKey = ('%s:%s'):format(reporterId, configKey)
@@ -115,7 +117,6 @@ AddEventHandler('onyx_dispatch:ReportIncident', function(data)
         local input = data.coords
         if type(input) ~= 'table' or not IsFiniteNumber(input.x) or not IsFiniteNumber(input.y) or not IsFiniteNumber(input.z) then return end
         coords = vector3(input.x, input.y, input.z)
-        local reporterPed = GetPlayerPed(reporterId)
         if reporterPed == 0 or #(GetEntityCoords(reporterPed) - coords) > (tonumber(settings.scan_radius) or 180) + 25 then return end
     else
         local targetId = tonumber(data.target)
@@ -127,10 +128,6 @@ AddEventHandler('onyx_dispatch:ReportIncident', function(data)
 
         local weapon = GetSelectedPedWeapon(targetPed)
         if not weapon or weapon == GetHashKey('WEAPON_UNARMED') or not IsPedArmed(targetPed, 4) then return end
-        local whitelistedWeapons = (Config.PoliceAlerts.GunShots or {}).WhitelistedWeapons or {}
-        if kind == 'nearby_gunshot' and whitelistedWeapons[weapon] then return end
-        if kind == 'nearby_gunshot' and data.silenced == true then return end
-
         coords = GetEntityCoords(targetPed)
         local reporterPed = GetPlayerPed(reporterId)
         if reporterPed == 0 or #(GetEntityCoords(reporterPed) - coords) > (tonumber(settings.scan_radius) or 180) + 25 then return end
