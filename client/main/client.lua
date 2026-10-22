@@ -42,6 +42,7 @@ end)
 RegisterNUICallback("dispatcheroffline", function()
     isDispatcherOffline = true
     Authorised = true
+    TriggerEvent('cd_dispatch:ClientAuthorised')
     if Config.Debug then
         print("Loaded Successfully!")
     end
