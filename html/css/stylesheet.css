@@ -35,13 +35,13 @@ html {
 .toastHeader {
   background-color: rgb(52, 58, 64);
 }
-#body {
+#dispatchCallContent {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
 
-#body::before {
+#dispatchCallContent::before {
   position: absolute;
   z-index: -1;
   inset: 0;
@@ -52,8 +52,7 @@ html {
   pointer-events: none;
 }
 
-#body.dispatch-alert-normal::before {
-  opacity: 1;
+#dispatchCallContent.dispatch-alert-normal::before {
   background-image: linear-gradient(
     115deg,
     rgba(32, 181, 163, 0.04),
@@ -61,11 +60,11 @@ html {
     rgba(126, 96, 220, 0.12),
     rgba(32, 181, 163, 0.04)
   );
-  animation: dispatch-alert-normal-flow 7s ease-in-out infinite alternate;
+  animation: dispatch-alert-normal-flow 7s ease-in-out infinite alternate,
+    dispatch-alert-normal-breathe 3.2s ease-in-out infinite;
 }
 
-#body.dispatch-alert-urgent::before {
-  opacity: 1;
+#dispatchCallContent.dispatch-alert-urgent::before {
   background-image: linear-gradient(
     115deg,
     rgba(255, 57, 67, 0.12),
@@ -73,7 +72,8 @@ html {
     rgba(235, 35, 78, 0.34),
     rgba(255, 57, 67, 0.12)
   );
-  animation: dispatch-alert-urgent-flow 1.35s ease-in-out infinite alternate;
+  animation: dispatch-alert-urgent-flow 1.35s ease-in-out infinite alternate,
+    dispatch-alert-urgent-breathe 0.95s ease-in-out infinite;
 }
 
 @keyframes dispatch-alert-normal-flow {
@@ -86,10 +86,21 @@ html {
   to { background-position: 100% 50%; filter: brightness(1.45); }
 }
 
+@keyframes dispatch-alert-normal-breathe {
+  0%, 100% { opacity: 0.16; }
+  50% { opacity: 0.62; }
+}
+
+@keyframes dispatch-alert-urgent-breathe {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.96; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  #body.dispatch-alert-normal::before,
-  #body.dispatch-alert-urgent::before {
+  #dispatchCallContent.dispatch-alert-normal::before,
+  #dispatchCallContent.dispatch-alert-urgent::before {
     animation: none;
+    opacity: 0.35;
     background-position: 50% 50%;
   }
 }
