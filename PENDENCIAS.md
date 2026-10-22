@@ -26,6 +26,7 @@ Atualizar este ficheiro quando uma pendência for investigada, alterada, confirm
 
 - **Estado:** correção implementada em 2026-10-22; falta teste no FiveM.
 - Ao mudar a resolução, a NUI espera 250 ms para estabilizar, volta a ajustar o mapa à janela e pede ao cliente Lua para reapresentar o small se o mapa grande estiver fechado e o jogador continuar autorizado/de serviço. A posição do small é guardada como proporção da área útil, para manter a colocação relativa entre resoluções e reinícios da NUI.
+- A posição só é guardada após arrastar o painel; abrir/fechar menus e alterações automáticas de estilo já não reescrevem a posição guardada. A aplicação da posição também substitui explicitamente a transformação CSS de centragem.
 - Corrigida a transformação CSS do `#toastContainer`, que estava a ser sobrescrita e podia deslocar o small verticalmente.
 - **Ajuste 720p:** reduzido o mínimo da escala global de 14 px para 12 px, a largura mínima do toast e a largura máxima das definições. Em ecrãs baixos, as margens e espaçamentos das definições também diminuem para evitar um modal desproporcional.
 - **Menus:** o small é temporariamente ocultado enquanto o Pause Menu ou inventário está aberto e reaparece ao fechar. A deteção usa `IsPauseMenuActive()` e os state bags `invOpen`, `invBusy` e `inv_busy`.

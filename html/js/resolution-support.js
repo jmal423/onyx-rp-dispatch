@@ -2,6 +2,7 @@
   let resizeTimer;
   let lastWidth = window.innerWidth;
   let lastHeight = window.innerHeight;
+  let dragStart = null;
   let positionSaveTimer;
   const positionStorageKey = 'onyx_dispatch.small_relative_position.v1';
   let relativePosition = null;
@@ -66,7 +67,7 @@
     if (!relativePosition) {
       readRelativePosition();
       storeRelativePosition();
-      return;
+      if (!relativePosition) return;
     }
 
     const rect = panel.getBoundingClientRect();
@@ -76,8 +77,8 @@
     const top = Math.min(maxTop, Math.max(0, relativePosition.y * maxTop));
 
     panel.style.right = 'auto';
-    panel.style.transform = 'none';
-    panel.style.webkitTransform = 'none';
+    panel.style.setProperty('transform', 'none', 'important');
+    panel.style.setProperty('-webkit-transform', 'none', 'important');
     panel.style.left = `${left}px`;
     panel.style.top = `${top}px`;
   }
@@ -89,9 +90,21 @@
 
   const smallPanel = document.getElementById('toastContainer');
   if (smallPanel) {
-    new MutationObserver(schedulePositionSave).observe(smallPanel, {
-      attributes: true,
-      attributeFilter: ['style'],
+    document.addEventListener('pointerdown', (event) => {
+      if (!smallPanel.contains(event.target)) return;
+      dragStart = { x: event.clientX, y: event.clientY };
+    });
+
+    document.addEventListener('pointerup', (event) => {
+      if (!dragStart) return;
+      const moved = Math.abs(event.clientX - dragStart.x) > 2 ||
+        Math.abs(event.clientY - dragStart.y) > 2;
+      dragStart = null;
+      if (moved) schedulePositionSave();
+    });
+
+    document.addEventListener('pointercancel', () => {
+      dragStart = null;
     });
   }
 
