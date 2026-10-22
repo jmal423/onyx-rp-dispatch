@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/brand/onyx-server-logo.png" alt="Logótipo ONYX RP" width="280">
+<img src="docs/brand/onyx-server-logo-wide.png" alt="Logótipo ONYX RP" width="700">
 
 # ONYX DISPATCH
 
