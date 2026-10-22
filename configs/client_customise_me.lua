@@ -230,6 +230,26 @@ local keyLabelMap = {
     DOWN = '↓',
     RETURN = 'ENTER',
     BACK = 'BACKSPACE',
+    ['b_194'] = '↑',
+    ['b_195'] = '↓',
+    ['b_196'] = '←',
+    ['b_197'] = '→',
+    ['b_198'] = 'DEL',
+    ['b_199'] = 'ESC',
+    ['b_200'] = 'INS',
+    ['b_201'] = 'END',
+    ['b_1000'] = 'SHIFT',
+    ['b_1002'] = 'TAB',
+    ['b_1003'] = 'ENTER',
+    ['b_1004'] = 'BACKSPACE',
+    ['b_1008'] = 'HOME',
+    ['b_1009'] = 'PAGE UP',
+    ['b_1010'] = 'PAGE DOWN',
+    ['b_1012'] = 'CAPS LOCK',
+    ['b_1013'] = 'CTRL',
+    ['b_1014'] = 'RIGHT CTRL',
+    ['b_1015'] = 'ALT',
+    ['b_2000'] = 'SPACE',
 }
 
 local function GetMappedKeyLabel(command)
@@ -237,6 +257,8 @@ local function GetMappedKeyLabel(command)
 
     local mapped = GetControlInstructionalButton(0, GetHashKey(command) | 0x80000000, true)
     if type(mapped) ~= 'string' or mapped == '' then return '—' end
+
+    if keyLabelMap[mapped] then return keyLabelMap[mapped] end
 
     local key = mapped:match('^t_(.+)$')
     if not key then return '—' end
