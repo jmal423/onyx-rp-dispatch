@@ -142,6 +142,33 @@ Config.Dispatcher = {
     VoipResource = 'toko' ---[ 'toko' / 'mumble' / 'pmavoice' / 'other' ] Choose your servers voip resource.
 }
 
+Config.IncidentAlerts = {
+    ArmedPlayers = {
+        ENABLE = true,
+        scan_radius = 120, -- A unit only checks nearby players.
+        road_distance = 22, -- Armed players farther from a drivable road are ignored.
+        scan_interval = 2000,
+        cooldown = 120,
+    },
+    NearbyGunshots = {
+        ENABLE = true, -- Detect shots fired by nearby players as well as the existing local-player alert.
+        scan_radius = 180,
+        cooldown = 20,
+    },
+    Explosions = {
+        ENABLE = true, -- Uses the FXServer explosionEvent (OneSync required).
+        source_cooldown = 5,
+        max_source_distance = 300,
+        cooldown = 30,
+    },
+    Fires = {
+        ENABLE = true,
+        scan_radius = 180,
+        scan_interval = 5000,
+        cooldown = 120,
+    },
+}
+
 
 --     ██╗ ██████╗ ██████╗      ██████╗ █████╗ ██╗     ██╗          ██████╗ ██████╗ ███╗   ███╗███╗   ███╗ █████╗ ███╗   ██╗██████╗ ███████╗
 --     ██║██╔═══██╗██╔══██╗    ██╔════╝██╔══██╗██║     ██║         ██╔════╝██╔═══██╗████╗ ████║████╗ ████║██╔══██╗████╗  ██║██╔══██╗██╔════╝
@@ -211,12 +238,12 @@ Config.RadioCodes = {
 
 Config.PoliceAlerts = {
     ENABLE = true, --Do you want to use the built in police alerts?
-    police_jobs = {'police', }, --The jobs who will be notified from these police alerts.
+    police_jobs = {'police', 'sheriff'}, --The jobs who will be notified from these police alerts.
     whitelisted_jobs = {'police', 'ambulance', 'sheriff'}, --These jobs will NOT trigger these police alerts.
     cooldown = 30, --(in seconds) This cooldown is to prevent alerts from being spammed by the same player.
     add_bolos = true, --(requires cd_radar) Do you want to add a bolo for the vehicle that was used in the crime?
     require_witness_peds = {
-        ENABLE = false, --Do you want police alerts only to be sent if a witness (npc ped) is in the area?
+        ENABLE = false, --The server has no NPCs; keep this disabled so shots do not depend on witnesses.
         distance = 100, --The distance to check for witnesses.
     },
 

@@ -28,7 +28,7 @@ Interface NUI, alertas policiais, códigos de rádio e localização de equipas 
 | **Central** | Painel de ocorrências, mapa de dispatch, estado e dados das unidades. |
 | **Unidades** | Chamadasigns, viatura atribuída, estado de serviço e resposta a ocorrências. |
 | **Mapa** | Marcadores de unidades no mapa do dispatch e blips no mapa/minimapa do GTA. |
-| **Alertas** | Alertas policiais configuráveis para disparos e radares de velocidade. |
+| **Alertas** | Disparos, jogador armado junto a uma estrada, explosões e incêndios, além de radares de velocidade. |
 | **Rádio** | Atalhos 10-20, 10-32, 10-99 urgente, apoio conjunto LSPD/Sheriff e pedido médico da Polícia aos EMS. |
 | **Acesso** | Acesso baseado no emprego e no estado de serviço do framework. |
 | **Interface** | NUI adaptável a diferentes resoluções, com posições guardadas no cliente. |
@@ -75,9 +75,9 @@ Os mapeamentos podem ser alterados nas definições de teclas do FiveM. O painel
 
 ## ◉ Alertas: incluído e por integrar
 
-**Incluído:** alertas policiais configuráveis para disparos e radares, com filtros de empregos, armas, zonas e cooldown. Os códigos 10-20, 10-32 e 10-99 são enviados manualmente pelos atalhos de rádio. O pedido médico de Alt+5 só é criado quando há EMS de serviço; é encaminhado operacionalmente apenas aos EMS. Polícia e Sheriff de serviço veem uma cópia silenciosa, apenas informativa, com a lista e a distância das unidades EMS a caminho. Sem EMS, o chamado não é criado e quem o enviou recebe um aviso.
+**Incluído:** alertas policiais configuráveis para disparos, jogadores armados junto a vias, explosões, incêndios e radares, com filtros e cooldowns. O alerta de pessoa armada só é emitido quando um jogador armado está até 22 m de uma via (ajustável em `Config.IncidentAlerts`). Disparos não dependem da proximidade a uma via. Explosões usam o evento OneSync do FXServer e verificam a distância ao jogador que as originou; incêndios são detetados por unidades policiais de serviço próximas. Os alertas policiais são encaminhados a Polícia e Sheriff. Os códigos 10-20, 10-32 e 10-99 são enviados manualmente pelos atalhos de rádio. O pedido médico de Alt+5 só é criado quando há EMS de serviço; é encaminhado operacionalmente apenas aos EMS. Polícia e Sheriff de serviço veem uma cópia silenciosa, apenas informativa, com a lista e a distância das unidades EMS a caminho. Sem EMS, o chamado não é criado e quem o enviou recebe um aviso.
 
-**Ainda requer integração com outros recursos:** assaltos, pessoas armadas, explosões e incêndios. A resource não deteta automaticamente esses eventos por defeito. O estado atual está em [PENDENCIAS.md](PENDENCIAS.md).
+**Ainda requer integração com outros recursos:** assaltos. O alerta 10-90 não é criado automaticamente até cada recurso validar o início e chamar o export server-side `SendAlert`. Não ligues o alerta a eventos client-side de tentativa: são falsificáveis e podem gerar chamadas falsas. O estado e os testes pendentes estão em [PENDENCIAS.md](PENDENCIAS.md).
 
 ## ⌘ Exports
 

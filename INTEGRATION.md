@@ -1,6 +1,6 @@
 # Integrar outros recursos com o ONYX Dispatch
 
-Usa o export server-side `SendAlert` para ligar um assalto, uma explosão, um incêndio ou outro evento confirmado ao dispatch. O export não cria eventos de rede; chama-o a partir do servidor do recurso que detetou e validou a ocorrência.
+Usa o export server-side `SendAlert` para ligar um assalto ou outro evento confirmado ao dispatch. Disparos, jogadores armados junto a vias, explosões e incêndios próximos de unidades policiais já têm deteção integrada; continua a usar o export para assaltos e eventos especiais de outros recursos. O export não cria eventos de rede; chama-o a partir do servidor do recurso que detetou e validou a ocorrência.
 
 ## Exemplo
 
@@ -66,6 +66,7 @@ Em sucesso, `result` é o número de unidades operacionais e o terceiro retorno 
 
 - Usa o export só em ficheiros server-side e depois de o recurso de origem confirmar o início da ocorrência.
 - Não ligues o export a um evento client-side sem validação; isso permite alertas falsos e spam.
+- Recursos de assalto devem chamar o export no ponto server-side em que o alarme/assalto fica confirmado, não ao iniciar uma animação, lockpick ou tentativa.
 - Não uses `TriggerServerEvent` para tentar chamar esta exportação. O nome do recurso e a API pública são `onyx_dispatch`.
 - Para prevenir duplicados, mantém um `unique_id` por ocorrência e só chama o export uma vez por início confirmado.
 - A exportação não deteta crimes por si só e não altera o recurso que iniciou o assalto, incêndio ou explosão.
