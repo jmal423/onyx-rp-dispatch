@@ -36,7 +36,7 @@ CreateThread(function()
         AddEventHandler(Config.FrameworkTriggers.load, function(xPlayer)
             JobData = xPlayer.job or {}
             on_duty = Config.UseFrameworkDutySystem and JobData.onDuty == true
-            while not Authorised do Wait(1000) end
+            while not Authorised do Wait(100) end
             TriggerServerEvent('cd_dispatch:PlayerLoaded')
             UpdateDispatchVisibility()
         end)
@@ -74,7 +74,7 @@ CreateThread(function()
         AddEventHandler(Config.FrameworkTriggers.load, function()
             JobData = QBCore.Functions.GetPlayerData().job or {}
             on_duty = Config.UseFrameworkDutySystem and JobData.onduty == true
-            while not Authorised do Wait(1000) end
+            while not Authorised do Wait(100) end
             TriggerServerEvent('cd_dispatch:PlayerLoaded')
             UpdateDispatchVisibility()
         end)
@@ -190,7 +190,7 @@ end)
 
 
 CreateThread(function()
-    while not Authorised do Wait(1000) end 
+    while not Authorised do Wait(100) end
     if Config.large_ui.ENABLE then
         RegisterKeyMapping(Config.large_ui.command, L('dispatchlarge_description'), 'keyboard', Config.large_ui.key)
         RegisterCommand(Config.large_ui.command, function()
